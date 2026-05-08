@@ -1,0 +1,14 @@
+{
+  "name": "supergraph",
+  "owner": {
+    "name": "datit309",
+    "email": "trantandat0919@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "supergraph",
+      "source": "./plugins/supergraph",
+      "description": "Mandatory AI workflows + intelligent codebase graph analysis. Combines superpowers methodology with code-review-graph AST analysis. Supports Node.js, Flutter, PHP."
+    }
+  ]
+}
