@@ -52,7 +52,23 @@ cat >> ~/.agents/plugins/marketplace.json << 'EOF'
 EOF
 ```
 
-### Option 3: Repo-scoped Marketplace (cho team)
+### Option 3: Codex CLI Marketplace Commands
+
+```bash
+# From GitHub (owner/repo format)
+codex plugin marketplace add datit309/supergraph
+
+# From specific branch
+codex plugin marketplace add datit309/supergraph --ref main
+
+# From any Git URL (sparse checkout)
+codex plugin marketplace add https://github.com/datit309/supergraph.git --sparse .agents/plugins
+
+# From local directory
+codex plugin marketplace add ./supergraph-codex
+```
+
+### Option 4: Repo-scoped Marketplace (cho team)
 
 ```bash
 # Thêm vào .agents/plugins/marketplace.json ở repo root
