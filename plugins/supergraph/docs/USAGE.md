@@ -96,17 +96,13 @@ Supergraph là plugin cho Claude Code, kết hợp hai phương pháp:
 ### Cách 1: Cài từ thư mục local
 
     # Clone hoặc copy plugin vào máy
-    git clone https://github.com/YOUR_USER/supergraph.git /tmp/supergraph
+    git clone https://github.com/datit309/supergraph.git
 
-    # Cài vào project
-    cd your-project
-    claude plugins install /tmp/supergraph
-
-    # Thêm local marketplace
+    # Thêm local marketplace của claude code
     /plugin marketplace add ./supergraph
 
     # Cài plugin
-    /plugin install supergraph@datit309
+    /plugin install supergraph
 
 ### Cách 2: Copy trực tiếp
 
