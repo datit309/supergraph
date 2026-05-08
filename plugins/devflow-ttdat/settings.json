@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__code-review-graph__get_stats",
+      "mcp__code-review-graph__index_directory",
+      "mcp__code-review-graph__index_incremental",
+      "mcp__code-review-graph__blast_radius",
+      "mcp__code-review-graph__blast_radius_visualize",
+      "mcp__code-review-graph__find_dependencies",
+      "mcp__code-review-graph__find_dependents",
+      "mcp__code-review-graph__find_transitive_deps",
+      "mcp__code-review-graph__find_communities",
+      "mcp__code-review-graph__find_hub_nodes",
+      "mcp__code-review-graph__find_bridge_nodes",
+      "mcp__code-review-graph__find_cycles",
+      "mcp__code-review-graph__find_symbol",
+      "mcp__code-review-graph__find_callers",
+      "mcp__code-review-graph__find_callees",
+      "mcp__code-review-graph__find_similar",
+      "mcp__code-review-graph__surprise_score",
+      "mcp__code-review-graph__find_tests_for",
+      "mcp__code-review-graph__find_untested_files",
+      "Bash(npm test:*)",
+      "Bash(npx jest:*)",
+      "Bash(npx vitest:*)",
+      "Bash(flutter test:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(vendor/bin/pest:*)",
+      "Bash(vendor/bin/phpstan:*)",
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

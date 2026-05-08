@@ -1,0 +1,14 @@
+{
+  "name": "devflow-ttdat",
+  "owner": {
+    "name": "devflow-ttdat",
+    "email": "trantandat0919@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "devflow-ttdat",
+      "source": "./plugins/devflow-ttdat",
+      "description": "Mandatory AI workflows + intelligent codebase graph analysis. Combines superpowers methodology with code-review-graph AST analysis. Supports Node.js, Flutter, PHP."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "devflow-ttdat",
+  "version": "1.0.0",
+  "description": "Mandatory AI workflows + intelligent codebase graph analysis. Combines superpowers methodology with code-review-graph AST analysis. Supports Node.js, Flutter, PHP.",
+  "author": {
+    "name": "devflow-ttdat",
+    "email": "trantandat0919@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "code-review-graph",
+    "superpowers",
+    "tdd",
+    "blast-radius",
+    "code-review",
+    "workflow",
+    "nodejs",
+    "flutter",
+    "php"
+  ],
+  "homepage": "https://docs.example.com/plugin",
+  "repository": "https://github.com/author/plugin",
+  "minClaudeVersion": "1.0.0",
+  "agents":  [
+    "./agents/auto-fixer.md",
+    "./agents/code-reviewer.md"
+  ],
+  "skills": "./skills/"
+}
