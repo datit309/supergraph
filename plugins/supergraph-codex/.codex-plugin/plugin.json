@@ -1,0 +1,29 @@
+{
+  "name": "supergraph",
+  "version": "1.0.0",
+  "description": "Mandatory AI workflows + intelligent codebase graph analysis. Combines TDD methodology with code graph AST analysis. Supports Node.js, Flutter, PHP.",
+  "author": {
+    "name": "datit309",
+    "email": "datit309@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "code-review-graph",
+    "supergraph",
+    "tdd",
+    "blast-radius",
+    "code-review",
+    "workflow",
+    "nodejs",
+    "flutter",
+    "php"
+  ],
+  "homepage": "https://github.com/datit309/supergraph",
+  "repository": "https://github.com/datit309/supergraph",
+  "interface": {
+    "description": "Supergraph mandatory workflows for Codex - TDD, blast radius analysis, graph-enhanced code review"
+  },
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "hooks": "./hooks/"
+}
