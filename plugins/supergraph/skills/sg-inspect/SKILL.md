@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-inspect
+name: sg-inspect
 description: Kiểm tra sâu file, symbol hoặc module sử dụng graph analysis.
 autoTrigger: manual
 ---

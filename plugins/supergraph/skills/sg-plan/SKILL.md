@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-plan
+name: sg-plan
 description: Tạo plan có thông tin graph trước khi viết code. Tự động kích hoạt trước khi implementation.
 autoTrigger: pre_implementation
 ---

@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "supergraph",
-      "source": "./",
+      "source": "./plugins/supergraph",
       "version": "1.0.0",
       "description": "Mandatory AI workflows + intelligent codebase graph analysis. Combines superpowers methodology with code-review-graph AST analysis. Supports Node.js, Flutter, PHP."
     }

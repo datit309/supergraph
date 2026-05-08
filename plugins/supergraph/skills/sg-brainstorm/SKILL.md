@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-brainstorm
+name: sg-brainstorm
 description: Hiểu requirement với dữ liệu graph trước khi code. Tự động kích hoạt cho các task phức tạp.
 autoTrigger: pre_task
 ---

@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-review
+name: sg-review
 description: Code review với graph enhancement. Tự động kích hoạt trước khi merge và sau khi task hoàn tất.
 autoTrigger: pre_merge
 ---

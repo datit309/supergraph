@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-refactor
+name: sg-refactor
 description: Refactoring an toàn có graph-aware. Tự động kích hoạt khi refactoring code.
 autoTrigger: refactor
 ---

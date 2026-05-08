@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-fix
+name: sg-fix
 description: Tự động fix loop test + lint + graph review. Tự động kích hoạt sau khi coding hoàn tất.
 autoTrigger: post_implementation
 ---

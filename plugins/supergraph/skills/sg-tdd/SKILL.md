@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-tdd
+name: sg-tdd
 description: Test-Driven Development cho mọi implementation. Tự động kích hoạt khi writing code.
 autoTrigger: implementation
 ---

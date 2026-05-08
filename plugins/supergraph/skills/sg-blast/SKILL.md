@@ -1,5 +1,5 @@
 ---
-name: supergraph:sg-blast
+name: sg-blast
 description: Phân tích blast radius để xác định tác động của thay đổi. Tự động kích hoạt khi phân tích impact.
 autoTrigger: impact_analysis
 ---
