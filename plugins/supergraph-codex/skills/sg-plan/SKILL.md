@@ -152,7 +152,6 @@ git commit -m "feat: add specific feature"
 ### Task Dependencies
 - Task 2 depends on: Task 1
 - Task 3 depends on: Task 2
-```
 
 ### 8. Resume Detection
 
