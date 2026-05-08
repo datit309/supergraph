@@ -87,13 +87,16 @@ NEVER start coding until user approves.
 
 After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`
 
+**IMPORTANT:** Use the **Write tool** to create the file. Do NOT use Bash echo/cat.
+
+**Required sub-skill:** superpowers:subagent-driven-development (recommended) or superpowers:executing-plans
+
 **Superpowers-compatible format:**
 
 ````markdown
 # [Feature Name] Implementation Plan
 
 > **For agentic workers:** Use checkbox (`- [ ]`) syntax for tracking progress.
-> **Required sub-skill:** superpowers:subagent-driven-development (recommended) or superpowers:executing-plans
 
 **Goal:** [One sentence describing what this builds]
 
@@ -158,7 +161,15 @@ git commit -m "feat: add specific feature"
 - Task 2 depends on: Task 1
 - Task 3 depends on: Task 2
 
-### 8. Resume Detection
+### 8. Write Plan File
+
+Use the **Write tool** to create the file at `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`.
+
+**IMPORTANT:** 
+- Create the directory first if needed using Bash: `mkdir -p docs/superpowers/plans/`
+- Use the **Write tool** (NOT Bash echo/cat) to write the file content
+
+### 9. Resume Detection
 
 At session start, check for existing plan files:
 
@@ -167,7 +178,7 @@ At session start, check for existing plan files:
 If uncompleted plans exist → ask user:
 "You have an incomplete plan: `{filename}`. Resume from Task N?"
 
-### 9. Execution Handoff
+### 10. Execution Handoff
 
 After saving plan, offer execution choice:
 

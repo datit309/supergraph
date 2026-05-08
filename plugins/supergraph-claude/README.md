@@ -72,7 +72,7 @@ Plugin sử dụng [code-review-graph](https://github.com/tirth8205/code-review-
 
 ```bash
 pip install code-review-graph
-code-review-graph index .
+code-review-graph build
 ```
 
 ## License

@@ -25,7 +25,7 @@ Check which file exists in project root:
 ### 2. Verify MCP Available
 
 Call `mcp__code-review-graph__get_stats()`.
-If MCP not available → inform user: "Run `pip install code-review-graph` and `code-review-graph index .` first"
+If MCP not available → inform user: "Run `pip install code-review-graph` and `code-review-graph build` first"
 
 ### 3. Load Full Context
 

@@ -69,6 +69,7 @@ After writing the complete plan, review against the original requirement:
 **1. Spec coverage:** Can you point to a task for each requirement? List any gaps.
 
 **2. Placeholder scan:** Search for red flags:
+
 - "TBD", "TODO", "implement later"
 - "Add appropriate error handling" / "add validation"
 - "Similar to Task N" (repeat code instead)
@@ -86,19 +87,23 @@ NEVER start coding until user approves.
 
 After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`
 
+**IMPORTANT:** Use the **Write tool** to create the file. Do NOT use Bash echo/cat.
+
+**Required sub-skill:** superpowers:subagent-driven-development (recommended) or superpowers:executing-plans
+
 **Superpowers-compatible format:**
 
-```markdown
+````markdown
 # [Feature Name] Implementation Plan
 
 > **For agentic workers:** Use checkbox (`- [ ]`) syntax for tracking progress.
-> **Required sub-skill:** superpowers:subagent-driven-development (recommended) or superpowers:executing-plans
 
 **Goal:** [One sentence describing what this builds]
 
 **Architecture:** [2-3 sentences about approach]
 
 **Graph Context:**
+
 - Files in repo: N
 - Blast radius: M files
 - Hub nodes affected: [list]
@@ -111,6 +116,7 @@ After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<featu
 ### Task N: [Component Name]
 
 **Files:**
+
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
@@ -122,6 +128,7 @@ def test_specific_behavior():
     result = function(input)
     assert result == expected
 ```
+````
 
 - [ ] **Step 2: Run test to verify it fails**
 
@@ -150,10 +157,19 @@ git commit -m "feat: add specific feature"
 ---
 
 ### Task Dependencies
+
 - Task 2 depends on: Task 1
 - Task 3 depends on: Task 2
 
-### 8. Resume Detection
+### 8. Write Plan File
+
+Use the **Write tool** to create the file at `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`.
+
+**IMPORTANT:** 
+- Create the directory first if needed using Bash: `mkdir -p docs/superpowers/plans/`
+- Use the **Write tool** (NOT Bash echo/cat) to write the file content
+
+### 9. Resume Detection
 
 At session start, check for existing plan files:
 
@@ -162,7 +178,7 @@ At session start, check for existing plan files:
 If uncompleted plans exist → ask user:
 "You have an incomplete plan: `{filename}`. Resume from Task N?"
 
-### 9. Execution Handoff
+### 10. Execution Handoff
 
 After saving plan, offer execution choice:
 
