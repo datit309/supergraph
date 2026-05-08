@@ -9,15 +9,14 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 
 ### Option 1: From Local Directory
 
+    # Clone plugin
+    git clone https://github.com/datit309/supergraph.git
+
     # Add plugin to marketplace
     /plugin marketplace add ./supergraph
 
     # Install plugin
     /plugin install supergraph
-
-### Option 2: From GitHub
-
-    claude plugins install https://github.com/datit309/supergraph
 
 ## Prerequisites
 
