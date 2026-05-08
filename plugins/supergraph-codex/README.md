@@ -13,13 +13,28 @@ Claude Code plugin chuyển sang format cho OpenAI Codex.
 
 ## Install
 
-### Option 1: Local Marketplace
+### Option 1: Local Plugin Directory
 
 ```bash
-# Tạo marketplace local
+# Tạo plugins directory nếu chưa có
 mkdir -p ~/.agents/plugins
-cp -r plugins/supergraph-codex ~/.agents/plugins/
-echo '{"plugins":[{"name":"supergraph","source":"./supergraph-codex","version":"1.0.0"}]}' >> ~/.agents/plugins/marketplace.json
+
+# Copy plugin vào marketplace
+cp -r /path/to/supergraph/plugins/supergraph-codex ~/.agents/plugins/
+
+# Thêm vào marketplace.json
+cat >> ~/.agents/plugins/marketplace.json << 'EOF'
+{
+  "plugins": [
+    {
+      "name": "supergraph",
+      "source": "./supergraph-codex",
+      "version": "1.0.0",
+      "description": "Mandatory AI workflows + intelligent codebase graph analysis"
+    }
+  ]
+}
+EOF
 ```
 
 ### Option 2: Git Repository
@@ -28,22 +43,64 @@ echo '{"plugins":[{"name":"supergraph","source":"./supergraph-codex","version":"
 # Clone repo
 git clone https://github.com/datit309/supergraph.git
 
-# Copy vào marketplace
+# Copy plugin vào marketplace
 cp -r supergraph/plugins/supergraph-codex ~/.agents/plugins/
+
+# Cập nhật marketplace.json
+cat >> ~/.agents/plugins/marketplace.json << 'EOF'
+{"plugins":[{"name":"supergraph","source":"./supergraph-codex","version":"1.0.0"}]}
+EOF
 ```
+
+### Option 3: Repo-scoped Marketplace (cho team)
+
+```bash
+# Thêm vào .agents/plugins/marketplace.json ở repo root
+# Tạo file nếu chưa có
+mkdir -p .agents/plugins
+
+cat > .agents/plugins/marketplace.json << 'EOF'
+{
+  "plugins": [
+    {
+      "name": "supergraph",
+      "source": "https://github.com/datit309/supergraph.git",
+      "version": "1.0.0",
+      "description": "Mandatory AI workflows + graph analysis"
+    }
+  ]
+}
+EOF
+```
+
+### Sau khi Install
+
+1. **Restart Codex** để load plugin
+2. **Verify installation:**
+   ```bash
+   codex --plugins list
+   # hoặc
+   /plugins
+   ```
+3. **Trigger skills** với `$` prefix hoặc `@supergraph:skill-name`
 
 ## Usage
 
-Sau khi install, gọi skills với `$` prefix:
+Gọi skills với `$` prefix trong conversation:
 
 ```bash
-$sg-context     # Load codebase graph
-$sg-brainstorm  # Hiểu task với graph data
-$sg-plan        # Tạo plan với blast radius
-$sg-tdd         # Implement với TDD
-$sg-fix         # Auto-fix loop
-$sg-review      # Graph-enhanced review
-$sg-finish      # Merge/PR/discard
+$sg-context     # Load codebase graph khi bắt đầu session
+$sg-brainstorm  # Hiểu task với graph data trước khi code
+$sg-plan        # Tạo plan với blast radius analysis
+$sg-tdd         # Implement với RED → GREEN → REFACTOR
+$sg-fix         # Auto-fix loop (test + lint + review)
+$sg-review      # Graph-enhanced code review trước merge
+$sg-finish      # Merge, PR, hoặc discard
+```
+
+**Alternative invocation:**
+```bash
+@supergraph:sg-tdd    # Dùng @ để trigger specific skill
 ```
 
 ## Skills
