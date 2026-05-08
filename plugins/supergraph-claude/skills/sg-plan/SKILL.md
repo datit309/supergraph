@@ -83,6 +83,15 @@ If issues found → fix inline, don't re-review.
 
 NEVER start coding until user approves.
 
+### 6.1 MANDATORY: Save Plan File BEFORE Execution
+
+**After user approves — you MUST save the plan file first:**
+
+1. Run: `mkdir -p docs/superpowers/plans/`
+2. Use **Write tool** to create: `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`
+
+**The plan file IS the contract. No file saved = do NOT execute any task.**
+
 ### 7. Save Plan to File (after approval)
 
 After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`

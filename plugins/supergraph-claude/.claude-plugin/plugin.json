@@ -24,7 +24,9 @@
   "minClaudeVersion": "1.0.0",
   "agents": [
     "./agents/auto-fixer.md",
-    "./agents/code-reviewer.md"
+    "./agents/code-reviewer.md",
+    "./agents/planner-agent.md",
+    "./agents/executor-agent.md"
   ],
   "skills": "./skills/"
 }
