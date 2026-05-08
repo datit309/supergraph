@@ -22,7 +22,7 @@
   "homepage": "https://github.com/datit309/supergraph",
   "repository": "https://github.com/datit309/supergraph",
   "minClaudeVersion": "1.0.0",
-  "agents":  [
+  "agents": [
     "./agents/auto-fixer.md",
     "./agents/code-reviewer.md"
   ],
