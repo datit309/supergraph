@@ -69,6 +69,7 @@ After writing the complete plan, review against the original requirement:
 **1. Spec coverage:** Can you point to a task for each requirement? List any gaps.
 
 **2. Placeholder scan:** Search for red flags:
+
 - "TBD", "TODO", "implement later"
 - "Add appropriate error handling" / "add validation"
 - "Similar to Task N" (repeat code instead)
@@ -88,7 +89,7 @@ After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<featu
 
 **Superpowers-compatible format:**
 
-```markdown
+````markdown
 # [Feature Name] Implementation Plan
 
 > **For agentic workers:** Use checkbox (`- [ ]`) syntax for tracking progress.
@@ -99,6 +100,7 @@ After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<featu
 **Architecture:** [2-3 sentences about approach]
 
 **Graph Context:**
+
 - Files in repo: N
 - Blast radius: M files
 - Hub nodes affected: [list]
@@ -111,6 +113,7 @@ After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<featu
 ### Task N: [Component Name]
 
 **Files:**
+
 - Create: `exact/path/to/file.py`
 - Modify: `exact/path/to/existing.py:123-145`
 - Test: `tests/exact/path/to/test.py`
@@ -122,6 +125,7 @@ def test_specific_behavior():
     result = function(input)
     assert result == expected
 ```
+````
 
 - [ ] **Step 2: Run test to verify it fails**
 
@@ -150,6 +154,7 @@ git commit -m "feat: add specific feature"
 ---
 
 ### Task Dependencies
+
 - Task 2 depends on: Task 1
 - Task 3 depends on: Task 2
 
