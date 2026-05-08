@@ -33,21 +33,33 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
       AI reads 15 files (blast radius) → plans → TDD → graph review → auto-fix → merge
       Tokens: 4,260 | Quality: production-ready
 
-## Skills (Auto-triggered)
+## Skills
 
-| Skill      | Trigger              | What It Does                    |
-| ---------- | -------------------- | ------------------------------- |
-| context    | Session start        | Load codebase graph             |
-| brainstorm | Non-trivial task     | Understand with graph data      |
-| plan       | Before coding        | Graph-informed task breakdown   |
-| execute    | Executing plan       | Run saved plan with checkpoints |
-| finish     | Completing work      | Merge, PR, or discard options   |
-| tdd        | Every implementation | RED → GREEN → REFACTOR          |
-| review     | Before merge         | Graph-enhanced code review      |
-| blast      | Impact analysis      | Find affected files             |
-| fix        | After coding         | Auto test + lint + review loop  |
-| refactor   | Refactoring          | Safe incremental refactoring    |
-| inspect    | Deep dive            | File/symbol/module analysis     |
+**Note:** Skills use `sg-` prefix to avoid conflicts with built-in Claude Code commands.
+
+| Skill          | Trigger              | What It Does                    |
+| -------------- | -------------------- | ------------------------------- |
+| `/sg-context`  | Session start        | Load codebase graph             |
+| `/sg-brainstorm` | Non-trivial task   | Understand with graph data      |
+| `/sg-plan`     | Before coding         | Graph-informed task breakdown   |
+| `/sg-execute`  | Executing plan        | Run saved plan with checkpoints |
+| `/sg-finish`   | Completing work       | Merge, PR, or discard options   |
+| `/sg-tdd`      | Every implementation  | RED → GREEN → REFACTOR          |
+| `/sg-review`   | Before merge         | Graph-enhanced code review      |
+| `/sg-blast`    | Impact analysis       | Find affected files             |
+| `/sg-fix`      | After coding         | Auto test + lint + review loop  |
+| `/sg-refactor` | Refactoring           | Safe incremental refactoring    |
+| `/sg-inspect`  | Deep dive             | File/symbol/module analysis     |
+
+## How It Works
+
+1. **Session starts** → `/sg-context` loads graph
+2. **Task arrives** → `/sg-brainstorm` explores with graph data
+3. **Before coding** → `/sg-plan` uses blast_radius for scope
+4. **Implementing** → `/sg-tdd` enforces RED-GREEN-REFACTOR
+5. **After coding** → `/sg-fix` runs test + lint + review loop (max 3x)
+6. **Before merge** → `/sg-review` does full graph analysis
+7. **Refactoring** → `/sg-refactor` ensures safe incremental changes
 
 ## Agents
 
@@ -56,23 +68,18 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 | code-reviewer | Specialized graph-enhanced review |
 | auto-fixer    | Iterative test + lint + fix loop  |
 
-## Language Support
+## Quick Usage
 
-| Language             | Test                   | Lint            |
-| -------------------- | ---------------------- | --------------- |
-| Node.js / TypeScript | npm test, jest, vitest | eslint          |
-| Flutter / Dart       | flutter test           | flutter analyze |
-| PHP                  | phpunit, pest          | phpstan, phpcs  |
-
-## How It Works
-
-1. **Session starts** → context skill loads graph
-2. **Task arrives** → brainstorm skill explores with graph data
-3. **Before coding** → plan skill uses blast_radius for scope
-4. **Implementing** → tdd skill enforces RED-GREEN-REFACTOR
-5. **After coding** → fix skill runs test + lint + review loop (max 3x)
-6. **Before merge** → review skill does full graph analysis
-7. **Refactoring** → refactor skill ensures safe incremental changes
+```bash
+# Start session - context auto-loads
+# For new feature:
+/sg-brainstorm        # Understand the task
+/sg-plan              # Create plan with blast radius
+/sg-tdd              # Implement with TDD
+/sg-fix              # Auto-fix issues
+/sg-review           # Final review
+/sg-finish           # Merge/PR/discard
+```
 
 ## Requirements
 

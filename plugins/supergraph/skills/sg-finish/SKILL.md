@@ -1,10 +1,10 @@
 ---
-name: supergraph-finish
+name: supergraph:sg-finish
 description: Hoàn thành development — merge, PR, hoặc discard. Tự động kích hoạt khi implementation complete.
 autoTrigger: completion
 ---
 
-# Skill: Finish
+# Skill: sg-finish
 
 > Auto-trigger: Khi implementation hoàn tất.
 

@@ -1,10 +1,10 @@
 ---
-name: supergraph-inspect
+name: supergraph:sg-inspect
 description: Kiểm tra sâu file, symbol hoặc module sử dụng graph analysis.
 autoTrigger: manual
 ---
 
-# Skill: Inspect
+# Skill: sg-inspect
 
 > Trigger: When deep-diving into a file, symbol, or module.
 

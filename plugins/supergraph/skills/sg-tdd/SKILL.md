@@ -1,10 +1,10 @@
 ---
-name: supergraph-tdd
+name: supergraph:sg-tdd
 description: Test-Driven Development cho mọi implementation. Tự động kích hoạt khi writing code.
 autoTrigger: implementation
 ---
 
-# Skill: TDD
+# Skill: sg-tdd
 
 > Auto-trigger: When implementing any feature or fix.
 

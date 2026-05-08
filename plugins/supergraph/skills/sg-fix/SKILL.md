@@ -1,10 +1,10 @@
 ---
-name: supergraph-fix
+name: supergraph:sg-fix
 description: Tự động fix loop test + lint + graph review. Tự động kích hoạt sau khi coding hoàn tất.
 autoTrigger: post_implementation
 ---
 
-# Skill: Auto-Fix Loop
+# Skill: sg-fix
 
 > Auto-trigger: After all coding is complete.
 

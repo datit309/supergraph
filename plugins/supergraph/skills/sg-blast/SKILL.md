@@ -1,10 +1,10 @@
 ---
-name: supergraph-blast
+name: supergraph:sg-blast
 description: Phân tích blast radius để xác định tác động của thay đổi. Tự động kích hoạt khi phân tích impact.
 autoTrigger: impact_analysis
 ---
 
-# Skill: Blast Radius
+# Skill: sg-blast
 
 > Auto-trigger: When analyzing impact of changes.
 

@@ -7,22 +7,22 @@
 
 ## Skills
 
-This project uses supergraph skills located in `.claude/skills/`.
+This project uses supergraph skills with `sg-` prefix to avoid conflicts with built-in commands.
 Agent MUST read and follow the relevant skill before each phase.
 
 | Skill                          | When to read                            |
 | ------------------------------ | --------------------------------------- |
-| `.claude/skills/context.md`    | Start of every session                  |
-| `.claude/skills/brainstorm.md` | Before understanding a non-trivial task |
-| `.claude/skills/plan.md`       | Before writing any code                 |
-| `.claude/skills/tdd.md`        | When implementing any feature or fix    |
-| `.claude/skills/review.md`     | Before merging or when review is needed |
-| `.claude/skills/blast.md`      | When analyzing impact of changes        |
-| `.claude/skills/fix.md`        | After all coding is complete            |
-| `.claude/skills/refactor.md`   | When refactoring code                   |
-| `.claude/skills/inspect.md`    | When deep-diving into a file or symbol  |
-| `.claude/skills/execute.md`    | When executing saved plans               |
-| `.claude/skills/finish.md`     | When completing work                    |
+| `sg-context`    | Start of every session                  |
+| `sg-brainstorm` | Before understanding a non-trivial task |
+| `sg-plan`       | Before writing any code                 |
+| `sg-tdd`        | When implementing any feature or fix    |
+| `sg-review`     | Before merging or when review is needed |
+| `sg-blast`      | When analyzing impact of changes        |
+| `sg-fix`        | After all coding is complete            |
+| `sg-refactor`   | When refactoring code                   |
+| `sg-inspect`    | When deep-diving into a file or symbol  |
+| `sg-execute`    | When executing saved plans               |
+| `sg-finish`     | When completing work                    |
 
 ---
 
@@ -42,28 +42,28 @@ Use the correct test/lint commands for the detected language.
 
 ### Step 0: Context
 
-Read `.claude/skills/context.md` and execute it.
+Read `sg-context` and execute it.
 NEVER start work without graph context.
 
 ### Step 1: Understand
 
-Non-trivial task → Read `.claude/skills/brainstorm.md` and execute it.
+Non-trivial task → Read `sg-brainstorm` and execute it.
 Ask questions. Confirm with user.
 
 ### Step 2: Plan
 
-Read `.claude/skills/plan.md` and execute it.
+Read `sg-plan` and execute it.
 blast_radius → identify affected files. Tasks 2-5 min each. User approval.
 Save plan to `docs/superpowers/plans/` for resume capability.
 
 ### Step 3: Execute TDD
 
-Read `.claude/skills/tdd.md` and execute it.
+Read `sg-tdd` and execute it.
 Each task: RED → GREEN → REFACTOR. No exceptions.
 
 ### Step 4: Auto-Fix Loop
 
-After ALL coding, read `.claude/skills/fix.md` and execute it.
+After ALL coding, read `sg-fix` and execute it.
 
     iteration = 0
     while iteration < 3:
@@ -75,12 +75,12 @@ After ALL coding, read `.claude/skills/fix.md` and execute it.
 
 ### Step 5: Final Review
 
-Read `.claude/skills/review.md` and execute it.
+Read `sg-review` and execute it.
 All checks pass before merge.
 
 ### Step 6: Complete Development
 
-Read `.claude/skills/finish.md` and execute it.
+Read `sg-finish` and execute it.
 Choose: merge, PR, keep, or discard.
 
 ---

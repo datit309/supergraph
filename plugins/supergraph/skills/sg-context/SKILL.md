@@ -1,10 +1,10 @@
 ---
-name: supergraph-context
+name: supergraph:sg-context
 description: Load graph context của codebase lúc bắt đầu session. Tự động kích hoạt mỗi session.
 autoTrigger: session_start
 ---
 
-# Skill: Context
+# Skill: sg-context
 
 > Auto-trigger: Start of every session.
 

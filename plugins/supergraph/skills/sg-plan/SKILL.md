@@ -1,10 +1,10 @@
 ---
-name: supergraph-plan
+name: supergraph:sg-plan
 description: Tạo plan có thông tin graph trước khi viết code. Tự động kích hoạt trước khi implementation.
 autoTrigger: pre_implementation
 ---
 
-# Skill: Plan
+# Skill: sg-plan
 
 > Auto-trigger: Before writing any code.
 

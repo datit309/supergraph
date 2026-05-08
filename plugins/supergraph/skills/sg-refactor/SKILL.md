@@ -1,10 +1,10 @@
 ---
-name: supergraph-refactor
+name: supergraph:sg-refactor
 description: Refactoring an toàn có graph-aware. Tự động kích hoạt khi refactoring code.
 autoTrigger: refactor
 ---
 
-# Skill: Refactor
+# Skill: sg-refactor
 
 > Auto-trigger: When refactoring code.
 

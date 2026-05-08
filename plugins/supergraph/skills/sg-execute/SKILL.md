@@ -1,10 +1,10 @@
 ---
-name: supergraph-execute
+name: supergraph:sg-execute
 description: Thực thi plan đã lưu với checkpoint resume. Tự động kích hoạt khi cần execute plan.
 autoTrigger: execution
 ---
 
-# Skill: Execute
+# Skill: sg-execute
 
 > Auto-trigger: When executing a saved plan.
 
