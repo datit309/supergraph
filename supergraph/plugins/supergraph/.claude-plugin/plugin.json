@@ -19,8 +19,8 @@
     "flutter",
     "php"
   ],
-  "homepage": "https://github.com/datit309/devflow-ttdat",
-  "repository": "https://github.com/datit309/devflow-ttdat",
+  "homepage": "https://github.com/datit309/supergraph",
+  "repository": "https://github.com/datit309/supergraph",
   "minClaudeVersion": "1.0.0",
   "agents":  [
     "./agents/auto-fixer.md",

@@ -7,11 +7,17 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 
 ## Install
 
-    # In your project directory
-    claude plugins install ./supergraph
+### Option 1: From Local Directory
 
-    # Or from git
-    claude plugins install github-user/supergraph
+    # Add plugin to marketplace
+    /plugin marketplace add ./supergraph
+
+    # Install plugin
+    /plugin install supergraph
+
+### Option 2: From GitHub
+
+    claude plugins install https://github.com/datit309/supergraph
 
 ## Prerequisites
 
@@ -30,17 +36,19 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 
 ## Skills (Auto-triggered)
 
-| Skill      | Trigger              | What It Does                   |
-| ---------- | -------------------- | ------------------------------ |
-| context    | Session start        | Load codebase graph            |
-| brainstorm | Non-trivial task     | Understand with graph data     |
-| plan       | Before coding        | Graph-informed task breakdown  |
-| tdd        | Every implementation | RED → GREEN → REFACTOR         |
-| review     | Before merge         | Graph-enhanced code review     |
-| blast      | Impact analysis      | Find affected files            |
-| fix        | After coding         | Auto test + lint + review loop |
-| refactor   | Refactoring          | Safe incremental refactoring   |
-| inspect    | Deep dive            | File/symbol/module analysis    |
+| Skill      | Trigger              | What It Does                    |
+| ---------- | -------------------- | ------------------------------- |
+| context    | Session start        | Load codebase graph             |
+| brainstorm | Non-trivial task     | Understand with graph data      |
+| plan       | Before coding        | Graph-informed task breakdown   |
+| execute    | Executing plan       | Run saved plan with checkpoints |
+| finish     | Completing work      | Merge, PR, or discard options   |
+| tdd        | Every implementation | RED → GREEN → REFACTOR          |
+| review     | Before merge         | Graph-enhanced code review      |
+| blast      | Impact analysis      | Find affected files             |
+| fix        | After coding         | Auto test + lint + review loop  |
+| refactor   | Refactoring          | Safe incremental refactoring    |
+| inspect    | Deep dive            | File/symbol/module analysis     |
 
 ## Agents
 
