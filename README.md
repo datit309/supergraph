@@ -7,16 +7,28 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 
 ## Install
 
-### Option 1: From Local Directory
+### Option 1: From Git Repository (Recommended for teams)
 
-    # Clone plugin
-    git clone https://github.com/datit309/supergraph.git
+```bash
+# Add plugin marketplace from Git repo
+/plugin marketplace add https://github.com/datit309/supergraph.git
 
-    # Add plugin to marketplace
-    /plugin marketplace add ./supergraph
+# Install plugin
+/plugin install supergraph
+```
 
-    # Install plugin
-    /plugin install supergraph
+### Option 2: From Local Directory
+
+```bash
+# Clone plugin
+git clone https://github.com/datit309/supergraph.git
+
+# Add plugin to marketplace
+/plugin marketplace add ./supergraph
+
+# Install plugin
+/plugin install supergraph
+```
 
 ## Prerequisites
 
@@ -37,19 +49,19 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 
 **Note:** Skills use `sg-` prefix to avoid conflicts with built-in Claude Code commands.
 
-| Skill          | Trigger              | What It Does                    |
-| -------------- | -------------------- | ------------------------------- |
-| `/sg-context`  | Session start        | Load codebase graph             |
-| `/sg-brainstorm` | Non-trivial task   | Understand with graph data      |
-| `/sg-plan`     | Before coding         | Graph-informed task breakdown   |
-| `/sg-execute`  | Executing plan        | Run saved plan with checkpoints |
-| `/sg-finish`   | Completing work       | Merge, PR, or discard options   |
-| `/sg-tdd`      | Every implementation  | RED → GREEN → REFACTOR          |
-| `/sg-review`   | Before merge         | Graph-enhanced code review      |
-| `/sg-blast`    | Impact analysis       | Find affected files             |
-| `/sg-fix`      | After coding         | Auto test + lint + review loop  |
-| `/sg-refactor` | Refactoring           | Safe incremental refactoring    |
-| `/sg-inspect`  | Deep dive             | File/symbol/module analysis     |
+| Skill            | Trigger              | What It Does                    |
+| ---------------- | -------------------- | ------------------------------- |
+| `/sg-context`    | Session start        | Load codebase graph             |
+| `/sg-brainstorm` | Non-trivial task     | Understand with graph data      |
+| `/sg-plan`       | Before coding        | Graph-informed task breakdown   |
+| `/sg-execute`    | Executing plan       | Run saved plan with checkpoints |
+| `/sg-finish`     | Completing work      | Merge, PR, or discard options   |
+| `/sg-tdd`        | Every implementation | RED → GREEN → REFACTOR          |
+| `/sg-review`     | Before merge         | Graph-enhanced code review      |
+| `/sg-blast`      | Impact analysis      | Find affected files             |
+| `/sg-fix`        | After coding         | Auto test + lint + review loop  |
+| `/sg-refactor`   | Refactoring          | Safe incremental refactoring    |
+| `/sg-inspect`    | Deep dive            | File/symbol/module analysis     |
 
 ## How It Works
 
