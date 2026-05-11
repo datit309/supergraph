@@ -9,7 +9,7 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 
 | Plugin              | Platform     | Prefix | Install Command                                    |
 | ------------------- | ------------ | ------ | -------------------------------------------------- |
-| `supergraph-claude` | Claude Code  | `/sg-` | `/plugin install supergraph`                       |
+| `supergraph-claude` | Claude Code  | `/sg-` | `/plugin install supergraph-claude`                |
 | `supergraph-codex`  | OpenAI Codex | `$sg-` | `codex plugin marketplace add datit309/supergraph` |
 
 ## Install (Claude Code)
@@ -19,7 +19,7 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 /plugin marketplace add https://github.com/datit309/supergraph.git
 
 # Install plugin
-/plugin install supergraph
+/plugin install supergraph-claude
 ```
 
 ## Install (OpenAI Codex)
