@@ -30,35 +30,28 @@ git clone https://github.com/datit309/supergraph.git
 /plugin install supergraph
 ```
 
-## Usage
-
-Gọi skills với `/sg-` prefix:
-
-```bash
-/sg-context     # Load codebase graph khi bắt đầu session
-/sg-brainstorm  # Hiểu task với graph data trước khi code
-/sg-plan        # Tạo plan với blast radius analysis
-/sg-tdd         # Implement với RED → GREEN → REFACTOR
-/sg-fix         # Auto-fix loop (test + lint + review)
-/sg-review      # Graph-enhanced code review trước merge
-/sg-finish      # Merge, PR, hoặc discard
-```
-
 ## Skills
 
-| Skill           | Trigger              | Mô tả                           |
-| --------------- | -------------------- | ------------------------------- |
-| `/sg-context`   | Session start        | Load codebase graph             |
-| `/sg-brainstorm`| Non-trivial task     | Hiểu requirement với graph      |
-| `/sg-plan`      | Before coding        | Graph-informed task breakdown   |
-| `/sg-tdd`       | Every implementation | RED → GREEN → REFACTOR         |
-| `/sg-review`    | Before merge         | Graph-enhanced code review      |
-| `/sg-blast`     | Impact analysis      | Find affected files             |
-| `/sg-fix`       | After coding         | Auto test + lint + review loop  |
-| `/sg-refactor`  | Refactoring          | Safe incremental refactoring    |
-| `/sg-inspect`   | Deep dive            | File/symbol/module analysis     |
-| `/sg-execute`   | Executing plan       | Run saved plan with checkpoints |
-| `/sg-finish`    | Completing work      | Merge, PR, or discard options   |
+| Skill   | Command               | Purpose                                    |
+| ------- | --------------------- | ------------------------------------------ |
+| Context | `/supergraph:context` | Load graph context at session start        |
+| Plan    | `/supergraph:plan`    | Scan codebase + graph analysis + save plan |
+| TDD     | `/supergraph:tdd`     | RED-GREEN-REFACTOR implementation          |
+| Fix     | `/supergraph:fix`     | Auto-fix loop (test + lint + graph)        |
+| Review  | `/supergraph:review`  | Pre-merge graph-enhanced review            |
+
+## Agents
+
+| Agent                 | Purpose                          |
+| --------------------- | -------------------------------- |
+| `supergraph-planner`  | Create plans only, never execute |
+| `supergraph-executor` | Execute saved plans with TDD     |
+
+## Hooks
+
+- **PreToolUse**: Blocks code writes if no plan file exists
+- **PostToolUse**: Auto-updates graph on file changes, blocks destructive commands
+- **Stop**: Shows plan progress and uncommitted changes reminder
 
 ## Prerequisites
 

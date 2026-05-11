@@ -1,82 +1,69 @@
 ---
-name: sg-fix
-description: Tự động fix loop test + lint + graph review. Tự động kích hoạt sau khi coding hoàn tất.
-autoTrigger: post_implementation
+description: Auto-fix loop after coding. Runs tests, lint, and graph review iteratively. Use after all coding tasks are complete.
 ---
 
-# Skill: sg-fix
+# Skill: Fix
 
-> Auto-trigger: After all coding is complete.
-
-## Purpose
-
-Catch and fix issues automatically. Max 3 iterations.
+Catch and fix issues automatically. Tests pass, lint clean, no graph surprises. Max 3 iterations.
 
 ## Steps
 
-### 0. Setup
+### 1. Detect Language
 
-Detect language:
+Run: `bash bin/detect-project.sh`
 
-- `pubspec.yaml` → TEST=`flutter test`, LINT=`flutter analyze`
-- `package.json` → TEST=`npm test`, LINT=`npm run lint` or `npx eslint .`
-- `composer.json` → TEST=`vendor/bin/phpunit`, LINT=`vendor/bin/phpstan analyse`
+### 2. Get Changed Files
 
-Get changed files:
+```bash
+git diff --name-only
+```
 
-    git diff --name-only
+### 3. Get Blast Radius
 
-Graph scope:
+```
+mcp__code-review-graph__get_impact_radius_tool(files=[changed_files], depth=3)
+```
 
-    mcp__code-review-graph__blast_radius(files=[changed], depth=3, direction="both")
+### 4. Fix Loop (max 3 iterations)
 
-### 1. Fix Loop
+**A. Tests**
+Run: `$TEST_CMD`
+If failed → for each failing test:
 
-    MAX = 3
-    iter = 0
+- Read error, find source file
+- `get_impact_radius_tool(files=[source], depth=2)`
+- Read test + source + blast files
+- Fix source (NOT test unless test is wrong)
+- Re-run test
 
-    while iter < MAX:
+**B. Lint**
+Run: `$LINT_CMD`
+If errors → fix each error.
 
-        A. Tests
-        Run [TEST_CMD]
-        If failed:
-            For each failing test:
-                Find source file
-                blast_radius([source], depth=2)
-                Read test + source + blast files
-                Analyze failure
-                Fix source (NOT test unless test is wrong)
-            iter++
-            continue
+**C. Graph Review**
 
-        B. Lint
-        Run [LINT_CMD]
-        If errors:
-            For each error: fix it
-            iter++
-            continue
+```
+mcp__code-review-graph__get_surprising_connections_tool()
+mcp__code-review-graph__get_knowledge_gaps_tool()
+```
 
-        C. Graph Review
-        cycles = find_cycles()
-        For each changed file:
-            score = surprise_score(file)
-            If score > 0.7: mark CRITICAL
-        For each changed file:
-            tests = find_tests_for(file)
-            If no tests: mark WARNING
+- Surprise > 0.7 → CRITICAL, investigate
+- Untested files → WARNING
 
-        If any CRITICAL: fix them; iter++; continue
+**D. Check**
 
-        break
+- If CRITICAL or WARNING → fix, continue loop
+- If all clean → break
 
-    If iter >= MAX:
-        STOP → present remaining issues → NEVER commit broken code
-    Else:
-        "Auto-fix complete — tests PASS, lint PASS, review PASS"
+### 5. Final State
 
-### Rules
+If 3 iterations exhausted → STOP, present remaining issues, NEVER commit broken code.
+
+If clean → report: "Auto-fix complete — tests PASS, lint PASS, review PASS"
+
+## Rules
 
 - NEVER modify tests to make them pass (unless test is wrong)
 - NEVER commit if any check fails after 3 iterations
-- ALWAYS use blast_radius to understand fix impact
-- ALWAYS re-run full check after each fix
+- Use blast radius to understand fix impact
+- Re-run full check after each fix

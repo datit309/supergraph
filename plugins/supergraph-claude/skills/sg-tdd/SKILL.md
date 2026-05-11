@@ -1,66 +1,72 @@
 ---
-name: sg-tdd
-description: Test-Driven Development cho mọi implementation. Tự động kích hoạt khi writing code.
-autoTrigger: implementation
+description: Test-Driven Development for every implementation. Use when implementing any feature or fix. RED-GREEN-REFACTOR cycle.
 ---
 
-# Skill: sg-tdd
-
-> Auto-trigger: When implementing any feature or fix.
-
-## Purpose
+# Skill: TDD
 
 Write test first, then implement. No exceptions.
 
 ## Steps
 
-### Detect Language
+### 1. Detect Language
 
-- `pubspec.yaml` → `flutter test [file]`
-- `package.json` → `npm test` / `npx jest [file]` / `npx vitest [file]`
-- `composer.json` → `vendor/bin/phpunit [file]` / `vendor/bin/pest [file]`
+Run: `bash bin/detect-project.sh`
 
-### RED: Write Failing Test
+### 2. Find Existing Tests
 
-1. Find existing tests:
+```
+mcp__code-review-graph__query_graph_tool(query_type="tests", target="target/file.py")
+```
 
-   mcp__code-review-graph__find_tests_for(file=[target_file])
+If tests exist → read and understand patterns.
+If no tests → create new test file following project conventions.
 
-2. If tests exist: read, understand patterns, extend.
-   If no tests: create new test file following project conventions.
+### 3. RED — Write Failing Test
 
-3. Write MINIMAL failing test that describes expected behavior.
+1. Write MINIMAL failing test describing expected behavior
+2. Run: `$TEST_CMD`
+3. MUST FAIL
+4. Report: `RED: [test_name] fails`
 
-4. Run test → MUST FAIL.
+### 4. GREEN — Minimal Implementation
 
-5. Report: "RED: [test_name] fails"
+1. Write SIMPLEST code that makes test pass
+2. No extras, no optimization
+3. Run: `$TEST_CMD`
+4. MUST PASS
+5. Report: `GREEN: [test_name] passes`
 
-### GREEN: Minimal Implementation
-
-1. Write SIMPLEST code that makes the test pass.
-2. No extras. No optimization.
-3. Run test → MUST PASS.
-4. Report: "GREEN: [test_name] passes"
-
-### REFACTOR: Safe Improvement
+### 5. REFACTOR — Safe Improvement
 
 1. Check impact:
 
-   mcp__code-review-graph__blast_radius(files=[refactored_file], depth=2)
-   mcp__code-review-graph__find_similar(pattern=[current_implementation])
+```
+mcp__code-review-graph__get_impact_radius_tool(files=["refactored_file"], depth=2)
+```
 
-2. Refactor while keeping tests green.
-3. Run ALL tests for blast_radius files.
-4. Report: "REFACTOR: clean"
+2. Refactor while keeping tests green
+3. Run ALL tests for blast radius files
+4. Report: `REFACTOR: clean`
 
-### Verify Blast Radius
+### 6. Verify Blast Radius
 
-    mcp__code-review-graph__blast_radius(files=[all_changed_files], depth=3)
+```
+mcp__code-review-graph__get_impact_radius_tool(files=["all_changed_files"], depth=3)
+```
 
-Run tests for ALL files in blast_radius.
+Run tests for ALL files in blast radius.
 
-### Commit
+### 7. Commit
 
-    git add -p
-    git commit -m "test: [description of test]"
-    git commit -m "feat: [description of implementation]"
+```bash
+git add -p
+git commit -m "test: [description]"
+git commit -m "feat: [description]"
+```
+
+## Rules
+
+- Test first, always
+- Minimal test, minimal implementation
+- Verify blast radius after changes
+- Separate commits for test and implementation
