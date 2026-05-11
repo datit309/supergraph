@@ -77,10 +77,26 @@ code-review-graph index .
 
 ## Agents
 
-| Agent         | Purpose                           |
-| ------------- | --------------------------------- |
-| code-reviewer | Specialized graph-enhanced review |
-| auto-fixer    | Iterative test + lint + fix loop  |
+| Agent | Purpose |
+|-------|---------|
+| `supergraph-planner` | Create plans, never code |
+| `supergraph-executor` | Execute saved plans with TDD |
+| `supergraph-code-reviewer` | Graph-enhanced code review |
+| `supergraph-auto-fixer` | Automated fix loop |
+
+## MCP Tools
+
+| Tool | Purpose |
+|------|---------|
+| `get_impact_radius_tool` | Blast radius analysis |
+| `build_or_update_graph_tool` | Build/refresh graph |
+| `list_graph_stats_tool` | Graph health |
+| `get_hub_nodes_tool` | Most-connected nodes |
+| `get_bridge_nodes_tool` | Chokepoints |
+| `list_communities_tool` | Code clusters |
+| `get_surprising_connections_tool` | Unexpected coupling |
+| `get_knowledge_gaps_tool` | Untested hotspots |
+| `detect_changes_tool` | Risk-scored impact |
 
 ## Quick Usage (Claude Code)
 
@@ -106,10 +122,38 @@ $sg-finish           # Merge/PR/discard
 
 ## Requirements
 
-- Claude Code CLI hoặc OpenAI Codex CLI
+- Claude Code CLI or OpenAI Codex CLI
 - Python 3.8+
 - Git repository
 - code-review-graph (`pip install code-review-graph`)
+
+## Documentation
+
+Each plugin has its own documentation:
+
+| Plugin | Docs |
+|--------|------|
+| `plugins/supergraph-claude/` | `CLAUDE.md`, `docs/TEAM-SETUP.md` |
+| `plugins/supergraph-codex/` | `CLAUDE.md`, `docs/TEAM-SETUP.md`, `docs/SKILLS.md`, `CHANGELOG.md` |
+
+### Plan Files
+
+Plans are saved to `docs/superpowers/plans/` for tracking and team collaboration:
+```
+docs/superpowers/plans/2026-05-11-user-auth.md
+```
+
+## Local Development
+
+This repo includes local plugin copies for development:
+
+```
+plugins/
+├── supergraph-claude/   # Claude Code variant
+└── supergraph-codex/    # OpenAI Codex variant
+```
+
+To reload plugins: `/reload-plugins`
 
 ## License
 
