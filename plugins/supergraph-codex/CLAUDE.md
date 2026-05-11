@@ -7,22 +7,17 @@
 
 ## Skills
 
-This project uses supergraph skills with `sg-` prefix to avoid conflicts with built-in commands.
-Agent MUST read and follow the relevant skill before each phase.
+This project uses supergraph skills. Agent MUST read and follow the relevant skill before each phase.
 
-| Skill                          | When to read                            |
-| ------------------------------ | --------------------------------------- |
+| Skill           | When to read                            |
+| --------------- | --------------------------------------- |
 | `sg-context`    | Start of every session                  |
-| `sg-brainstorm` | Before understanding a non-trivial task |
 | `sg-plan`       | Before writing any code                 |
 | `sg-tdd`        | When implementing any feature or fix    |
-| `sg-review`     | Before merging or when review is needed |
-| `sg-blast`      | When analyzing impact of changes        |
 | `sg-fix`        | After all coding is complete            |
-| `sg-refactor`   | When refactoring code                   |
-| `sg-inspect`    | When deep-diving into a file or symbol  |
+| `sg-review`     | Before merging or when review is needed |
 | `sg-execute`    | When executing saved plans               |
-| `sg-finish`     | When completing work                    |
+| `sg-integration`| After fix, before review                |
 
 ---
 
@@ -45,23 +40,18 @@ Use the correct test/lint commands for the detected language.
 Read `sg-context` and execute it.
 NEVER start work without graph context.
 
-### Step 1: Understand
-
-Non-trivial task → Read `sg-brainstorm` and execute it.
-Ask questions. Confirm with user.
-
-### Step 2: Plan
+### Step 1: Plan
 
 Read `sg-plan` and execute it.
 blast_radius → identify affected files. Tasks 2-5 min each. User approval.
 Save plan to `docs/superpowers/plans/` for resume capability.
 
-### Step 3: Execute TDD
+### Step 2: Execute TDD
 
 Read `sg-tdd` and execute it.
 Each task: RED → GREEN → REFACTOR. No exceptions.
 
-### Step 4: Auto-Fix Loop
+### Step 3: Auto-Fix Loop
 
 After ALL coding, read `sg-fix` and execute it.
 
@@ -73,15 +63,14 @@ After ALL coding, read `sg-fix` and execute it.
         break
     if iteration >= 3: STOP, ask user
 
+### Step 4: Integration
+
+After fix, run `sg-integration` to validate cross-module behavior.
+
 ### Step 5: Final Review
 
 Read `sg-review` and execute it.
 All checks pass before merge.
-
-### Step 6: Complete Development
-
-Read `sg-finish` and execute it.
-Choose: merge, PR, keep, or discard.
 
 ---
 

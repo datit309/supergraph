@@ -16,13 +16,13 @@ code-review-graph build
 code-review-graph status
 ```
 
-Codex will auto-load the plugin from `.codex-plugin/`.
+Claude Code will auto-load the plugin from `.claude-plugin/`.
 
 ## What's in Git
 
 | Path | In Git? | Reason |
 |---|---|---|
-| `.codex-plugin/` | ✅ Yes | Plugin manifest + skills |
+| `.claude-plugin/` | ✅ Yes | Plugin manifest + skills |
 | `.mcp.json` | ✅ Yes | MCP server config |
 | `.code-review-graph/` | ✅ Yes | Graph data (shared across team) |
 | `docs/superpowers/plans/` | ✅ Yes | Plans are contracts — team can see/track |
@@ -117,7 +117,7 @@ jobs:
           kill %1
 ```
 
-### Pre-commit Hook (for non-Codex users)
+### Pre-commit Hook (for non-Claude Code users)
 
 ```bash
 # .githooks/pre-commit

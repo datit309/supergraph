@@ -15,6 +15,15 @@ Create implementation plans. Never execute.
 eval "$(bash bin/detect-project.sh)"
 ```
 
+**Fallback** (if script missing):
+
+```bash
+[ -f package.json ] && PROJECT_TYPE=node && TEST_CMD="npm test" && LINT_CMD="npx eslint ." && FORMAT_CMD="npx prettier --write ." && BUILD_CMD="npm run build"
+[ -f Cargo.toml ] && PROJECT_TYPE=rust && TEST_CMD="cargo test" && LINT_CMD="cargo clippy" && FORMAT_CMD="cargo fmt" && BUILD_CMD="cargo build"
+[ -f pyproject.toml ] && PROJECT_TYPE=python && TEST_CMD="pytest" && LINT_CMD="ruff check ." && FORMAT_CMD="ruff format ." && BUILD_CMD="python -m build"
+[ -f go.mod ] && PROJECT_TYPE=go && TEST_CMD="go test ./..." && LINT_CMD="golangci-lint run" && FORMAT_CMD="gofmt -w ." && BUILD_CMD="go build ./..."
+```
+
 Read config, 2-3 source files, 1-2 test files. Note conventions.
 
 ### 2. Ensure Graph
@@ -22,6 +31,8 @@ Read config, 2-3 source files, 1-2 test files. Note conventions.
 ```
 mcp__code-review-graph__list_graph_stats_tool()
 ```
+
+If fails → install: `pip install code-review-graph && code-review-graph install && code-review-graph build`
 
 ### 3. Graph Analysis
 
@@ -40,19 +51,51 @@ mcp__code-review-graph__get_affected_flows_tool(files=["targets"])
 
 Each 2-5 min. Exact files, exact code, exact commands.
 
-### 5. Save Plan
+### 5. Validate Plan
+
+- [ ] Blast radius files covered
+- [ ] Code style matches conventions found in scan
+- [ ] Test commands real (from detect-project.sh or fallback)
+- [ ] Hub nodes have review steps
+- [ ] No placeholders
+- [ ] Environment Context complete
+
+### 6. Save Plan
 
 After approval → `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`
 
-Include Environment Context (language, test/lint/format/build commands from detect-project.sh, branch, conventions, graph context).
+**MUST include Environment Context:**
 
-### 6. Report
+```markdown
+## Environment Context
 
-"Plan saved. Execute with supergraph-executor agent or `/supergraph:tdd`."
+- **Language:** [X] v[Y]
+- **Test command:** `[detected]`
+- **Linter command:** `[detected]`
+- **Formatter command:** `[detected]`
+- **Build command:** `[detected]`
+- **Branch:** `[current]`
+- **Conventional commit style:** `[e.g., "feat: / fix:"]`
+
+**Codebase conventions:** [naming, imports, error handling, test structure]
+
+**Graph Context:**
+
+- Blast radius: M files
+- Hub nodes: [list]
+- Bridge nodes: [list]
+- Communities crossed: [list]
+- Surprising connections: [list]
+```
+
+### 7. Report
+
+"Plan saved. Execute with `/supergraph:execute` (dispatches executor agent) or `/supergraph:tdd` for single-task."
 
 ## Rules
 
 - NEVER code — only plan
 - NEVER skip codebase scan
 - NEVER save before approval
-- Environment Context mandatory
+- Environment Context mandatory — executor depends on it
+- Use fallback detection if `detect-project.sh` missing

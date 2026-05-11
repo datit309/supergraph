@@ -19,7 +19,7 @@ ls docs/superpowers/plans/*.md
 
 Read `## Environment Context` block. Store: TEST_CMD, LINT_CMD, FORMAT_CMD, BUILD_CMD, BRANCH, COMMIT_STYLE.
 
-If missing → STOP: "Plan missing Environment Context. Re-run planner."
+**If missing → STOP:** "Plan missing Environment Context. Re-run `/supergraph:plan`."
 
 ### 3. Branch Setup
 
@@ -35,7 +35,7 @@ If BRANCH starts with `create:` → `git checkout -b [name]`
 $TEST_CMD
 ```
 
-If fails → STOP.
+If fails → STOP, report baseline failures.
 
 ### 5. Execute Tasks (TDD)
 
@@ -46,15 +46,18 @@ For each incomplete task:
 **C. REFACTOR** — `get_impact_radius_tool`. Keep green.
 **D. Lint** — `$FORMAT_CMD` then `$LINT_CMD`.
 **E. Checkpoint** — `git add [exact files] && git commit -m "$COMMIT_STYLE checkpoint: Task N"`
-**F. Verify** — Full `$TEST_CMD`. Regression → STOP.
+**F. Verify** — Full `$TEST_CMD`. Regression → STOP, revert checkpoint.
 
 ### 6. Handle Failures
 
 Max 3 retries per step. On failure → save to plan:
+
 ```markdown
 - [ ] Task N: [Name]
   > ⚠️ FAILED: [error summary]
 ```
+
+After 3 retries → mark stuck, skip task, continue next.
 
 ### 7. Final Verification
 
@@ -75,12 +78,24 @@ mcp__code-review-graph__detect_changes_tool()
 ```
 ✅ Execution Complete
 Tasks: N/N | Tests: PASS | Lint: PASS
+Stuck: [list or "none"]
 Next: /supergraph:fix → /supergraph:review
 ```
+
+## Parallel Dispatch
+
+When called from `/supergraph:execute` with parallel groups:
+
+1. Only execute assigned task group
+2. Commit with group prefix: `feat(group-N): [description]`
+3. Report status back to orchestrator
+4. Orchestrator handles merge + final verification
 
 ## Rules
 
 - NEVER create plan — only execute
 - NEVER skip Environment Context extraction
-- NEVER `git add -A`
-- Max 3 retries per step
+- NEVER `git add -A` — always explicit files
+- Max 3 retries per step — then mark stuck + skip
+- Regression at any checkpoint → revert immediately
+- Stuck tasks don't block other tasks — continue execution

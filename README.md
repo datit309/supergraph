@@ -7,10 +7,10 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 
 ## Two Platforms
 
-| Plugin | Platform | Prefix | Install Command |
-|--------|----------|--------|-----------------|
-| `supergraph-claude` | Claude Code | `/sg-` | `/plugin install supergraph-claude` |
-| `supergraph-codex` | OpenAI Codex | `$sg-` | `codex plugin marketplace add datit309/supergraph` |
+| Plugin              | Platform     | Prefix | Install Command                                    |
+| ------------------- | ------------ | ------ | -------------------------------------------------- |
+| `supergraph-claude` | Claude Code  | `/sg-` | `/plugin install supergraph`                       |
+| `supergraph-codex`  | OpenAI Codex | `$sg-` | `codex plugin marketplace add datit309/supergraph` |
 
 ## Install (Claude Code)
 
@@ -19,7 +19,7 @@ with [code-review-graph](https://github.com/tirth8205/code-review-graph) AST ana
 /plugin marketplace add https://github.com/datit309/supergraph.git
 
 # Install plugin
-/plugin install supergraph-claude
+/plugin install supergraph
 ```
 
 ## Install (OpenAI Codex)
@@ -77,26 +77,26 @@ code-review-graph index .
 
 ## Agents
 
-| Agent | Purpose |
-|-------|---------|
-| `supergraph-planner` | Create plans, never code |
-| `supergraph-executor` | Execute saved plans with TDD |
-| `supergraph-code-reviewer` | Graph-enhanced code review |
-| `supergraph-auto-fixer` | Automated fix loop |
+| Agent                      | Purpose                      |
+| -------------------------- | ---------------------------- |
+| `supergraph-planner`       | Create plans, never code     |
+| `supergraph-executor`      | Execute saved plans with TDD |
+| `supergraph-code-reviewer` | Graph-enhanced code review   |
+| `supergraph-auto-fixer`    | Automated fix loop           |
 
 ## MCP Tools
 
-| Tool | Purpose |
-|------|---------|
-| `get_impact_radius_tool` | Blast radius analysis |
-| `build_or_update_graph_tool` | Build/refresh graph |
-| `list_graph_stats_tool` | Graph health |
-| `get_hub_nodes_tool` | Most-connected nodes |
-| `get_bridge_nodes_tool` | Chokepoints |
-| `list_communities_tool` | Code clusters |
-| `get_surprising_connections_tool` | Unexpected coupling |
-| `get_knowledge_gaps_tool` | Untested hotspots |
-| `detect_changes_tool` | Risk-scored impact |
+| Tool                              | Purpose               |
+| --------------------------------- | --------------------- |
+| `get_impact_radius_tool`          | Blast radius analysis |
+| `build_or_update_graph_tool`      | Build/refresh graph   |
+| `list_graph_stats_tool`           | Graph health          |
+| `get_hub_nodes_tool`              | Most-connected nodes  |
+| `get_bridge_nodes_tool`           | Chokepoints           |
+| `list_communities_tool`           | Code clusters         |
+| `get_surprising_connections_tool` | Unexpected coupling   |
+| `get_knowledge_gaps_tool`         | Untested hotspots     |
+| `detect_changes_tool`             | Risk-scored impact    |
 
 ## Quick Usage (Claude Code)
 
@@ -131,14 +131,15 @@ $sg-finish           # Merge/PR/discard
 
 Each plugin has its own documentation:
 
-| Plugin | Docs |
-|--------|------|
-| `plugins/supergraph-claude/` | `CLAUDE.md`, `docs/TEAM-SETUP.md` |
-| `plugins/supergraph-codex/` | `CLAUDE.md`, `docs/TEAM-SETUP.md`, `docs/SKILLS.md`, `CHANGELOG.md` |
+| Plugin                       | Docs                                                                |
+| ---------------------------- | ------------------------------------------------------------------- |
+| `plugins/supergraph-claude/` | `CLAUDE.md`, `docs/TEAM-SETUP.md`                                   |
+| `plugins/supergraph-codex/`  | `CLAUDE.md`, `docs/TEAM-SETUP.md`, `docs/SKILLS.md`, `CHANGELOG.md` |
 
 ### Plan Files
 
 Plans are saved to `docs/superpowers/plans/` for tracking and team collaboration:
+
 ```
 docs/superpowers/plans/2026-05-11-user-auth.md
 ```
