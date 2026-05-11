@@ -1,8 +1,14 @@
 ---
-description: Load codebase graph context at session start. Use when starting a session, switching projects, or before any coding task to understand the codebase structure.
+name: sg-context
+description: Load graph context của codebase lúc bắt đầu session. Tự động kích hoạt mỗi session.
+autoTrigger: session_start
 ---
 
-# Skill: Context
+# Skill: sg-context
+
+> Auto-trigger: Start of every session.
+
+## Purpose
 
 Load codebase graph context so every subsequent decision is data-informed.
 
@@ -10,51 +16,48 @@ Load codebase graph context so every subsequent decision is data-informed.
 
 ### 1. Detect Project Type
 
-Run: `bash bin/detect-project.sh`
+Check which file exists in project root:
 
-Store: PROJECT_TYPE, TEST_CMD, LINT_CMD, FORMAT_CMD, BUILD_CMD, BRANCH.
+- `pubspec.yaml` → Flutter/Dart, TEST=`flutter test`, LINT=`flutter analyze`
+- `package.json` → Node.js, detect test runner from dependencies
+- `composer.json` → PHP, detect from require-dev
 
-### 2. Verify Graph Available
+### 2. Verify MCP Available
 
-```
-mcp__code-review-graph__list_graph_stats_tool()
-```
+Call `mcp__code-review-graph__get_stats()`.
+If MCP not available → inform user: "Run `pip install code-review-graph` and `code-review-graph index .` first"
 
-If fails → inform user: "Run `pip install code-review-graph && code-review-graph install && code-review-graph build`"
+### 3. Load Full Context
 
-### 3. Load Context
+    mcp__code-review-graph__get_stats()
+    mcp__code-review-graph__find_communities()
+    mcp__code-review-graph__find_hub_nodes(threshold=5)
+    mcp__code-review-graph__find_bridge_nodes()
+    mcp__code-review-graph__find_cycles()
+    mcp__code-review-graph__find_untested_files()
 
-```
-mcp__code-review-graph__list_graph_stats_tool()
-mcp__code-review-graph__list_communities_tool()
-mcp__code-review-graph__get_hub_nodes_tool()
-mcp__code-review-graph__get_bridge_nodes_tool()
-mcp__code-review-graph__get_knowledge_gaps_tool()
-mcp__code-review-graph__get_architecture_overview_tool()
-```
+### 4. Present to User
 
-### 4. Present
-
-```
-## Graph Context
-- Type: [language]
-- Test: [command]
-- Lint: [command]
-- Files: N
-- Communities: N — [name]: [count] files
-- Hub nodes: [list]
-- Bridge nodes: [list]
-- Knowledge gaps: [list or none]
-```
+    ## Supergraph Context
+    - Type: [Node.js | Flutter | PHP]
+    - Test: [command]
+    - Lint: [command]
+    - Files: N
+    - Languages: [list]
+    - Communities: N — [name]: [count] files
+    - Hub nodes: [list]
+    - Bridge nodes: [list]
+    - Circular deps: [list or none]
+    - Untested: N files
 
 ### 5. Re-index if Stale
 
-```
-mcp__code-review-graph__build_or_update_graph_tool()
-```
+    mcp__code-review-graph__index_incremental(directory=".")
 
-## Rules
+## Escalation
 
-- Load context before any coding task
-- Re-index if graph is stale
-- If graph unavailable, proceed without it but warn user
+| Condition                   | Action                   |
+| --------------------------- | ------------------------ |
+| MCP not available           | Instruct user to install code-review-graph |
+| Graph stale (>1 day)        | Run index_incremental     |
+| No files indexed            | Run index_directory       |

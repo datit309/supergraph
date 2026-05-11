@@ -21,11 +21,13 @@
   ],
   "homepage": "https://github.com/datit309/supergraph",
   "repository": "https://github.com/datit309/supergraph",
+  "minClaudeVersion": "1.0.0",
   "agents": [
+    "./agents/planner.md",
+    "./agents/executor.md",
     "./agents/auto-fixer.md",
-    "./agents/code-reviewer.md",
-    "./agents/planner-agent.md",
-    "./agents/executor-agent.md"
+    "./agents/code-reviewer.md"
   ],
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "hooks": "./hooks/"
 }

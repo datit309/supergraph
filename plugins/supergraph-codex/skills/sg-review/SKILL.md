@@ -1,97 +1,108 @@
 ---
-description: Graph-enhanced code review before merge. Use after task completion or before merging. CRITICAL issues block merge.
+name: sg-review
+description: Code review với graph enhancement. Tự động kích hoạt trước khi merge và sau khi task hoàn tất.
+autoTrigger: pre_merge
 ---
 
-# Skill: Review
+# Skill: sg-review
 
-Graph-enhanced code review. Find issues that static analysis misses.
+> Auto-trigger: Before merge, after task completion.
+
+## Purpose
+
+Graph-enhanced code review. CRITICAL issues block merge.
 
 ## Steps
 
 ### 1. Get Changed Files
 
-```bash
-git diff --name-only HEAD~1
-```
+    git diff --name-only HEAD~1
 
-### 2. Detect Language
-
-Run: `bash bin/detect-project.sh`
+### 2. Detect Language and Commands
 
 ### 3. Graph Analysis
 
-```
-mcp__code-review-graph__get_impact_radius_tool(files=[changed], depth=3)
-mcp__code-review-graph__get_hub_nodes_tool()
-mcp__code-review-graph__get_bridge_nodes_tool()
-mcp__code-review-graph__list_communities_tool()
-mcp__code-review-graph__get_surprising_connections_tool()
-mcp__code-review-graph__get_knowledge_gaps_tool()
-mcp__code-review-graph__detect_changes_tool()
-```
+    mcp__code-review-graph__blast_radius(files=[changed], depth=3, direction="both")
+    mcp__code-review-graph__find_hub_nodes(threshold=5)
+    mcp__code-review-graph__find_communities()
+    mcp__code-review-graph__find_cycles()
+    mcp__code-review-graph__find_bridge_nodes()
 
 For each changed file:
 
-```
-mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
-```
+    mcp__code-review-graph__surprise_score(file=[file])
+    mcp__code-review-graph__find_tests_for(file=[file])
 
 ### 4. Run Tests and Lint
 
-```bash
-$TEST_CMD
-$LINT_CMD
-```
+Use detected language commands.
 
-### 5. Review Checklist
+### 5. Checklist
 
-**Blast radius:** All affected files handled? No unexpected files?
+**Blast radius:**
 
-**Hub safety:** Hub modifications — all callers tested? API unchanged?
+- All blast_radius files intentionally changed or verified
+- No unexpected files
 
-**Bridge nodes:** Changes justified? Cross-community impact assessed?
+**Hub safety:**
 
-**Surprise:** Connections > 0.5 investigated?
+- If hub modified: all callers tested
+- Hub API unchanged or dependents updated
 
-**Knowledge gaps:** Untested hotspots addressed?
+**Community:**
 
-**Language-specific:**
+- Cross-community imports justified
+- No new circular deps
 
-- Node.js: No unhandled rejections, no console.log in prod
-- Python: Type hints on public functions, no bare except
-- Flutter: const constructors, no unnecessary rebuilds
-- Go: Error handling on all returns, context propagation
-- Rust: Proper error types, no unwrap in production
-- Java: Null checks, resource cleanup
+**Surprise:**
+
+- surprise_score > 0.5 investigated
+
+**Node.js specific:**
+
+- No unhandled rejections
+- require/import consistency
+- No console.log in prod
+
+**Flutter specific:**
+
+- const constructors where possible
+- No unnecessary rebuilds
+- State management follows pattern
+
+**PHP specific:**
+
+- Type hints on params and returns
+- No raw SQL without parameterized queries
+- PSR-12 compliance
 
 ### 6. Output
 
-```
-## Graph Review
-- Changed: N files
-- Blast radius: M files
-- Hub nodes: [list]
-- Bridge nodes: [list]
-- Communities crossed: [list]
-- Surprising connections: [list]
-- Tests: [PASS or FAIL]
-- Lint: [PASS or FAIL]
-
-CRITICAL: [count]
-WARNING: [count]
-INFO: [count]
-
-Verdict: [PASS | BLOCKED | NEEDS_CHANGES]
-```
+    ## Supergraph Review
+    - Changed: N files
+    - Blast radius: M files
+    - Hub nodes: [list]
+    - Communities: [list]
+    - New cycles: [list]
+    - Surprise flags: [list]
+    - Tests: [PASS or FAIL]
+    - Lint: [PASS or FAIL]
+    CRITICAL: [count]
+    WARNING: [count]
+    INFO: [count]
+    Verdict: [PASS | BLOCKED | NEEDS_CHANGES]
 
 ### Severity
 
-- **CRITICAL:** New cycles, broken hub API, test fail → BLOCK
-- **WARNING:** High surprise, missing tests, cross-community → FIX FIRST
-- **INFO:** Clean structure, token savings → NOTE
+- CRITICAL: New cycles, broken hub API, test fail → BLOCK
+- WARNING: High surprise, missing tests, cross-community → FIX FIRST
+- INFO: Token savings, clean structure → NOTE
 
-## Rules
+## Escalation
 
-- CRITICAL issues block merge — no exceptions
-- Graph analysis catches what static analysis misses
-- Hub and bridge node changes need extra scrutiny
+| Condition                   | Action                   |
+| --------------------------- | ------------------------ |
+| Any CRITICAL                | BLOCK merge              |
+| Hub node modified           | REQUIRE justification    |
+| New cycles detected         | BLOCK — must fix first   |
+| Surprise > 0.7              | REQUIRE investigation    |

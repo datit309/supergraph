@@ -1,137 +1,193 @@
 ---
-description: Create graph-informed implementation plans before writing code. Use before any implementation task to scan codebase, analyze blast radius, and create a detailed task breakdown.
+name: sg-plan
+description: Tạo plan có thông tin graph trước khi viết code. Tự động kích hoạt trước khi implementation.
+autoTrigger: pre_implementation
 ---
 
-# Skill: Plan
+# Skill: sg-plan
 
-Never write code without understanding the codebase. Scan first, then plan with graph analysis.
+> Auto-trigger: Before writing any code.
+
+## Purpose
+
+Never write code without a plan. Use blast_radius to know exact scope. Save plan to file for tracking and resume.
 
 ## Steps
 
-### 1. Scan Codebase (MANDATORY)
+### 1. Identify Likely Change Targets
 
-```bash
-ls -la
-find . -maxdepth 2 -type f \( -name "*.json" -o -name "*.toml" -o -name "*.yaml" -o -name "Makefile" \) | head -30
-```
+Based on the task, determine which files will likely change.
 
-- Read config file → identify language, framework, test runner, linter, formatter, versions
-- Read 2-3 source files in target area → note naming, imports, error handling, style
-- Read 1-2 test files → note test structure, assertion style
+### 2. Graph Analysis
 
-Run: `bash bin/detect-project.sh` for commands.
+    mcp__code-review-graph__blast_radius(files=[targets], depth=3, direction="both")
+    mcp__code-review-graph__find_hub_nodes(threshold=5)
+    mcp__code-review-graph__find_communities()
+    mcp__code-review-graph__find_tests_for(files=[targets])
+    mcp__code-review-graph__surprise_score(file=[targets])
 
-### 2. Ensure Graph is Built
-
-```
-mcp__code-review-graph__list_graph_stats_tool()
-```
-
-If stale: `mcp__code-review-graph__build_or_update_graph_tool()`
-
-### 3. Identify Change Targets
-
-Based on task + codebase understanding → exact file paths.
-
-### 4. Graph Analysis
-
-```
-mcp__code-review-graph__get_impact_radius_tool(files=["targets"], depth=3)
-mcp__code-review-graph__get_hub_nodes_tool()
-mcp__code-review-graph__get_bridge_nodes_tool()
-mcp__code-review-graph__list_communities_tool()
-mcp__code-review-graph__get_surprising_connections_tool()
-mcp__code-review-graph__get_review_context_tool(files=["targets"])
-mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
-mcp__code-review-graph__get_affected_flows_tool(files=["targets"])
-```
-
-### 5. Create Task Breakdown
+### 3. Create Task Breakdown
 
 Each task 2-5 minutes:
 
+    ## Task N: [Description]
+    - Files: [exact paths from blast_radius]
+    - Blast radius: [files affected by this task]
+    - Test: [specific test to write in RED phase]
+    - Risk: [low | medium | high]
+    - Verify: [how to confirm done]
+    - Dependencies: [prerequisite tasks]
+
+### 4. Validate Plan
+
+- Every file in blast_radius covered by a task
+- Hub modifications have review steps
+- Cross-community changes justified
+- Existing tests accounted for
+- New tests planned
+- Surprise-scored files have investigation tasks
+
+### 5. Present Plan
+
+    ## Plan: [Name]
+    - Files in repo: N
+    - Blast radius: M files
+    - Hub nodes affected: [list]
+    - Communities crossed: [list]
+    - Token savings: reading M files instead of N
+
+    ### Tasks
+    [breakdown]
+
+    ### Risks
+    [list with mitigations]
+
+### 5.1 Self-Review
+
+After writing the complete plan, review against the original requirement:
+
+**1. Spec coverage:** Can you point to a task for each requirement? List any gaps.
+
+**2. Placeholder scan:** Search for red flags:
+- "TBD", "TODO", "implement later"
+- "Add appropriate error handling" / "add validation"
+- "Similar to Task N" (repeat code instead)
+- Steps that describe without showing how
+
+**3. Type consistency:** Do method signatures and names match across tasks?
+
+If issues found → fix inline, don't re-review.
+
+### 6. Get Approval
+
+NEVER start coding until user approves.
+
+### 7. Save Plan to File (after approval)
+
+After user approves, save the plan to: `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`
+
+**Superpowers-compatible format:**
+
 ```markdown
-## Task N: [Description]
+# [Feature Name] Implementation Plan
 
-**Files:**
+> **For agentic workers:** Use checkbox (`- [ ]`) syntax for tracking progress.
+> **Required sub-skill:** superpowers:subagent-driven-development (recommended) or superpowers:executing-plans
 
-- Create: `exact/path/to/file`
-- Modify: `exact/path/to/existing:123-145`
-- Test: `tests/exact/path/to/test`
+**Goal:** [One sentence describing what this builds]
 
-**Blast radius:** [files from get_impact_radius_tool]
-
-**Steps:**
-
-- [ ] Step 1: Write failing test → [exact test code]
-- [ ] Step 2: Run test → expect FAIL → `[test command]`
-- [ ] Step 3: Write implementation → [exact code]
-- [ ] Step 4: Run test → expect PASS → `[test command]`
-- [ ] Step 5: Lint & format → `[command]` (skip if none)
-- [ ] Step 6: Commit → `git add [files] && git commit -m "type: desc"`
-
-**Risk:** [low | medium | high]
-**Dependencies:** [prerequisite tasks or "none"]
-```
-
-### 6. Validate Plan
-
-- [ ] Codebase scanned
-- [ ] Blast radius files covered
-- [ ] Code style matches conventions
-- [ ] Test commands are real
-- [ ] Hub nodes have review steps
-- [ ] No placeholders (TBD, TODO)
-
-### 7. Save Plan
-
-After user approval:
-
-```bash
-mkdir -p docs/superpowers/plans/
-```
-
-Write to `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`.
-
-**Plan MUST include Environment Context block:**
-
-```markdown
-## Environment Context
-
-- **Language:** [X] v[Y]
-- **Test command:** `[exact]`
-- **Linter command:** `[exact or "none"]`
-- **Formatter command:** `[exact or "none"]`
-- **Build command:** `[exact or "none"]`
-- **Branch:** `[current or "create: feature/xxx"]`
-- **Conventional commit style:** `[e.g., "feat: / fix: / chore:"]`
-
-**Codebase conventions:**
-
-- [naming pattern]
-- [import style]
-- [error handling]
-- [test structure]
+**Architecture:** [2-3 sentences about approach]
 
 **Graph Context:**
-
+- Files in repo: N
 - Blast radius: M files
-- Hub nodes: [list]
-- Bridge nodes: [list]
+- Hub nodes affected: [list]
 - Communities crossed: [list]
-- Surprising connections: [list]
+
+**Tech Stack:** [Key technologies/libraries]
+
+---
+
+### Task N: [Component Name]
+
+**Files:**
+- Create: `exact/path/to/file.py`
+- Modify: `exact/path/to/existing.py:123-145`
+- Test: `tests/exact/path/to/test.py`
+
+- [ ] **Step 1: Write the failing test**
+
+```python
+def test_specific_behavior():
+    result = function(input)
+    assert result == expected
 ```
 
-### 8. Handoff
+- [ ] **Step 2: Run test to verify it fails**
 
-> "Plan saved. Choose execution:
->
-> 1. **Subagent-Driven** — fresh subagent per task, review between tasks
-> 2. **Inline** — execute in this session with checkpoints"
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: FAIL with "function not defined"
 
-## Rules
+- [ ] **Step 3: Write minimal implementation**
 
-- Codebase first, plan second
-- Environment Context is mandatory
-- Exact file paths, exact commands, exact code
-- Never write placeholders
+```python
+def function(input):
+    return expected
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: PASS
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add tests/path/test.py src/path/file.py
+git commit -m "feat: add specific feature"
+```
+
+---
+
+### Task Dependencies
+- Task 2 depends on: Task 1
+- Task 3 depends on: Task 2
+```
+
+### 8. Resume Detection
+
+At session start, check for existing plan files:
+
+    docs/superpowers/plans/*.md
+
+If uncompleted plans exist → ask user:
+"You have an incomplete plan: `{filename}`. Resume from Task N?"
+
+### 9. Execution Handoff
+
+After saving plan, offer execution choice:
+
+**"Plan complete and saved. Two execution options:**
+
+**1. Subagent-Driven (recommended)** — I dispatch a fresh subagent per task, review between tasks
+
+**2. Inline Execution** — Execute tasks in this session using superpowers:executing-plans, batch with checkpoints
+
+**Which approach?"**
+
+## Key Principles
+
+- Exact file paths always
+- Complete code in every step — if a step changes code, show the code
+- Exact commands with expected output
+- DRY, YAGNI, TDD, frequent commits
+- Never write placeholders (TBD, TODO, "implement later")
+
+## Escalation
+
+| Condition                   | Action                   |
+| --------------------------- | ------------------------ |
+| Blast radius > 20 files     | STOP — discuss with user |
+| Hub node modification       | REQUIRE user approval    |
+| Community boundary crossing | REQUIRE justification    |
+| Surprise score > 0.7        | REQUIRE investigation    |
