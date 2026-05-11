@@ -30,43 +30,73 @@ git clone https://github.com/datit309/supergraph.git
 /plugin install supergraph
 ```
 
-## Skills
-
-| Skill   | Command               | Purpose                                    |
-| ------- | --------------------- | ------------------------------------------ |
-| Context | `/supergraph:context` | Load graph context at session start        |
-| Plan    | `/supergraph:plan`    | Scan codebase + graph analysis + save plan |
-| TDD     | `/supergraph:tdd`     | RED-GREEN-REFACTOR implementation          |
-| Fix     | `/supergraph:fix`     | Auto-fix loop (test + lint + graph)        |
-| Review  | `/supergraph:review`  | Pre-merge graph-enhanced review            |
-
-## Agents
-
-| Agent                 | Purpose                          |
-| --------------------- | -------------------------------- |
-| `supergraph-planner`  | Create plans only, never execute |
-| `supergraph-executor` | Execute saved plans with TDD     |
-
-## Hooks
-
-- **PreToolUse**: Blocks code writes if no plan file exists
-- **PostToolUse**: Auto-updates graph on file changes, blocks destructive commands
-- **Stop**: Shows plan progress and uncommitted changes reminder
-
-## Prerequisites
-
-- Claude Code CLI
-- Python 3.8+ (cho code-review-graph)
-- Git repository
-
-## Code Review Graph MCP
-
-Plugin sử dụng [code-review-graph](https://github.com/tirth8205/code-review-graph) MCP server cho graph analysis.
+## Quick Start
 
 ```bash
-pip install code-review-graph
-code-review-graph build
+pip install code-review-graph && code-review-graph install && code-review-graph build
 ```
+
+## Workflow
+
+```
+Session start     → /supergraph:context     (load graph, detect project)
+Task received     → /supergraph:plan         (scan + analyze + save plan)
+Implementation    → /supergraph:tdd          (RED-GREEN-REFACTOR)
+Post-code         → /supergraph:fix          (auto-fix loop)
+Pre-merge         → /supergraph:review       (graph review → verdict)
+```
+
+**Quick path** (small changes, 1-2 files): skip plan → `/supergraph:tdd` → `/supergraph:fix` → `/supergraph:review`
+
+**Agents:**
+
+- `supergraph-planner` — create plans, never code
+- `supergraph-executor` — execute saved plans with TDD
+
+## MCP Tools
+
+| Tool                              | Purpose                 |
+| --------------------------------- | ----------------------- |
+| `build_or_update_graph_tool`      | Build/refresh graph     |
+| `list_graph_stats_tool`           | Graph health            |
+| `get_impact_radius_tool`          | Blast radius            |
+| `get_hub_nodes_tool`              | Most-connected nodes    |
+| `get_bridge_nodes_tool`           | Chokepoints             |
+| `list_communities_tool`           | Code clusters           |
+| `get_surprising_connections_tool` | Unexpected coupling     |
+| `get_knowledge_gaps_tool`         | Untested hotspots       |
+| `get_review_context_tool`         | Token-optimized context |
+| `get_architecture_overview_tool`  | Architecture map        |
+| `get_affected_flows_tool`         | Flows affected          |
+| `detect_changes_tool`             | Risk-scored impact      |
+| `query_graph_tool`                | Callers/callees/tests   |
+| `traverse_graph_tool`             | BFS/DFS exploration     |
+| `semantic_search_nodes_tool`      | Search by meaning       |
+
+## Team Use
+
+See [docs/TEAM-SETUP.md](docs/TEAM-SETUP.md) for onboarding, CI/CD, pre-commit hooks, and PR templates.
+
+**Quick team setup:**
+
+```bash
+cp -r supergraph-plugin/.claude-plugin /path/to/repo/.claude-plugin
+cp supergraph-plugin/.mcp.json /path/to/repo/.mcp.json
+cp -r supergraph-plugin/.github /path/to/repo/.github
+cp supergraph-plugin/.githooks/pre-commit /path/to/repo/.githooks/
+chmod +x /path/to/repo/.githooks/pre-commit
+cd /path/to/repo && git config core.hooksPath .githooks
+echo ".claude/settings.local.json" >> .gitignore
+```
+
+## Rules
+
+- Never write code without a plan (skip only for small changes)
+- Always TDD: RED → GREEN → REFACTOR
+- Environment Context mandatory in plan files
+- Checkpoint after each task — `git add [exact files] && git commit`
+- Max 3 retries per step — stop if blocked
+- CRITICAL issues block merge
 
 ## License
 

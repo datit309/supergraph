@@ -1,27 +1,28 @@
 ---
-description: Create graph-informed implementation plans before writing code. Use before any implementation task to scan codebase, analyze blast radius, and create a detailed task breakdown.
+description: Create graph-informed implementation plans before writing code. Use before any implementation task. Skip for small changes (1-2 files, <10 lines).
 ---
 
 # Skill: Plan
 
-Never write code without understanding the codebase. Scan first, then plan with graph analysis.
+Scan codebase, analyze blast radius, create plan. Skip for small changes.
+
+## Quick Check
+
+If change is small (1-2 files, <10 lines, no hub/bridge nodes) → skip plan, go to `/supergraph:tdd` directly.
 
 ## Steps
 
 ### 1. Scan Codebase (MANDATORY)
 
 ```bash
-ls -la
-find . -maxdepth 2 -type f \( -name "*.json" -o -name "*.toml" -o -name "*.yaml" -o -name "Makefile" \) | head -30
+eval "$(bash bin/detect-project.sh)"
 ```
 
-- Read config file → identify language, framework, test runner, linter, formatter, versions
-- Read 2-3 source files in target area → note naming, imports, error handling, style
-- Read 1-2 test files → note test structure, assertion style
+- Read config file → language, framework, versions
+- Read 2-3 source files in target area → naming, imports, error handling
+- Read 1-2 test files → test structure, assertion style
 
-Run: `bash bin/detect-project.sh` for commands.
-
-### 2. Ensure Graph is Built
+### 2. Ensure Graph
 
 ```
 mcp__code-review-graph__list_graph_stats_tool()
@@ -29,11 +30,7 @@ mcp__code-review-graph__list_graph_stats_tool()
 
 If stale: `mcp__code-review-graph__build_or_update_graph_tool()`
 
-### 3. Identify Change Targets
-
-Based on task + codebase understanding → exact file paths.
-
-### 4. Graph Analysis
+### 3. Graph Analysis
 
 ```
 mcp__code-review-graph__get_impact_radius_tool(files=["targets"], depth=3)
@@ -46,72 +43,53 @@ mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
 mcp__code-review-graph__get_affected_flows_tool(files=["targets"])
 ```
 
-### 5. Create Task Breakdown
+### 4. Task Breakdown
 
-Each task 2-5 minutes:
+Each task 2-5 min:
 
 ```markdown
 ## Task N: [Description]
 
-**Files:**
-
-- Create: `exact/path/to/file`
-- Modify: `exact/path/to/existing:123-145`
-- Test: `tests/exact/path/to/test`
-
+**Files:** Create/Modify/Test exact paths
 **Blast radius:** [files from get_impact_radius_tool]
-
 **Steps:**
 
-- [ ] Step 1: Write failing test → [exact test code]
-- [ ] Step 2: Run test → expect FAIL → `[test command]`
-- [ ] Step 3: Write implementation → [exact code]
-- [ ] Step 4: Run test → expect PASS → `[test command]`
-- [ ] Step 5: Lint & format → `[command]` (skip if none)
-- [ ] Step 6: Commit → `git add [files] && git commit -m "type: desc"`
-
-**Risk:** [low | medium | high]
-**Dependencies:** [prerequisite tasks or "none"]
+- [ ] Write failing test → [exact code]
+- [ ] Run test → expect FAIL → `$TEST_CMD`
+- [ ] Write implementation → [exact code]
+- [ ] Run test → expect PASS → `$TEST_CMD`
+- [ ] Lint → `$LINT_CMD` (skip if none)
+- [ ] Commit → `git add [files] && git commit -m "type: desc"`
+      **Risk:** [low|medium|high]
+      **Dependencies:** [tasks or "none"]
 ```
 
-### 6. Validate Plan
+### 5. Validate
 
-- [ ] Codebase scanned
 - [ ] Blast radius files covered
 - [ ] Code style matches conventions
-- [ ] Test commands are real
+- [ ] Test commands real (from detect-project.sh)
 - [ ] Hub nodes have review steps
-- [ ] No placeholders (TBD, TODO)
+- [ ] No placeholders
 
-### 7. Save Plan
+### 6. Save Plan
 
-After user approval:
+After approval → `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`
 
-```bash
-mkdir -p docs/superpowers/plans/
-```
-
-Write to `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`.
-
-**Plan MUST include Environment Context block:**
+**MUST include Environment Context:**
 
 ```markdown
 ## Environment Context
 
 - **Language:** [X] v[Y]
-- **Test command:** `[exact]`
-- **Linter command:** `[exact or "none"]`
-- **Formatter command:** `[exact or "none"]`
-- **Build command:** `[exact or "none"]`
-- **Branch:** `[current or "create: feature/xxx"]`
-- **Conventional commit style:** `[e.g., "feat: / fix: / chore:"]`
+- **Test command:** `[from detect-project.sh]`
+- **Linter command:** `[from detect-project.sh]`
+- **Formatter command:** `[from detect-project.sh]`
+- **Build command:** `[from detect-project.sh]`
+- **Branch:** `[current]`
+- **Conventional commit style:** `[e.g., "feat: / fix:"]`
 
-**Codebase conventions:**
-
-- [naming pattern]
-- [import style]
-- [error handling]
-- [test structure]
+**Codebase conventions:** [naming, imports, error handling, test structure]
 
 **Graph Context:**
 
@@ -122,16 +100,13 @@ Write to `docs/superpowers/plans/YYYY-MM-DD-<feature-slug>.md`.
 - Surprising connections: [list]
 ```
 
-### 8. Handoff
+### 7. Handoff
 
-> "Plan saved. Choose execution:
->
-> 1. **Subagent-Driven** — fresh subagent per task, review between tasks
-> 2. **Inline** — execute in this session with checkpoints"
+> "Plan saved. Next: `/supergraph:tdd` to implement, or dispatch `supergraph-executor` agent."
 
 ## Rules
 
 - Codebase first, plan second
-- Environment Context is mandatory
-- Exact file paths, exact commands, exact code
-- Never write placeholders
+- Environment Context mandatory — executor depends on it
+- Exact file paths, commands, code
+- No placeholders

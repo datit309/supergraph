@@ -1,10 +1,14 @@
 ---
-description: Graph-enhanced code review before merge. Use after task completion or before merging. CRITICAL issues block merge.
+description: Graph-enhanced code review before merge. Use after /supergraph:fix or before merging. CRITICAL issues block merge.
 ---
 
 # Skill: Review
 
-Graph-enhanced code review. Find issues that static analysis misses.
+Final gate. Graph-enhanced review. CRITICAL issues block merge.
+
+## Prerequisites
+
+- `/supergraph:fix` completed (tests pass, lint clean)
 
 ## Steps
 
@@ -14,11 +18,7 @@ Graph-enhanced code review. Find issues that static analysis misses.
 git diff --name-only HEAD~1
 ```
 
-### 2. Detect Language
-
-Run: `bash bin/detect-project.sh`
-
-### 3. Graph Analysis
+### 2. Graph Analysis
 
 ```
 mcp__code-review-graph__get_impact_radius_tool(files=[changed], depth=3)
@@ -36,18 +36,19 @@ For each changed file:
 mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
 ```
 
-### 4. Run Tests and Lint
+### 3. Verify
 
 ```bash
+eval "$(bash bin/detect-project.sh)"
 $TEST_CMD
 $LINT_CMD
 ```
 
-### 5. Review Checklist
+### 4. Checklist
 
 **Blast radius:** All affected files handled? No unexpected files?
 
-**Hub safety:** Hub modifications — all callers tested? API unchanged?
+**Hub safety:** Hub modifications — callers tested? API unchanged?
 
 **Bridge nodes:** Changes justified? Cross-community impact assessed?
 
@@ -55,43 +56,28 @@ $LINT_CMD
 
 **Knowledge gaps:** Untested hotspots addressed?
 
-**Language-specific:**
-
-- Node.js: No unhandled rejections, no console.log in prod
-- Python: Type hints on public functions, no bare except
-- Flutter: const constructors, no unnecessary rebuilds
-- Go: Error handling on all returns, context propagation
-- Rust: Proper error types, no unwrap in production
-- Java: Null checks, resource cleanup
-
-### 6. Output
+### 5. Output
 
 ```
 ## Graph Review
-- Changed: N files
-- Blast radius: M files
-- Hub nodes: [list]
-- Bridge nodes: [list]
+- Changed: N files | Blast radius: M files
+- Hub nodes: [list] | Bridge nodes: [list]
 - Communities crossed: [list]
 - Surprising connections: [list]
-- Tests: [PASS or FAIL]
-- Lint: [PASS or FAIL]
+- Tests: [PASS|FAIL] | Lint: [PASS|FAIL]
 
-CRITICAL: [count]
-WARNING: [count]
-INFO: [count]
-
+CRITICAL: [count] | WARNING: [count] | INFO: [count]
 Verdict: [PASS | BLOCKED | NEEDS_CHANGES]
 ```
 
 ### Severity
 
 - **CRITICAL:** New cycles, broken hub API, test fail → BLOCK
-- **WARNING:** High surprise, missing tests, cross-community → FIX FIRST
-- **INFO:** Clean structure, token savings → NOTE
+- **WARNING:** High surprise, missing tests → FIX FIRST
+- **INFO:** Clean structure → NOTE
 
 ## Rules
 
-- CRITICAL issues block merge — no exceptions
-- Graph analysis catches what static analysis misses
-- Hub and bridge node changes need extra scrutiny
+- CRITICAL blocks merge — no exceptions
+- Hub/bridge changes need extra scrutiny
+- This is the final gate before merge

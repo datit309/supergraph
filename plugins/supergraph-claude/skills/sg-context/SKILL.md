@@ -1,26 +1,28 @@
 ---
-description: Load codebase graph context at session start. Use when starting a session, switching projects, or before any coding task to understand the codebase structure.
+description: Load codebase graph context at session start. Use when starting a session or switching projects. Run once per session.
 ---
 
 # Skill: Context
 
-Load codebase graph context so every subsequent decision is data-informed.
+Load codebase graph context. Run once per session — other skills depend on this.
 
 ## Steps
 
-### 1. Detect Project Type
+### 1. Detect Project
 
-Run: `bash bin/detect-project.sh`
+```bash
+eval "$(bash bin/detect-project.sh)"
+```
 
-Store: PROJECT_TYPE, TEST_CMD, LINT_CMD, FORMAT_CMD, BUILD_CMD, BRANCH.
+Store: `PROJECT_TYPE`, `TEST_CMD`, `LINT_CMD`, `FORMAT_CMD`, `BUILD_CMD`, `BRANCH`.
 
-### 2. Verify Graph Available
+### 2. Verify Graph
 
 ```
 mcp__code-review-graph__list_graph_stats_tool()
 ```
 
-If fails → inform user: "Run `pip install code-review-graph && code-review-graph install && code-review-graph build`"
+If fails → "Run `pip install code-review-graph && code-review-graph install && code-review-graph build`"
 
 ### 3. Load Context
 
@@ -37,24 +39,23 @@ mcp__code-review-graph__get_architecture_overview_tool()
 
 ```
 ## Graph Context
-- Type: [language]
-- Test: [command]
-- Lint: [command]
-- Files: N
-- Communities: N — [name]: [count] files
+- Type: $PROJECT_TYPE | Test: $TEST_CMD | Lint: $LINT_CMD
+- Files: N | Communities: N
 - Hub nodes: [list]
 - Bridge nodes: [list]
-- Knowledge gaps: [list or none]
+- Knowledge gaps: [list]
 ```
 
-### 5. Re-index if Stale
+## Output for Other Skills
 
-```
-mcp__code-review-graph__build_or_update_graph_tool()
-```
+After running context, these are available:
 
-## Rules
+- `$PROJECT_TYPE` — language/framework
+- `$TEST_CMD` — test command
+- `$LINT_CMD` — linter command
+- `$FORMAT_CMD` — formatter command
+- `$BUILD_CMD` — build command
+- `$BRANCH` — current git branch
+- Graph data (hub nodes, bridge nodes, communities, knowledge gaps)
 
-- Load context before any coding task
-- Re-index if graph is stale
-- If graph unavailable, proceed without it but warn user
+Other skills should reference "context from /supergraph:context" instead of re-loading.

@@ -1,44 +1,43 @@
 ---
-description: Auto-fix loop after coding. Runs tests, lint, and graph review iteratively. Use after all coding tasks are complete.
+description: Auto-fix loop after coding. Runs tests, lint, and graph review. Use after all implementation tasks are complete.
 ---
 
 # Skill: Fix
 
-Catch and fix issues automatically. Tests pass, lint clean, no graph surprises. Max 3 iterations.
+Auto-fix loop. Tests pass, lint clean, no graph surprises. Max 3 iterations.
+
+## Prerequisites
+
+- All implementation tasks complete
+- Commands from `/supergraph:context` or plan's Environment Context
 
 ## Steps
 
-### 1. Detect Language
+### 1. Get Commands
 
-Run: `bash bin/detect-project.sh`
+```bash
+eval "$(bash bin/detect-project.sh)"
+```
 
-### 2. Get Changed Files
+### 2. Get Changed Files + Blast Radius
 
 ```bash
 git diff --name-only
 ```
 
-### 3. Get Blast Radius
-
 ```
-mcp__code-review-graph__get_impact_radius_tool(files=[changed_files], depth=3)
+mcp__code-review-graph__get_impact_radius_tool(files=[changed], depth=3)
 ```
 
-### 4. Fix Loop (max 3 iterations)
+### 3. Fix Loop (max 3 iterations)
 
 **A. Tests**
 Run: `$TEST_CMD`
-If failed → for each failing test:
-
-- Read error, find source file
-- `get_impact_radius_tool(files=[source], depth=2)`
-- Read test + source + blast files
-- Fix source (NOT test unless test is wrong)
-- Re-run test
+Failed → for each: read error, find source, fix source (NOT test), re-run.
 
 **B. Lint**
 Run: `$LINT_CMD`
-If errors → fix each error.
+Errors → fix each.
 
 **C. Graph Review**
 
@@ -48,22 +47,24 @@ mcp__code-review-graph__get_knowledge_gaps_tool()
 ```
 
 - Surprise > 0.7 → CRITICAL, investigate
-- Untested files → WARNING
+- Untested → WARNING
 
 **D. Check**
 
-- If CRITICAL or WARNING → fix, continue loop
-- If all clean → break
+- CRITICAL/WARNING → fix, continue loop
+- All clean → break
 
-### 5. Final State
+### 4. Final State
 
-If 3 iterations exhausted → STOP, present remaining issues, NEVER commit broken code.
+3 iterations exhausted → STOP, present issues, NEVER commit broken.
+Clean → report: "Auto-fix complete — tests PASS, lint PASS, review PASS"
 
-If clean → report: "Auto-fix complete — tests PASS, lint PASS, review PASS"
+### 5. Next
+
+→ `/supergraph:review`
 
 ## Rules
 
 - NEVER modify tests to make them pass (unless test is wrong)
-- NEVER commit if any check fails after 3 iterations
-- Use blast radius to understand fix impact
-- Re-run full check after each fix
+- NEVER commit if checks fail after 3 iterations
+- After fix → run `/supergraph:review`
