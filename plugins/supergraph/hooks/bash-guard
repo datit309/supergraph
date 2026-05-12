@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+input="${TOOL_INPUT:-}"
+
+if printf '%s' "$input" | grep -qE '(rm -rf /|rm -rf ~|mkfs|dd if=|git push --force|git reset --hard|DROP TABLE|DELETE FROM)'; then
+  echo '🚫 BLOCKED: Destructive command.'
+  exit 1
+fi

@@ -1,14 +1,14 @@
 {
-  "name": "supergraph-claude",
+  "name": "supergraph",
   "owner": {
     "name": "datit309",
     "email": "datit309@gmail.com"
   },
   "plugins": [
     {
-      "name": "supergraph-claude",
-      "source": "./plugins/supergraph-claude",
-      "version": "1.0.0",
+      "name": "supergraph",
+      "source": "./plugins/supergraph",
+      "version": "1.0.1",
       "description": "Mandatory AI workflows + intelligent codebase graph analysis for Claude Code"
     }
   ]

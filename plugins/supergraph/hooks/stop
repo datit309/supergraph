@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+plan=$(ls docs/superpowers/plans/*.md 2>/dev/null | head -1 || true)
+
+if [ -n "$plan" ]; then
+  pending=$(grep -c '^Status: pending' "$plan" 2>/dev/null || true)
+  in_progress=$(grep -c '^Status: in_progress' "$plan" 2>/dev/null || true)
+  completed=$(grep -c '^Status: completed' "$plan" 2>/dev/null || true)
+  stuck=$(grep -c '^Status: stuck' "$plan" 2>/dev/null || true)
+  total=$((pending + in_progress + completed + stuck))
+
+  if [ "$total" -gt 0 ]; then
+    echo "📊 Progress: completed=$completed/$total pending=$pending in_progress=$in_progress stuck=$stuck"
+  fi
+
+  if [ "$pending" -eq 0 ] && [ "$in_progress" -eq 0 ] && [ "$completed" -gt 0 ]; then
+    echo '✅ Plan tasks done → /supergraph:fix → /supergraph:verify → /supergraph:review'
+  fi
+fi
+
+dirty=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+if [ "${dirty:-0}" -gt 0 ]; then
+  echo "⚠️ $dirty uncommitted changes — verify before claiming completion."
+fi

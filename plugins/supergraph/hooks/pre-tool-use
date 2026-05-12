@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+input="${TOOL_INPUT:-}"
+file=""
+
+if [ -n "$input" ]; then
+  file=$(printf '%s' "$input" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("file_path",""))' 2>/dev/null || true)
+fi
+
+if ! printf '%s' "$file" | grep -qE '\.(py|js|ts|jsx|tsx|go|rs|java|php|dart|vue|svelte)$'; then
+  exit 0
+fi
+
+plan=$(ls docs/superpowers/plans/*.md 2>/dev/null | head -1 || true)
+
+if [ -z "$plan" ]; then
+  echo '⚠️ No plan file. Run /supergraph:plan first, or /supergraph:tdd for small changes.'
+  exit 1
+fi
+
+pending=$(grep -c '^Status: pending' "$plan" 2>/dev/null || true)
+in_progress=$(grep -c '^Status: in_progress' "$plan" 2>/dev/null || true)
+completed=$(grep -c '^Status: completed' "$plan" 2>/dev/null || true)
+stuck=$(grep -c '^Status: stuck' "$plan" 2>/dev/null || true)
+
+echo "📋 Plan: $(basename "$plan") — completed=$completed pending=$pending in_progress=$in_progress stuck=$stuck"
+
+if ! grep -q '^\*\*Status:\*\* Approved\|^Status: Approved' "$plan" 2>/dev/null; then
+  echo '⚠️ Plan review not approved yet. Run /supergraph:plan and ensure plan-reviewer approves before implementation.'
+fi
