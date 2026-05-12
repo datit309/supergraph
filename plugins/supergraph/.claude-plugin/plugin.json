@@ -28,6 +28,5 @@
     "./agents/code-reviewer.md",
     "./agents/plan-reviewer.md"
   ],
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills/"
 }
