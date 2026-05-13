@@ -24,7 +24,15 @@ When failures are unclear or repeated attempts fail, apply `skills/fix/systemati
 
 ## Steps
 
+### 0. Announce
+
+Start by saying:
+
+> "🔧 /supergraph:fix — starting auto-fix loop..."
+
 ### 1. Select Plan Context (optional but preferred)
+
+**Progress:** Detecting plan context...
 
 Check for plan files:
 
@@ -75,9 +83,26 @@ mcp__code-review-graph__get_affected_flows_tool(files=[changed_files])
 
 If no changed files and no in-progress/stuck plan tasks → STOP: nothing to fix.
 
-### 4. Auto-Fix Loop (max 3 iterations)
+### 4. Report Completion
 
-For each iteration:
+```markdown
+✅ /supergraph:fix complete
+- Iterations: N/3 | Tests: PASS|FAIL|SKIP | Lint: PASS|FAIL|SKIP
+- Graph: PASS|WARNING|CRITICAL
+- Plan status: updated | Next: /supergraph:verify → /supergraph:review
+```
+
+### 5. Auto-Fix Loop (max 3 iterations)
+
+For each iteration (reporting progress):
+
+Say at start of each iteration:
+
+> "🔧 Fix iteration N/3 — running tests..."
+
+Say at end of clean iteration:
+
+> "✅ All clean — no issues to fix."
 
 #### A. Tests
 

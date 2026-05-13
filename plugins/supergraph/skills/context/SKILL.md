@@ -11,6 +11,12 @@ For ambiguous or non-trivial tasks, apply `skills/context/brainstorming.md` afte
 
 ## Steps
 
+### 0. Announce
+
+Start by saying:
+
+> "📡 /supergraph:context — loading codebase graph context..."
+
 ### 1. Detect Project
 
 ```bash
@@ -56,7 +62,17 @@ mcp__code-review-graph__list_flows_tool()
 mcp__code-review-graph__find_large_functions_tool()
 ```
 
-### 4. Present
+### 4. Report Completion
+
+```markdown
+✅ /supergraph:context complete
+- Project: $PROJECT_TYPE | Branch: $BRANCH
+- Commands: test=$TEST_CMD | lint=$LINT_CMD | format=$FORMAT_CMD | build=$BUILD_CMD
+- Graph: N files | N communities | N hub nodes | N bridge nodes
+- Next: /supergraph:plan (non-trivial tasks) or /supergraph:tdd (small changes, 1-2 files)
+```
+
+### 5. Present
 
 ```
 ## Graph Context

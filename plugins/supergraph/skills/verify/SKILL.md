@@ -72,6 +72,12 @@ Prior runs do not count. Subagent reports do not count without independent verif
 
 ## Steps
 
+### 0. Announce
+
+Start by saying:
+
+> "✅ /supergraph:verify — verifying [claim] with fresh evidence..."
+
 ### 1. Identify Intended Claim
 
 Determine what is about to be claimed:
@@ -229,6 +235,24 @@ If failed:
 
 ```text
 Verification failed with `<command>`: [failure summary].
+```
+
+### 8. Report Completion
+
+```markdown
+✅ /supergraph:verify complete
+- Claim: [claim]
+- Evidence: [command] → exit code 0 → PASS|FAIL
+- Plan status: updated | Next: [recommendation]
+```
+
+### 8. Report Completion
+
+```markdown
+✅ /supergraph:verify complete
+- Claim: [claim]
+- Evidence: [command] → exit code 0 → PASS|FAIL
+- Plan status: updated | Next: [recommendation]
 ```
 
 ## Rules

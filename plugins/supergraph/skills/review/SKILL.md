@@ -22,6 +22,12 @@ Final gate before merge. Graph-enhanced review with plan awareness. CRITICAL iss
 
 ## Steps
 
+### 0. Announce
+
+Start by saying:
+
+> "🔍 /supergraph:review — starting graph-enhanced code review..."
+
 ### 1. Select Plan Context (optional but preferred)
 
 Check for plan files:
@@ -84,6 +90,10 @@ mcp__code-review-graph__refactor_tool(action="suggestions", files=[file])
 ```
 
 ### 4. Dispatch Independent Code Reviewer
+
+Say:
+
+> "⏳ Reviewing code with `code-reviewer` agent..."
 
 Spawn `code-reviewer` agent with self-contained context:
 
@@ -229,7 +239,13 @@ Use `skills/tdd/testing-anti-patterns.md` as checklist:
 - No tasks left `Status: in_progress`?
 - Stuck tasks documented with reason?
 
-### 8. Act on Feedback
+### 8. Progress Indicator (while agent running)
+
+If dispatching `code-reviewer` agent takes noticeable time, say:
+
+> "⏳ Waiting for `code-reviewer` agent... [N seconds]"
+
+### 9. Act on Feedback
 
 **Critical issues:**
 - Fix immediately

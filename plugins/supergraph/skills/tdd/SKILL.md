@@ -45,6 +45,12 @@ Do not skip states.
 
 ## Steps
 
+### 0. Announce
+
+Start by saying:
+
+> "🔴 /supergraph:tdd — starting test-driven development..."
+
 ### 1. Identify One Behavior
 
 Before writing code, state the behavior under test:
@@ -213,6 +219,27 @@ Before marking complete, run `/supergraph:verify` or include fresh evidence:
 ```
 
 Then move to next behavior and repeat from RED.
+
+### 8. Progress Report (after each behavior, before next)
+
+```markdown
+⏳ /supergraph:tdd — behavior N complete: [brief description]
+✅ RED verified | ✅ GREEN verified | ✅ Tests PASS
+```
+
+### 9. Report Completion
+
+All behaviors implemented, verify passed:
+
+```markdown
+✅ /supergraph:tdd complete
+- Behaviors: N | Tests: PASS | Lint: PASS
+- Behaviors implemented:
+  1. [brief description]
+  2. [brief description]
+  ...
+- Next: /supergraph:fix → /supergraph:verify → /supergraph:review
+```
 
 ## Plan Integration
 

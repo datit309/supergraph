@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Mandatory AI workflows + intelligent codebase graph analysis. Combines superpowers methodology with code-review-graph AST analysis. Supports Node.js, Flutter, PHP.",
   "author": {
     "name": "datit309",
@@ -28,5 +28,8 @@
     "./agents/code-reviewer.md",
     "./agents/plan-reviewer.md"
   ],
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "experimental": {
+    "themes": "./themes/"
+  }
 }

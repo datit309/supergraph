@@ -13,6 +13,12 @@ If change is small (1-2 files, <10 lines, no hub/bridge nodes) → skip plan, go
 
 ## Steps
 
+### 0. Announce
+
+Start by saying:
+
+> "📐 /supergraph:plan — scanning codebase, analyzing blast radius, creating plan..."
+
 ### 1. Scan Codebase (MANDATORY)
 
 ```bash
@@ -205,9 +211,17 @@ If reviewer returns `Approved`, append review result to plan:
 - [advisory items or none]
 ```
 
-### 8. Handoff
+### 8. Report Completion
 
-> "Plan saved and reviewed. Next: `/supergraph:execute plan <slug>` to dispatch executor agent, or `/supergraph:tdd` for single-task implementation."
+```markdown
+✅ /supergraph:plan complete
+- Plan: docs/superpowers/plans/YYYY-MM-DD-<slug>.md
+- Tasks: N total | Blast radius: M files | Communities crossed: K
+- Review: Approved
+- Next: /supergraph:execute plan <slug> (multi-task) or /supergraph:tdd (single-task)
+```
+
+### 9. Handoff
 
 ## Rules
 

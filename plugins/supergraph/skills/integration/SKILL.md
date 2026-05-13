@@ -14,7 +14,15 @@ Integration + e2e tests. Run after unit tests pass. Validates modules work toget
 
 ## Steps
 
+### 0. Announce
+
+Start by saying:
+
+> "🔗 /supergraph:integration — running integration and e2e tests..."
+
 ### 1. Detect Integration Setup
+
+**Progress:** Detecting integration test configuration...
 
 ```bash
 # Check for integration test config
@@ -55,13 +63,20 @@ Cross-module flows all tested? Surprising connections investigated?
 ### 5. Report
 
 ```
-## Integration Report
+📊 Integration Report
 - Unit tests: PASS
 - Integration: [PASS|FAIL|SKIP]
 - E2E: [PASS|FAIL|SKIP]
 - Cross-module flows: [N tested / M total]
 - Issues: [list or "none"]
 Next: /supergraph:review
+```
+
+```markdown
+✅ /supergraph:integration complete
+- Unit: PASS | Integration: PASS|FAIL|SKIP | E2E: PASS|FAIL|SKIP
+- Cross-module flows: N/M
+- Next: /supergraph:review
 ```
 
 ## Rules
