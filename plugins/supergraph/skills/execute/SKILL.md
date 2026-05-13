@@ -180,7 +180,7 @@ Used when:
 
 ```
 Agent(
-  subagent_type="supergraph:supergraph-executor",
+  subagent_type="supergraph:executor",
   description="Execute plan: [plan-name] (sequential)",
   prompt="Execute [task-scope] from plan at [selected-plan-path]. 
 
@@ -221,7 +221,7 @@ For each task in scope, spawn one agent:
 
 ```
 Agent(
-  subagent_type="supergraph:supergraph-executor",
+  subagent_type="supergraph:executor",
   description="Execute Task N from plan: [plan-name]",
   prompt="Execute ONLY Task N from plan at [selected-plan-path].
 
@@ -260,36 +260,6 @@ Stop conditions (ask instead of guessing):
 ```
 
 Spawn all task agents concurrently (one message with multiple Agent calls).
-
-```
-Agent(
-  subagent_type="supergraph:supergraph-executor",
-  description="Execute plan: [plan-name]",
-  prompt="Execute [task-scope] from plan at [selected-plan-path]. 
-
-Plan file: [selected-plan-path]
-Context: Plan contains N tasks with Environment Context (TEST_CMD, LINT_CMD, etc.). User requested scope: [all incomplete | task N | tasks N,M,K | from task N].
-
-Your job:
-1. Extract Environment Context from plan
-2. Run baseline tests
-3. Filter tasks by scope (execute only requested tasks)
-4. For each task in scope: RED → GREEN → REFACTOR → Format → Lint → Checkpoint
-5. Max 3 retries per step, mark stuck if blocked
-6. Final verification: tests, lint, build, graph update
-7. Report: tasks done, stuck list, next steps
-
-Follow TDD strictly. Checkpoint after every task. Never skip Environment Context.
-
-Stop conditions (ask instead of guessing):
-- Plan instruction unclear
-- Test command missing or fails baseline
-- Dependency not met
-- Acceptance criteria not testable
-- File path is placeholder
-- Any blocker or repeated failure"
-)
-```
 
 ### 6. Monitor Progress
 
