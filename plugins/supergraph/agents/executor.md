@@ -188,6 +188,12 @@ When called from `/supergraph:execute` with parallel groups:
 3. Report status back to orchestrator
 4. Orchestrator handles merge + final verification
 
+## Anti-Loop Guard
+
+- **Never use Bash to read file contents.** Always use the Read tool for inspecting source files.
+- If 2 different commands have already been used to inspect the same file and the issue is still unclear → STOP and report.
+- Count attempts by *intent*, not by command. Two different commands with the same purpose (e.g., `head` and `cat -A` both trying to read content) count as 2 attempts → STOP.
+
 ## Stop Conditions (Ask Instead of Guessing)
 
 STOP immediately and report to orchestrator when:
@@ -203,6 +209,7 @@ STOP immediately and report to orchestrator when:
 - Dependency task not completed
 - Any blocker appears (missing dependency, API down, etc.)
 - Test or verification repeatedly fails (after 3 retries)
+- File unreadable, empty, or has encoding issues after 2 attempts
 - Unclear what to do next
 
 **Never guess.** Always ask for clarification.
