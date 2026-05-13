@@ -1,324 +1,147 @@
 ---
 name: tdd
 description: Strict test-driven development for behavior changes. Requires verified RED before production code, minimal GREEN, and refactor only after passing tests.
+mcp: code-review-graph
 ---
 
-# Skill: TDD
+# /supergraph:tdd
 
-Strict test-driven development for features, bug fixes, refactors, and behavior changes.
+Strict TDD for features, bug fixes, refactors.
 
-Before claiming a TDD task complete or taking branch actions, apply `skills/tdd/finishing-development.md`.
+**Iron Law:** `NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST`
 
-**Iron law:** NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.
+**Delete means delete:** Production code written before verified failing test → delete and restart from RED.
 
-**Delete means delete:** If production code was written before a verified failing test, delete it and restart from RED. Do not keep it as a reference.
+## When
 
-## When to Use
+**Full TDD:** new features, behavior changes, refactoring.
+**Fast TDD:** bug fixes (add regression test → RED verify → minimal fix).
+**Ask to skip:** config-only, generated code, throwaway prototype, docs-only.
 
-Always use for:
+## State Machine (in order, never skip)
 
-- New features
-- Bug fixes
-- Behavior changes
-- Refactoring behavior-preserving code with test coverage
-
-Ask before skipping for:
-
-- Configuration-only changes
-- Generated code
-- Throwaway prototypes
-- Documentation-only changes
-
-## State Machine
-
-Every behavior change must move through these states in order:
-
-1. `needs_test`
-2. `red_written`
-3. `red_verified`
-4. `green_implementation_allowed`
-5. `green_verified`
-6. `refactor_allowed`
-7. `complete`
-
-Do not skip states.
+`needs_test` → `red_verified` → `green_verified` → `refactor_allowed` → `complete`
 
 ## Steps
 
 ### 0. Announce
-
-Start by saying:
-
-> "🔴 /supergraph:tdd — starting test-driven development..."
+"🔴 /supergraph:tdd — TDD: [full|fast] for [behavior]..."
 
 ### 1. Identify One Behavior
-
-Before writing code, state the behavior under test:
-
-```markdown
+```
 Behavior: [single externally visible behavior]
-Test file: [path]
-Test name: [clear behavior-focused name]
+Test file: [path] | Test name: [name]
 Command: [focused test command]
-Expected RED failure: [why it should fail before implementation]
+Expected RED: [why it should fail before implementation]
 ```
 
-Rules:
+**One behavior per test. Public behavior, not internals. Real code over mocks.**
 
-- One behavior per test
-- Test public behavior, not implementation details
-- Prefer real code over mocks
-- Mocks allowed only when unavoidable; state why
-- Bug fixes must reproduce the bug first
+### 2. RED — Write + Verify in One Round
 
-### 2. RED — Write One Failing Test
-
-Write the minimal automated test for the behavior.
-
-Do not edit production code yet.
-
-Good tests:
-
-- Clear name describing expected behavior
-- Minimal setup
-- Deterministic
-- Assertions on observable behavior
-- Uses real code where practical
-
-Bad tests:
-
-- Name like `works`
-- Multiple unrelated assertions
-- Mock-call-count-only assertions
-- Mirrors implementation details
-- Requires production test-only hooks
-
-### 3. Verify RED
-
-Run the focused test:
+Write one failing test, then run immediately:
 
 ```bash
-$FOCUSED_TEST_CMD
+<write test> && $TEST_CMD <focused command>
 ```
 
-Valid RED means:
-
-- Test fails
-- Failure is for the expected missing behavior
-- Failure is not syntax/import/setup error
-- Failure is not due to typo or bad assertion
-
-If test passes immediately:
-
-- It does not prove new behavior
-- Revise the test until it fails for the expected reason
-
-If test errors:
-
-- Fix test/setup until it fails for the intended behavioral reason
+Valid RED: fails **for the expected missing behavior**, not syntax/import/typo.
 
 Record evidence:
-
 ```markdown
-## TDD Evidence
-- Behavior: [behavior]
-- RED command: `[command]`
-- RED result: FAIL
-- RED reason: [expected missing behavior]
+## TDD Evidence — RED
+- RED: `[command]` → FAIL ([expected missing behavior])
 ```
 
-Only after valid RED may production implementation begin.
+Invalid RED → fix test setup, don't write production code yet.
 
-### 4. GREEN — Minimal Implementation
+### 3. GREEN — Minimal Implementation
 
-Write only the production code needed to pass the failing test.
+Write only enough code to pass the test. No abstractions, no cleanup, no extra features.
 
-Allowed:
+Delete any production code written before RED.
 
-- Minimal code to satisfy current test
-- Smallest API change required by test
+### 4. GREEN Verify
 
-Forbidden:
-
-- Unrelated cleanup
-- Future behavior not required by current test
-- Speculative abstractions/options/callbacks
-- Broad refactors
-- Adding test-only methods to production code
-
-If production code was already written before RED:
-
-1. Delete it
-2. Re-run RED test to confirm failure
-3. Re-implement minimally
-
-### 5. Verify GREEN
-
-Run focused test first:
-
-```bash
-$FOCUSED_TEST_CMD
-```
-
-Then run relevant broader tests:
-
-```bash
-$TEST_CMD
-```
-
-Valid GREEN means:
-
-- New test passes
-- Existing relevant tests pass
-- Output has no unexpected warnings/errors/logs
-
-Record evidence:
-
+Run focused test → broader suite:
 ```markdown
-- GREEN command: `[command]`
-- GREEN result: PASS
-- Relevant suite: PASS
+## TDD Evidence — GREEN
+- GREEN: `[command]` → PASS
+- Suite: PASS
 ```
 
-### 6. REFACTOR — Only After Green
+Failing test → fix code, not test. Other tests fail → fix now.
 
-Refactor only after tests pass.
+### 5. REFACTOR — Only After GREEN
 
-Allowed:
+Rename, deduplicate, extract. No behavior changes. Re-run tests.
 
-- Rename for clarity
-- Remove duplication
-- Extract helper
-- Improve structure without changing behavior
+### 6. Complete
 
-Required after refactor:
-
-```bash
-$FOCUSED_TEST_CMD
-$TEST_CMD
-```
-
-Record evidence:
-
-```markdown
-- Refactor: [summary or none]
-- Refactor verification: PASS
-```
-
-### 7. Complete Behavior
-
-Before marking complete, run `/supergraph:verify` or include fresh evidence:
-
+Before marking complete:
 ```markdown
 ## TDD Complete
 - Behavior: [behavior]
-- RED verified: yes
-- GREEN verified: yes
-- Refactor verified: yes|none
+- Mode: full|fast
+- RED verified: yes | GREEN verified: yes | Refactor: yes|none
 - Tests: PASS
 ```
 
-Then move to next behavior and repeat from RED.
+### 7. Report
 
-### 8. Progress Report (after each behavior, before next)
+Per behavior: `✅ /supergraph:tdd — behavior N: [brief]`
 
-```markdown
-⏳ /supergraph:tdd — behavior N complete: [brief description]
-✅ RED verified | ✅ GREEN verified | ✅ Tests PASS
+Final:
 ```
-
-### 9. Report Completion
-
-All behaviors implemented, verify passed:
-
-```markdown
 ✅ /supergraph:tdd complete
-- Behaviors: N | Tests: PASS | Lint: PASS
-- Behaviors implemented:
-  1. [brief description]
-  2. [brief description]
-  ...
+- Behaviors: N | Mode: full|fast | Tests: PASS | Lint: PASS
 - Next: /supergraph:fix → /supergraph:verify → /supergraph:review
 ```
 
+## Fast TDD Path (Bug Fixes)
+
+For bugs, skip full TDD ceremony:
+1. Write **one regression test** that reproduces the bug
+2. Verify it fails (RED) — the bug is proved
+3. Write **minimal fix only** (GREEN)
+4. Verify test passes — bug is fixed
+5. No REFACTOR needed unless specified
+
 ## Plan Integration
 
-Plans should include TDD metadata for every behavior task:
-
+Plans must include TDD metadata per behavior task:
 ```markdown
 TDD:
-- Behavior: [single behavior]
-- Test file: [path]
-- Test name: [name]
-- RED command: `[focused test command]`
-- Expected RED failure: [missing behavior]
-- Minimal GREEN change: [smallest implementation idea]
-- Refactor candidates: [optional, only after GREEN]
-- Mocking: none | [why unavoidable]
+- Behavior: [single behavior] | Test file: [path] | Test name: [name]
+- RED command: `[focused test command]` | Expected RED failure: [missing behavior]
+- Minimal GREEN change: [smallest implementation] | Mocking: none | [why unavoidable]
 ```
 
-## Execute Integration
-
-Executor must enforce:
-
+## Executor Enforcement
 - No production edits before `red_verified`
-- Stop if RED passes immediately
-- Stop if RED error is setup/import/syntax issue
-- Allow implementation only after valid RED
-- Allow refactor only after GREEN
-- Mark task completed only after verification evidence
+- Stop if RED passes immediately or fails for wrong reason
+- Allow implementation only after valid RED, refactor only after GREEN
 
-## Review Integration
+## Review Triggers — Reject When
+- Tests after implementation | No RED evidence | RED passed immediately | RED failed for wrong reason
+- Implementation exceeds tested behavior | Bug fix lacks regression test
+- Tests assert internals | Mocks hide integration risk
 
-Review must reject or flag work when:
+## Anti-Patterns — Stop & Return to RED
 
-- Tests were added after implementation
-- No RED evidence exists
-- RED passed immediately
-- RED failed for wrong reason
-- Implementation exceeds tested behavior
-- Bug fix lacks regression test
-- Tests assert implementation details instead of behavior
-- Mocks hide real integration risk
+| Symptom | Fix |
+|---|---|
+| Production code before failing test | Delete, start RED |
+| Tests after implementation | Next behavior test-first, remove untested code |
+| "Too small to test" | Write one-liner test |
+| Immediate pass accepted as RED | Test is wrong — revise |
+| Pre-written implementation kept as reference | Delete, start fresh |
+| Over-building before tests need it | YAGNI — remove |
 
-## Testing Anti-Patterns Reference
+### Mock Gate — Answer Before Mocking
+1. What behavior is under test?
+2. Is this mock isolating an external, slow, or flaky boundary?
+3. What side effects does the real dependency provide?
+4. Would this test fail if real behavior broke?
 
-Before writing or approving tests, check `skills/tdd/testing-anti-patterns.md`.
-
-Pre-mock gate:
-
-- What behavior is under test?
-- Is this mock isolating an external, slow, or flaky boundary?
-- What side effects does the real dependency provide?
-- Is the fake data schema complete enough?
-- Would this test fail if real behavior broke?
-
-Reject tests that only prove mocks exist or were called.
-
-## Anti-Patterns
-
-Stop and return to RED if you see:
-
-- Production code before failing test
-- Tests added after implementation
-- "Too small to test"
-- Manual testing instead of automated test
-- Immediate test pass accepted as RED
-- Cannot explain failure reason
-- Keeping prewritten implementation as reference
-- Overbuilding before tests require it
-- Test-only production methods
-- Heavy mocking due to tight coupling
-
-## Rules
-
-- NO production code without verified RED first
-- Delete means delete
-- Bugs require regression tests first
-- One behavior per test
-- Verify RED failure reason explicitly
-- GREEN must be minimal
-- Refactor only after GREEN
-- Re-run tests after refactor
-- Evidence required before completion
-- Prefer behavior tests over implementation tests
+**Reject tests that only prove mocks exist or were called.**

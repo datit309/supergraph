@@ -1,61 +1,50 @@
 ---
 name: plan
-description: Create graph-informed implementation plans before writing code. Use before any implementation task. Skip for small changes (1-2 files, <10 lines).
+description: Create graph-informed implementation plans before writing code. Use before any non-trivial task. Skip for small changes (1-2 files, <10 lines).
+mcp: code-review-graph
 ---
 
-# Skill: Plan
+# /supergraph:plan
 
-Scan codebase, analyze blast radius, create plan. Skip for small changes.
+Scan codebase, map blast radius, create machine-readable plan.
 
-## Quick Check
+Announce: "📐 /supergraph:plan — scanning codebase, creating plan..."
 
-If change is small (1-2 files, <10 lines, no hub/bridge nodes) → skip plan, go to `/supergraph:tdd` directly.
+## Quick Gate
+< 10 lines, 1 file, no hub/bridge nodes → skip to `/supergraph:tdd`.
 
 ## Steps
 
-### 0. Announce
-
-Start by saying:
-
-> "📐 /supergraph:plan — scanning codebase, analyzing blast radius, creating plan..."
-
-### 1. Scan Codebase (MANDATORY)
-
-```bash
-eval "$(bash bin/detect-project.sh)"
-```
-
+**1. Read the codebase (MANDATORY before planning):**
 - Read config file → language, framework, versions
-- Read 2-3 source files in target area → naming, imports, error handling
+- Read 2-3 source files near target area → naming, imports, error handling
 - Read 1-2 test files → test structure, assertion style
 
-### 2. Ensure Graph
+**2. Ensure graph:**
+Reuse graph context from `/supergraph:scan`. If task targets are unknown → call `get_minimal_context_tool()`.
+If graph stale (files changed since last index) → `build_or_update_graph_tool()`.
 
+**3. Graph analysis:**
 ```
-mcp__code-review-graph__get_minimal_context_tool()
-mcp__code-review-graph__list_graph_stats_tool()
-```
-
-If stale: `mcp__code-review-graph__build_or_update_graph_tool()`
-
-### 3. Graph Analysis
-
-```
-mcp__code-review-graph__get_impact_radius_tool(files=["targets"], depth=3)
+mcp__code-review-graph__get_impact_radius_tool(files=[targets], depth=3)
 mcp__code-review-graph__get_hub_nodes_tool()
 mcp__code-review-graph__get_bridge_nodes_tool()
-mcp__code-review-graph__list_communities_tool()
-mcp__code-review-graph__get_surprising_connections_tool()
-mcp__code-review-graph__get_review_context_tool(files=["targets"])
 mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
-mcp__code-review-graph__get_affected_flows_tool(files=["targets"])
-mcp__code-review-graph__find_large_functions_tool()
-mcp__code-review-graph__get_docs_section_tool()
+mcp__code-review-graph__get_affected_flows_tool(files=[targets])
 ```
+Fetch additional context (communities, surprising connections) only if task crosses boundaries.
 
-### 4. Task Breakdown
+**4. Discuss approach with user (MANDATORY, use user's language):**
+Before creating tasks, present findings from steps 1-3 to the user:
+- What was found in codebase (naming, conventions, patterns)
+- Graph risk (blast radius, hubs, bridges affected)
+- Proposed task breakdown (just summaries, not full tasks yet)
 
-Each task 2-5 min. Use this exact machine-readable format so `/supergraph:execute` can parse task scope reliably:
+Ask for approval in the user's language. If user disagrees with approach → revise.
+If user wants changes → incorporate, then re-present.
+**Do not proceed to step 5 until user approves the approach.**
+
+**5. Create plan tasks** — each task 2-5 min. Use exact machine-readable format:
 
 ```markdown
 ## Task N: [Short description]
@@ -102,133 +91,77 @@ Checkpoint:
 - Commit: `type: short description`
 ```
 
-Task status values:
-- `pending` — not started
-- `in_progress` — executor is working on it
-- `completed` — done and checkpointed
-- `stuck` — executor hit max retries or blocker
+Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by executor)
 
-### 5. Validate
-
-- [ ] Blast radius files covered
-- [ ] Code style matches conventions
-- [ ] Test commands real (from detect-project.sh)
+**6. Validate:**
+- [ ] Every task uses `## Task N:` heading exactly
+- [ ] Every task has all 8 fields: Status, Risk, Dependencies, Files, Acceptance, TDD, Steps, Checkpoint
+- [ ] No placeholders (TBD, TODO, "add validation", "similar to Task N")
+- [ ] Test commands real (from .supergraph-env)
 - [ ] Hub nodes have review steps
-- [ ] No placeholders
-- [ ] Every task uses `## Task N:` heading
-- [ ] Every task has `Status:`, `Risk:`, `Dependencies:`, `Files:`, `Acceptance:`, `TDD:`, `Steps:`, `Checkpoint:`
-- [ ] Every behavior task has expected RED failure reason
-- [ ] Every behavior task is one behavior only
+- [ ] Each behavior task has expected RED failure reason
+- [ ] NO indentation under field lines — `Status: pending` starts at column 0, not spaces
+- [ ] No extra blank lines between fields within a task section
+- [ ] NO indentation under field lines — `Status: pending` starts at column 0, not spaces
+- [ ] No extra blank lines between fields within a task section
 
-### 6. Save Plan
+**7. Save plan:** `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`
 
-After approval → `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`
+**8. Design Review Gate (if /supergraph:design was used):**
+If design step was completed — verify plan aligns with documented design decisions:
+```markdown
+## Design Decisions
+- Approach: [chosen approach from design step]
+- Alternatives rejected: [from design step with reasons]
+```
+If design was skipped for ambiguous task → WARN user: "No design step — proceeding with plan as-is."
 
-**MUST include Environment Context:**
-
+**9. Environment Context (MANDATORY at plan end):**
 ```markdown
 ## Environment Context
-
 - **Language:** [X] v[Y]
-- **Test command:** `[from detect-project.sh]`
-- **Linter command:** `[from detect-project.sh]`
-- **Formatter command:** `[from detect-project.sh]`
-- **Build command:** `[from detect-project.sh]`
-- **Branch:** `[current]`
-- **Conventional commit style:** `[e.g., "feat: / fix:"]`
+- **Test command:** [from .supergraph-env]
+- **Linter command:** [from .supergraph-env]
+- **Formatter command:** [from .supergraph-env]
+- **Build command:** [from .supergraph-env]
+- **Branch:** [current]
+- **Conventional commit style:** [e.g., "feat: / fix:"]
 
 **Codebase conventions:** [naming, imports, error handling, test structure]
 
 **Graph Context:**
-
-- Blast radius: M files
-- Hub nodes: [list]
-- Bridge nodes: [list]
-- Communities crossed: [list]
-- Surprising connections: [list]
+- Blast radius: M files | Hub nodes: [list]
+- Bridge nodes: [list] | Communities crossed: [list]
 ```
 
-### 7. Review Plan Document
+**10. Auto-review:**
+Dispatch `supergraph:plan-reviewer` subagent. Fix issues. Do not hand off to execute until `Approved`.
 
-After saving plan, dispatch independent plan reviewer:
-
+**11. User Review Gate (MANDATORY):**
+Present plan summary to user:
 ```
-Agent(
-  subagent_type="supergraph:plan-reviewer",
-  description="Review plan: [plan-name]",
-  prompt="Review implementation plan at docs/superpowers/plans/[plan-file].md.
-
-Spec/Requirements:
-[user request or spec path]
-
-Graph Context Summary:
-- Blast radius: [list]
-- Hub nodes: [list]
-- Bridge nodes: [list]
-- Communities crossed: [list]
-- Surprising connections: [list]
-- Affected flows: [list]
-
-Review for:
-- Completeness
-- Spec alignment
-- Task decomposition
-- Buildability
-- TDD metadata
-- Graph-aware safety
-
-Output exactly:
-## Plan Review
-
-**Status:** Approved | Issues Found
-
-**Issues (if any):**
-- [Task X, Step Y]: [specific issue] - [why it matters]
-
-**Recommendations (advisory, do not block approval):**
-- [suggestion]"
-)
+Plan: [plan path]
+Tasks: N ([list summaries])
+Blast radius: M files | Hub nodes affected: [list/none]
+Review: Approved (by plan-reviewer)
 ```
+Ask user for approval in their language: "[yes / modify / reject]"
+If modify → incorporate feedback, re-run auto-review.
+If rejected → ask for direction, return to design.
 
-If reviewer returns `Issues Found`:
-
-- Revise plan
-- Re-run plan reviewer
-- Do not hand off to execute until `Approved`
-
-If reviewer returns `Approved`, append review result to plan:
-
-```markdown
-## Plan Review
-
-**Status:** Approved
-**Reviewed by:** supergraph:plan-reviewer
-**Reviewed at:** [timestamp]
-
-**Issues:** none
-
-**Recommendations:**
-- [advisory items or none]
+**12. Report:**
 ```
-
-### 8. Report Completion
-
-```markdown
 ✅ /supergraph:plan complete
 - Plan: docs/superpowers/plans/YYYY-MM-DD-<slug>.md
-- Tasks: N total | Blast radius: M files | Communities crossed: K
-- Review: Approved
+- Tasks: N | Blast radius: M files | Review: Approved
+- User: yes | modify | rejected
 - Next: /supergraph:execute plan <slug> (multi-task) or /supergraph:tdd (single-task)
 ```
 
-### 9. Handoff
-
 ## Rules
-
-- Codebase first, plan second
+- Codebase first, plan second — never plan blindly
 - Environment Context mandatory — executor depends on it
-- Exact file paths, commands, code
-- Task headings must stay `## Task N:` for executor parsing
-- Task status must be updated by executor (`pending`, `in_progress`, `completed`, `stuck`)
-- No placeholders
-- Never execute code — only plan
+- Exact file paths, commands, code — no vagueness
+- Task headings stay `## Task N:` for executor parsing
+- No placeholders, no "TBD", no "similar to Task X"
+- Never execute code — only create plans

@@ -1,88 +1,50 @@
 ---
 name: integration
-description: Run integration and end-to-end tests after unit tests pass. Use after /supergraph:fix when unit tests are green. Validates cross-module behavior.
+description: Run integration and e2e tests after unit tests pass. Use after /supergraph:fix when unit tests are green.
+mcp: code-review-graph
 ---
 
-# Skill: Integration
+# /supergraph:integration
 
-Integration + e2e tests. Run after unit tests pass. Validates modules work together.
-
-## Prerequisites
-
-- `/supergraph:fix` completed — unit tests PASS, lint PASS
-- Commands from Environment Context
+Integration + e2e tests. Validates modules work together. Run AFTER unit tests pass.
 
 ## Steps
 
 ### 0. Announce
+"🔗 /supergraph:integration — running integration and e2e tests..."
 
-Start by saying:
+### 1. Detect Setup
+Check for integration configuration:
 
-> "🔗 /supergraph:integration — running integration and e2e tests..."
+| Config | Command |
+|---|---|
+| `jest.integration.config.js` | `npx jest --config jest.integration.config.js` |
+| `pytest.ini` with "integration" | `pytest -m integration` |
+| `cypress.config.js` | `npx cypress run` |
+| `playwright.config.js` | `npx playwright test` |
+| `docker-compose.test.yml` | `docker compose -f docker-compose.test.yml up --abort-on-container-exit` |
 
-### 1. Detect Integration Setup
-
-**Progress:** Detecting integration test configuration...
-
-```bash
-# Check for integration test config
-[ -f jest.integration.config.js ] && INT_TEST_CMD="npx jest --config jest.integration.config.js"
-[ -f pytest.ini ] && grep -q "integration" pytest.ini && INT_TEST_CMD="pytest -m integration"
-[ -f cypress.config.js ] && E2E_CMD="npx cypress run"
-[ -f playwright.config.js ] && E2E_CMD="npx playwright test"
-[ -f docker-compose.test.yml ] && COMPOSE_TEST="docker compose -f docker-compose.test.yml up --abort-on-container-exit"
-```
-
-If none found → skip, report: "No integration/e2e config found. Add if needed."
+If none found → skip: "No integration/e2e config found."
 
 ### 2. Run Integration Tests
+Max 3 retries. Failures → trace to source module, fix, re-run.
 
-```bash
-$INT_TEST_CMD
-```
-
-Failures → read error, trace to source module, fix, re-run (max 3).
-
-### 3. Run E2E Tests (if configured)
-
-```bash
-$E2E_CMD
-```
-
-Failures → read error, trace to source, fix, re-run (max 2 — e2e flaky ok).
+### 3. Run E2E (if configured)
+Max 2 retries (e2e can be flaky). Mark `@flaky` tests, don't block.
 
 ### 4. Graph Validation
-
-```
-mcp__code-review-graph__get_affected_flows_tool(files=["all_changed"])
-mcp__code-review-graph__get_surprising_connections_tool()
-```
-
+`get_affected_flows_tool(files=[all_changed])`, `get_surprising_connections_tool()`.
 Cross-module flows all tested? Surprising connections investigated?
 
 ### 5. Report
-
 ```
-📊 Integration Report
-- Unit tests: PASS
-- Integration: [PASS|FAIL|SKIP]
-- E2E: [PASS|FAIL|SKIP]
-- Cross-module flows: [N tested / M total]
-- Issues: [list or "none"]
-Next: /supergraph:review
-```
-
-```markdown
 ✅ /supergraph:integration complete
 - Unit: PASS | Integration: PASS|FAIL|SKIP | E2E: PASS|FAIL|SKIP
-- Cross-module flows: N/M
-- Next: /supergraph:review
+- Cross-module flows: N/M | Next: /supergraph:review
 ```
 
 ## Rules
-
-- Unit tests must pass FIRST — don't skip to integration
-- Integration failures take priority over e2e (fix foundation first)
-- Max 3 retries for integration, max 2 for e2e
-- Flaky e2e tests → mark `@flaky`, don't block
+- Unit tests MUST pass FIRST
+- Integration failures > e2e failures (fix foundation first)
+- Max 3 retries integration, 2 retries e2e
 - After integration pass → `/supergraph:review`

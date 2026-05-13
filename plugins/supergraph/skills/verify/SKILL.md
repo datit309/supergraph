@@ -1,266 +1,101 @@
 ---
 name: verify
-description: Fresh verification gate before claiming work is done, fixed, passing, clean, ready, or before commit/PR. Evidence before claims.
+description: Fresh verification gate before claiming done, fixed, passing, ready, or before commit/PR. Evidence before claims, always.
+mcp: code-review-graph
 ---
 
-# Skill: Verify
+# /supergraph:verify
 
 Fresh verification gate before completion claims.
 
-**Iron law:** NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.
+**Iron Law:** `NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE`
 
 ## When to Use
 
-Use before saying or implying:
-
-- done
-- fixed
-- passing
-- clean
-- ready
-- complete
-- works
-- verified
-- successful
-
-Also use before:
-
-- marking a plan task `Status: completed`
-- committing or creating a PR
-- moving to the next plan phase
-- accepting a subagent's success report
-- final response after execute/fix/integration/review
-
-## Core Rule
-
-Before any positive status claim:
-
-1. Identify the claim
-2. Identify what proves it
-3. Run fresh verification in the current context
-4. Read exit code and output
-5. Compare evidence to claim
-6. Report evidence with the claim
-
-Prior runs do not count. Subagent reports do not count without independent verification.
+Before saying/implying: done, fixed, passing, clean, ready, complete, works, verified, successful.
+Also: before marking `Status: completed`, committing, PR'ing, accepting agent reports, moving to next phase.
 
 ## Usage
 
-```bash
-/supergraph:verify
-/supergraph:verify tests
-/supergraph:verify lint
-/supergraph:verify build
-/supergraph:verify plan auth-login task 2
-/supergraph:verify claim "login validation is fixed"
-```
+`/supergraph:verify` | `tests` | `lint` | `build` | `plan auth-login task 2` | `claim "login fixed"`
 
 ## Evidence Mapping
 
 | Claim | Required fresh evidence |
-| --- | --- |
-| Tests pass | `$TEST_CMD` exits 0 and output shows zero failures |
-| Lint clean | `$LINT_CMD` exits 0 and output shows zero errors |
+|---|---|
+| Tests pass | `$TEST_CMD` exits 0, zero failures |
+| Lint clean | `$LINT_CMD` exits 0, zero errors |
 | Build succeeds | `$BUILD_CMD` exits 0 |
 | Bug fixed | Original failing symptom/test now passes |
-| Regression covered | RED test failed before fix, GREEN test passes after fix |
-| TDD complete | RED failure reason verified, GREEN passes, refactor verification passes, tests avoid anti-patterns |
-| Task completed | Acceptance criteria checked + verification commands pass |
-| Agent completed | Diff inspected + independent tests/lint run |
-| Review passed | Code reviewer + graph review + tests/lint pass |
-| Ready to merge | Tests + lint + build + review verdict PASS |
+| Regression covered | RED failed before fix, GREEN passes after |
+| TDD complete | RED failure valid, GREEN passes, refactor verified |
+| Task completed | Acceptance criteria met + verification commands pass |
+| Agent completed | Diff inspected + independent tests/lint |
+| Review passed | Reviewer + graph review + tests/lint pass |
+| Ready to merge | Tests + lint + build + review PASS |
 
 ## Steps
 
 ### 0. Announce
+"✅ /supergraph:verify — verifying [claim] with fresh evidence..."
 
-Start by saying:
+### 1. Identify Claim
+Map claim to required proofs from evidence mapping.
 
-> "✅ /supergraph:verify — verifying [claim] with fresh evidence..."
+### 2. Select Plan Context (if applicable)
+0 plans → skip | 1 → use | >1 → ask | `plan <slug>` → match.
 
-### 1. Identify Intended Claim
+### 3. Get Commands
+Read from plan `## Environment Context` or `.supergraph-env` (set by `/supergraph:scan`). Missing → STOP, run scan first.
+No command can prove claim → STOP: "Required check is unknown."
 
-Determine what is about to be claimed:
-
-- `tests pass`
-- `lint clean`
-- `build succeeds`
-- `task completed`
-- `bug fixed`
-- `review passed`
-- `ready to merge`
-- other explicit claim
-
-If claim is ambiguous, ask: "What claim should I verify?"
-
-### 2. Select Plan Context (optional)
-
-If args include `plan <slug>` or plan files exist, use standard plan selection rules:
-
-- 0 plans → continue without plan context
-- 1 plan → use it
-- >1 plans + no `plan <slug>` → ask user to choose
-- `plan <slug>` → match filename containing slug
-
-If task scope exists (`task N`, `tasks N,M`), verify acceptance criteria and status for those tasks.
-
-### 3. Determine Proof Commands
-
-Prefer commands from plan `## Environment Context`.
-
-Fallback:
-
-```bash
-eval "$(bash bin/detect-project.sh)"
-```
-
-Map claim to commands:
-
-- tests → `$TEST_CMD`
-- lint → `$LINT_CMD`
-- build → `$BUILD_CMD`
-- task completed → task VERIFY commands + acceptance criteria
-- ready to merge → `$TEST_CMD`, `$LINT_CMD`, `$BUILD_CMD`, `/supergraph:review`
-
-If no command can prove the claim, STOP and report:
-
-```text
-Not verified yet. Required check is unknown. Please provide verification command.
-```
-
-### 4. Run Fresh Verification
-
-Run required commands now. Do not reuse old output.
-
-For delegated agent output:
-
-```bash
-git diff --stat
-git diff --name-only
-```
-
+### 4. Run Fresh Verification (NOW — no reuse of old output)
+For agent output: `git diff --stat && git diff --name-only`.
 Then run relevant tests/lint/build locally.
 
-### 5. Read and Interpret Output
+### 5. Read Output
+Check: exit code, failure count, error count, warnings. Don't confuse lint ≠ build, targeted ≠ suite.
 
-Inspect:
+### 6. Report Evidence
 
-- exit code
-- failure count
-- error count
-- skipped tests (if relevant)
-- command output summary
-
-Do not equate:
-
-- lint pass with build pass
-- targeted test pass with full suite pass
-- subagent summary with verified completion
-- no output with success unless exit code is confirmed
-
-### 6. Compare Evidence to Claim
-
-If evidence supports claim, report:
-
+**Pass:**
 ```markdown
 ## Verification Evidence
-- Claim: [claim]
-- Command: `[command]`
-- Exit code: 0
-- Result: PASS
-- Evidence: [specific output summary]
-- Timestamp: [current timestamp]
+- Claim: [claim] | Command: `[command]` → exit 0 → PASS
+- Evidence: [output summary] | Timestamp: [now]
 ```
 
-If evidence fails, report actual state:
-
+**Fail:**
 ```markdown
 ## Verification Failed
-- Claim: [claim]
-- Command: `[command]`
-- Exit code: [code]
-- Result: FAIL
-- Failure summary: [specific failure]
-- Next: /supergraph:fix [same plan/scope]
+- Claim: [claim] | Command: `[command]` → exit [N] → FAIL
+- Failure: [summary] | Next: /supergraph:fix
 ```
 
-If verification cannot be run, say so explicitly and do not use completion language.
+Cannot verify → say so explicitly. No completion language.
 
-### 7. Update Plan Status (if applicable)
+### 7. Update Plan Status
+Only after evidence passes: `in_progress` → `completed`.
+If failed → keep status or mark `stuck` if retries exhausted.
 
-Only after evidence passes:
+**For user-facing confirmation:** Announce task/plan completion in the user's language.
+If plan context exists, show: "Task N completed — [user-facing summary]"
 
-- `Status: in_progress` → `Status: completed`
-
-If evidence fails:
-
-- keep current status, or mark `Status: stuck` if retries exhausted
-- append verification failure summary
-
-## Anti-Patterns to Block
-
-Do not say:
-
-- "should work"
-- "seems fixed"
-- "probably passes"
-- "looks good"
-- "done" without evidence
-- "tests pass" when only lint ran
-- "ready" when build/review were skipped
-
-Do not:
-
-- trust subagent success reports without independent checks
-- use stale command output
-- mark tasks completed without checking acceptance criteria
-- commit or open PR without fresh verification
-- hide skipped checks behind positive wording
-
-## Response Discipline
-
-If verified:
-
-```text
-Verified with `<command>`: [evidence]. [claim].
+### 8. Report
 ```
-
-If not verified:
-
-```text
-Not verified yet. Required check: `<command>`.
-```
-
-If failed:
-
-```text
-Verification failed with `<command>`: [failure summary].
-```
-
-### 8. Report Completion
-
-```markdown
 ✅ /supergraph:verify complete
-- Claim: [claim]
-- Evidence: [command] → exit code 0 → PASS|FAIL
-- Plan status: updated | Next: [recommendation]
+- Claim: [claim] | Evidence: [command] → PASS|FAIL
+- Next: [recommendation]
 ```
 
-### 8. Report Completion
+## Anti-Patterns — Block These
+- "should work" / "seems fixed" / "probably passes" / "looks good"
+- Trusting agent reports without independent check
+- Stale command output | No acceptance criteria check
+- Commit/PR without fresh tests+lint+build+review evidence
+- Hiding skipped checks behind positive wording
 
-```markdown
-✅ /supergraph:verify complete
-- Claim: [claim]
-- Evidence: [command] → exit code 0 → PASS|FAIL
-- Plan status: updated | Next: [recommendation]
-```
-
-## Rules
-
-- Evidence before claims, always
-- Fresh verification only; old runs do not count
-- Read command output before reporting
-- No positive completion language without proof
-- Agent output requires independent verification
-- Commit/PR requires fresh tests, lint, build, and review evidence
-- If verification cannot be run, state that explicitly
+## Evidence Rules
+Evidence before claims, always. Fresh only — old runs don't count.
+Read output before reporting. No positive language without proof.
+Agent output requires independent verification.

@@ -67,7 +67,7 @@ Scan plan for `## Task N:` headings. For each task, extract:
 CURRENT=$(git branch --show-current)
 ```
 
-If BRANCH starts with `create:` → `git checkout -b [name]`
+If BRANCH starts with `create:` → extract name after `create:` prefix → `git checkout -b <name>`
 
 ### 6. Baseline
 
@@ -76,6 +76,19 @@ $TEST_CMD
 ```
 
 If fails → STOP, report baseline failures.
+
+### 6.5. Read Task Files (MANDATORY before any edit)
+
+For each task, Read all files listed in `Files:` section before writing code.
+
+Check:
+- What exists vs what needs creating
+- Current naming conventions, import style, error handling patterns
+- Existing function signatures, type definitions, interfaces
+- Test file structure, assertion style, fixtures
+- How nearby code imports modules, handles errors
+
+Match the project's existing style. Do not introduce new patterns unless the task requires it.
 
 ### 7. Filter Tasks by Scope
 
@@ -107,13 +120,14 @@ For each task in scope:
 **A. Update Status**
 
 - **MANDATORY Read-before-Edit:** Use the Read tool to read the plan file immediately before editing it.
-- **Use the full status line as `old_string`,** not just the word `pending`. For example: `"Status: pending"` (not just `"pending"`).
-- If the Edit fails with "String to replace not found", **Re-read the plan file**, then retry the Edit using the current content. This can happen if the plan was modified by another process since your last Read.
+- **Match the exact indentation and whitespace** as shown in the Read output. Copy the status line verbatim from what Read returned.
+- **If multiple tasks have the same status:** include the task heading (`## Task N:`) + the status line in `old_string` to make the match unique.
+- If the Edit fails with "String to replace not found", **Re-read the plan file**, then retry with the current content. This happens if another process modified the file since your last Read.
 - Change `Status: pending` → `Status: in_progress` in plan file
 
 **B. Extract Task Details**
 
-- Read Files, Acceptance, Steps, Checkpoint from task section
+- Read Files, Acceptance, Steps, Checkpoint from task section (plan metadata only — source files already read in Step 6.5)
 
 **C. RED** — Follow TDD + Steps sections: write failing test, run RED command, verify failure is for expected missing behavior.
 
@@ -128,15 +142,15 @@ For each task in scope:
 
 **F. VERIFY** — Run all commands in Steps VERIFY section.
 
-**G. Checkpoint** — Run all commands in Steps VERIFY section. If verification passes, continue. Do NOT commit yet.
+**G. Checkpoint** — Run all commands in Steps VERIFY section. If verification passes, continue.
 
-**H. Update Status** — **MANDATORY Read-before-Edit:** Read the plan file immediately before editing. Change `Status: in_progress` → `Status: completed`. If Edit fails with "String to replace not found", Re-read the plan, then retry with the current content.
+**H. Update Status** — **MANDATORY Read-before-Edit:** Read the plan file immediately before editing. Match exact indentation. Include task heading for uniqueness. Change `Status: in_progress` → `Status: completed`. If Edit fails, re-read and retry.
 
 **I. Regression Check + Commit** — Run full `$TEST_CMD`. If regression → STOP, revert all changes for this task, mark `Status: stuck`. If PASS → commit all task files with one clean commit:
 
 ```bash
-git add [all files changed for this task]
-git commit -m "[checkpoint message from plan]"
+git add <all task checkpoint files>
+git commit -m "<checkpoint message from plan>"
 ```
 
 ### 9. Handle Failures
@@ -222,6 +236,7 @@ STOP immediately and report to orchestrator when:
 - ALWAYS critically review plan before starting
 - ALWAYS enforce TDD order: RED verified before GREEN
 - ALWAYS ask instead of guessing when unclear
+- For Edit tool: use exact content from Read output as old_string — never construct from template
 - NEVER create plan — only execute
 - NEVER skip Environment Context extraction
 - NEVER `git add -A` — use exact files from Checkpoint section

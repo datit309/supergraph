@@ -4,7 +4,7 @@
 
 ### Features
 
-- 8 skills: context, plan, tdd, execute, fix, integration, verify, review
+- 9 skills: scan, design, plan, tdd, execute, fix, integration, verify, review
 - 4 agents: executor, plan-writer, code-reviewer, plan-reviewer
 - MCP integration with code-review-graph
 - Auto language detection: Node.js, Flutter, PHP

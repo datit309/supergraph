@@ -12,7 +12,7 @@ Agent MUST read and follow the relevant skill before each phase.
 
 | Skill            | When to read                            |
 | ---------------- | --------------------------------------- |
-| `/supergraph:context`     | Start of every session                  |
+| `/supergraph:scan`        | Start of every session                  |
 | `/supergraph:plan`        | Before writing any code                 |
 | `/supergraph:tdd`         | When implementing any feature or fix    |
 | `/supergraph:fix`         | After all coding is complete            |
@@ -40,7 +40,7 @@ Use the correct test/lint commands for the detected language.
 
 ### Step 0: Context
 
-Read `/supergraph:context` and execute it.
+Read `/supergraph:scan` and execute it.
 NEVER start work without graph context.
 
 ### Step 1: Plan

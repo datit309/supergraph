@@ -39,7 +39,7 @@ pip install code-review-graph && code-review-graph install && code-review-graph 
 ## Workflow
 
 ```
-Session start     → /supergraph:context     (load graph, detect project)
+Session start     → /supergraph:scan         (load graph, detect project)
 Task received     → /supergraph:plan         (scan + analyze + save plan)
 Implementation    → /supergraph:tdd          (RED-GREEN-REFACTOR)
 Post-code         → /supergraph:fix          (auto-fix loop)

@@ -51,17 +51,23 @@ Evaluate:
 - Edge-case handling
 - Simplicity and maintainability
 
-### 4. Check Architecture + Graph Risks
+### 4. Check Architecture + Graph Risks + Security
 
 Evaluate:
 
 - Integration with nearby code
 - Performance/scalability implications
-- Security risks
 - Hub/bridge node changes
 - Community boundary crossings
 - Surprising connections
 - Affected flows
+- **Security** (OWASP top 10 where applicable):
+  - SQL injection: raw string concatenation in queries?
+  - XSS/HTML injection: unescaped user input in output?
+  - Command injection: unvalidated input in shell/exec?
+  - Path traversal: user-controlled file paths?
+  - Credentials/secrets: hardcoded keys, tokens, passwords?
+  - Auth/session: missing auth checks on protected endpoints?
 
 ### 5. Check Testing
 
@@ -105,6 +111,9 @@ Must fix before merge:
 - Bug fix without regression test
 - Test only validates mock behavior, not real behavior
 - Production API added only for tests
+- Hardcoded secrets, tokens, API keys
+- SQL/XSS/command injection vulnerabilities
+- Missing auth checks on protected endpoints
 
 ### Important
 

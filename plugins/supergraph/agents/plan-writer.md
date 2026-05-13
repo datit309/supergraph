@@ -18,10 +18,13 @@ eval "$(bash bin/detect-project.sh)"
 **Fallback** (if script missing):
 
 ```bash
+[ -f pubspec.yaml ] && PROJECT_TYPE=flutter && TEST_CMD="flutter test" && LINT_CMD="flutter analyze" && FORMAT_CMD="dart format ." && BUILD_CMD="flutter build"
 [ -f package.json ] && PROJECT_TYPE=node && TEST_CMD="npm test" && LINT_CMD="npx eslint ." && FORMAT_CMD="npx prettier --write ." && BUILD_CMD="npm run build"
 [ -f Cargo.toml ] && PROJECT_TYPE=rust && TEST_CMD="cargo test" && LINT_CMD="cargo clippy" && FORMAT_CMD="cargo fmt" && BUILD_CMD="cargo build"
 [ -f pyproject.toml ] && PROJECT_TYPE=python && TEST_CMD="pytest" && LINT_CMD="ruff check ." && FORMAT_CMD="ruff format ." && BUILD_CMD="python -m build"
 [ -f go.mod ] && PROJECT_TYPE=go && TEST_CMD="go test ./..." && LINT_CMD="golangci-lint run" && FORMAT_CMD="gofmt -w ." && BUILD_CMD="go build ./..."
+[ -f Gemfile ] && PROJECT_TYPE=ruby && TEST_CMD="bundle exec rspec" && LINT_CMD="rubocop" && FORMAT_CMD="rubocop -A" && BUILD_CMD="bundle exec rake"
+[ -f pom.xml ] || [ -f build.gradle* ] && PROJECT_TYPE=java && TEST_CMD="mvn test" && LINT_CMD="mvn checkstyle:check" && FORMAT_CMD="mvn spotless:apply" && BUILD_CMD="mvn compile"
 ```
 
 Read config, 2-3 source files, 1-2 test files. Note conventions.
@@ -32,7 +35,7 @@ Read config, 2-3 source files, 1-2 test files. Note conventions.
 mcp__code-review-graph__list_graph_stats_tool()
 ```
 
-If fails → install: `pip install code-review-graph && code-review-graph install && code-review-graph build`
+If fails → STOP: "Graph not available. Run `pip install code-review-graph && code-review-graph install && code-review-graph build` or ask user."
 
 ### 3. Graph Analysis
 
@@ -47,15 +50,31 @@ mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
 mcp__code-review-graph__get_affected_flows_tool(files=["targets"])
 ```
 
+### 3.5. Spec Alignment Check
+
+Before creating tasks, verify plan covers all user requirements:
+- What did the user actually ask for?
+- Any implicit requirements from the problem context?
+- No scope gaps (missing features from request)?
+- No scope creep (unasked features)?
+
 ### 4. Create Tasks
 
-Each 2-5 min. Exact files, exact code, exact commands.
+Each 2-5 min. Exact files, exact code, exact commands. Use format from plan skill template:
+- `## Task N:` heading at column 0
+- All fields (`Status:`, `Risk:`, etc.) at column 0 under the heading — NO indentation
+- One blank line between tasks, NO blank lines between fields within a task
+- Use exact status values: `pending`, `in_progress`, `completed`, `stuck` Use format from plan skill template:
+- `## Task N:` heading at column 0
+- All fields (`Status:`, `Risk:`, etc.) at column 0 under the heading — NO indentation
+- One blank line between tasks, NO blank lines between fields within a task
+- Use exact status values: `pending`, `in_progress`, `completed`, `stuck`
 
 ### 5. Validate Plan
 
 - [ ] Blast radius files covered
 - [ ] Code style matches conventions found in scan
-- [ ] Test commands real (from detect-project.sh or fallback)
+- [ ] Test commands real (from .supergraph-env)
 - [ ] Hub nodes have review steps
 - [ ] No placeholders
 - [ ] Environment Context complete
@@ -106,4 +125,4 @@ Execution must not start until plan review status is `Approved`.
 - NEVER skip codebase scan
 - NEVER save before approval
 - Environment Context mandatory — executor depends on it
-- Use fallback detection if `detect-project.sh` missing
+- Use fallback detection if `detect-project.sh` missing (.supergraph-env not yet created) (.supergraph-env not yet created)

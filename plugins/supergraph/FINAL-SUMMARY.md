@@ -9,8 +9,8 @@
 ## ✅ All Issues Fixed
 
 ### 1. Skill Naming Convention
-- Frontmatter: `name: context`, `name: plan`, etc.
-- Commands: `/supergraph:context`, `/supergraph:plan`
+- Frontmatter: `name: scan`, `name: plan`, etc.
+- Commands: `/supergraph:scan`, `/supergraph:plan`
 - Agent names: `plan-writer`, `plan-reviewer`, `supergraph-executor`, `code-reviewer`
 
 ### 2. MCP Permissions (29 tools)
@@ -86,7 +86,7 @@ Checkpoint: files + commit
 ## 🎯 Complete Workflow
 
 ```
-/supergraph:context
+/supergraph:scan
   ↓ (minimal context first, detect project)
 /supergraph:plan
   ↓ (scan + blast_radius + machine-readable format)
