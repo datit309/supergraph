@@ -106,6 +106,9 @@ For each task in scope:
 
 **A. Update Status**
 
+- **MANDATORY Read-before-Edit:** Use the Read tool to read the plan file immediately before editing it.
+- **Use the full status line as `old_string`,** not just the word `pending`. For example: `"Status: pending"` (not just `"pending"`).
+- If the Edit fails with "String to replace not found", **Re-read the plan file**, then retry the Edit using the current content. This can happen if the plan was modified by another process since your last Read.
 - Change `Status: pending` → `Status: in_progress` in plan file
 
 **B. Extract Task Details**
@@ -125,16 +128,16 @@ For each task in scope:
 
 **F. VERIFY** — Run all commands in Steps VERIFY section.
 
-**G. Checkpoint** — Use exact files and commit message from Checkpoint section:
+**G. Checkpoint** — Run all commands in Steps VERIFY section. If verification passes, continue. Do NOT commit yet.
+
+**H. Update Status** — **MANDATORY Read-before-Edit:** Read the plan file immediately before editing. Change `Status: in_progress` → `Status: completed`. If Edit fails with "String to replace not found", Re-read the plan, then retry with the current content.
+
+**I. Regression Check + Commit** — Run full `$TEST_CMD`. If regression → STOP, revert all changes for this task, mark `Status: stuck`. If PASS → commit all task files with one clean commit:
 
 ```bash
-git add [files from Checkpoint]
-git commit -m "[commit from Checkpoint]"
+git add [all files changed for this task]
+git commit -m "[checkpoint message from plan]"
 ```
-
-**H. Update Status** — Change `Status: in_progress` → `Status: completed` in plan file.
-
-**I. Regression Check** — Full `$TEST_CMD`. If regression → STOP, revert checkpoint, mark `Status: stuck`.
 
 ### 9. Handle Failures
 

@@ -193,12 +193,12 @@ Your job:
 2. Run baseline tests
 3. Filter tasks by scope (execute only requested tasks)
 4. Execute tasks IN ORDER (respect Dependencies)
-5. For each task: RED → GREEN → REFACTOR → Format → Lint → Checkpoint
+5. For each task: RED → GREEN → REFACTOR → Format → Lint → Checkpoint after tests pass, commit once per task
 6. Max 3 retries per step, mark stuck if blocked
 7. Final verification: tests, lint, build, graph update
 8. Report: tasks done, stuck list, next steps
 
-Follow TDD strictly. Checkpoint after every task. Never skip Environment Context.
+Follow TDD strictly. ONE commit per task after all tests pass. Never commit mid-TDD (no commit during RED/GREEN/REFACTOR).
 
 Stop conditions (ask instead of guessing):
 - Plan instruction unclear
@@ -237,11 +237,11 @@ Environment Context:
 
 Your job:
 1. Execute ONLY Task N
-2. RED → GREEN → REFACTOR → Format → Lint → Checkpoint
+2. RED → GREEN → REFACTOR → Format → Lint (do NOT commit during TDD)
 3. Update Status for Task N only
 4. Do NOT edit files outside Task N Files list without asking
 5. Do NOT refactor unrelated code
-6. Commit only exact checkpoint files for Task N
+6. Commit once after ALL tests pass for Task N (exact checkpoint files and message from plan)
 7. Max 3 retries per step, mark stuck if blocked
 
 Return:

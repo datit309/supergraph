@@ -154,6 +154,8 @@ Treat results:
 
 If plan context exists:
 
+- **MANDATORY Read-before-Edit:** Read the plan file immediately before editing any Status lines. If Edit fails with "String to replace not found", Re-read the plan, then retry with the current content.
+- **MANDATORY Read-before-Edit:** Read the plan file immediately before editing any Status lines. If Edit fails with "String to replace not found", Re-read the plan, then retry with the current content.
 - Fix succeeded and scoped task exists → set `Status: completed`
 - Fix succeeded and in-progress tasks exist → set those tasks to `completed`
 - Fix failed after 3 iterations → set affected task(s) to `stuck` and append:
