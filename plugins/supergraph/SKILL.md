@@ -18,7 +18,7 @@ Dispatch to the right skill. 1% rule: if it *might* apply, invoke it.
 
 | User intent | Skill to invoke |
 |-------------|----------------|
-| "start", "begin", unclear scope | `/supergraph:design` |
+| "start", "begin", unclear scope | `/supergraph:analyze` |
 | "plan", "lên kế hoạch", explicit plan request | `/supergraph:plan` |
 | "implement", "build", "execute" (plan saved) | `/supergraph:execute` |
 | "fix bug", "debug", "why failing" | `/supergraph:fix` |
@@ -33,7 +33,7 @@ Dispatch to the right skill. 1% rule: if it *might* apply, invoke it.
 
 - **< 10 lines, 1 file, no hub nodes** → use `/supergraph:tdd` directly
 - **1-3 files, clear requirement** → `/supergraph:plan` with lightweight tasks
-- **Multi-file, ambiguous, hub/bridge nodes** → `/supergraph:design` first, then plan
+- **Multi-file, ambiguous, hub/bridge nodes** → `/supergraph:analyze` first, then plan
 
 ## User Instructions
 

@@ -105,14 +105,14 @@ Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by e
 
 **7. Save plan:** `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`
 
-**8. Design Review Gate (if /supergraph:design was used):**
-If design step was completed — verify plan aligns with documented design decisions:
+**8. Analysis Review Gate (if /supergraph:analyze was used):**
+If analyze step was completed — verify plan aligns with documented analysis decisions:
 ```markdown
-## Design Decisions
-- Approach: [chosen approach from design step]
-- Alternatives rejected: [from design step with reasons]
+## Analysis Decisions
+- Approach: [chosen approach from analyze step]
+- Alternatives rejected: [from analyze step with reasons]
 ```
-If design was skipped for ambiguous task → WARN user: "No design step — proceeding with plan as-is."
+If analysis was skipped for ambiguous task → WARN user: "No analyze step — proceeding with plan as-is."
 
 **9. Environment Context (MANDATORY at plan end):**
 ```markdown

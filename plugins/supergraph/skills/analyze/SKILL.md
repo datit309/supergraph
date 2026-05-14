@@ -1,12 +1,12 @@
 ---
-name: design
-description: Structured ideation before planning. Use when requirements are ambiguous, approaches vary, or work touches hub/bridge nodes. Skip for typo fixes.
+name: analyze
+description: Risk analysis and approach selection before planning. Use when requirements are ambiguous, approaches vary, or work touches hub/bridge nodes. Skip for typo fixes.
 mcp: code-review-graph
 ---
 
-# /supergraph:design
+# /supergraph:analyze
 
-Design first, implement never. No code until design is approved.
+Analyze first, implement never. No code until approach is approved.
 
 ## When
 
@@ -36,15 +36,15 @@ For each: pros, cons, risk level, effort. Prefer minimal viable.
 Only if the answer changes direction.
 
 **5. Recommend and hand off:**
-Present recommendation. Once approved, summarize decisions into a design block in the plan file or prompt context:
+Present recommendation. Once approved, summarize decisions into an analysis block in the plan file or prompt context:
 ```markdown
-## Design Decisions
+## Analysis Decisions
 - Approach: [chosen] | Why: [reason]
 - Alternatives considered: [list] | Risks: [list]
 ```
 → invoke `/supergraph:plan`
 
 ## Rules
-- No implementation during design
-- Don't over-design for hypothetical futures
+- No implementation during analyze
+- Don't over-analyze for hypothetical futures
 - Always end with: "Shall I create the plan?" → invoke `/supergraph:plan`
