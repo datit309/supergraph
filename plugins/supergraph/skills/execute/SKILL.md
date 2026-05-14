@@ -16,8 +16,8 @@ Usage: `/supergraph:execute` | `task N` | `tasks N,M` | `from task N` | `plan au
 "I'm using /supergraph:execute to implement this plan."
 
 ### 1. Load Context
-- `/supergraph:scan` should already be done
-- Commands from `.supergraph-env` (set by `/supergraph:scan`)
+- `/supergraph:scan` should already be done. If `.supergraph-env` missing → STOP: "Run `/supergraph:scan` first."
+- Commands from `.supergraph-env` (if present) or plan `## Environment Context`
 
 ### 2. Select Plan
 Count plan files in `docs/superpowers/plans/*.md`:

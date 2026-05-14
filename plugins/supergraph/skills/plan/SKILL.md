@@ -21,7 +21,7 @@ Announce: "📐 /supergraph:plan — scanning codebase, creating plan..."
 - Read 1-2 test files → test structure, assertion style
 
 **2. Ensure graph:**
-Reuse graph context from `/supergraph:scan`. If task targets are unknown → call `get_minimal_context_tool()`.
+Reuse graph context from `/supergraph:scan`. If scan not done → run `/supergraph:scan` first.
 If graph stale (files changed since last index) → `build_or_update_graph_tool()`.
 
 **3. Graph analysis:**
@@ -100,8 +100,6 @@ Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by e
 - [ ] Test commands real (from .supergraph-env)
 - [ ] Hub nodes have review steps
 - [ ] Each behavior task has expected RED failure reason
-- [ ] NO indentation under field lines — `Status: pending` starts at column 0, not spaces
-- [ ] No extra blank lines between fields within a task section
 - [ ] NO indentation under field lines — `Status: pending` starts at column 0, not spaces
 - [ ] No extra blank lines between fields within a task section
 
