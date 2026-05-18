@@ -1,6 +1,7 @@
 ---
 name: database-migrations
 description: Database migration best practices for schema changes, data migrations, rollbacks, and zero-downtime deployments across PostgreSQL, MySQL, and common ORMs (Prisma, Drizzle, Kysely, Django, TypeORM, golang-migrate).
+mcp: code-review-graph
 ---
 
 # Database Migration Patterns
@@ -14,6 +15,14 @@ Safe, reversible database schema changes for production systems.
 - Running data migrations (backfill, transform)
 - Planning zero-downtime schema changes
 - Setting up migration tooling for a new project
+
+## MCP-Integrated Workflow
+
+Before writing any migration, check graph context to understand blast radius:
+
+1. **`get_impact_radius_tool(files=[schema_files, model_files], depth=2)`** — Schema changes to hub tables (e.g. `users`, `orders`) touch repositories, queries, services across the entire codebase
+2. **`query_graph(query_type="dependents", target=<schema_file>)`** — Find all code that references the table/column being changed. This prevents "migration approved but application code forgot to update" bugs
+3. After migration written, **`get_affected_flows_tool(files=[migration_and_related_code])`** — Verify all data flows still work
 
 ## Core Principles
 

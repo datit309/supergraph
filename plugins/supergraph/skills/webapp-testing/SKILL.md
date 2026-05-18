@@ -1,6 +1,7 @@
 ---
 name: webapp-testing
 description: Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.
+mcp: code-review-graph
 ---
 
 # Web Application Testing
@@ -10,6 +11,17 @@ To test local web applications, write native Python Playwright scripts.
 **Helper Scripts Available**:
 
 - `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)
+
+## MCP-Integrated Testing
+
+Before writing tests, use graph context to understand what to test and what changed:
+
+1. **`get_affected_flows_tool(files=[changed_frontend_pages])`** — When a page/component changes, find all user flows (navigation paths, data pipelines) that need testing. Never miss a regression flow.
+2. **`get_impact_radius_tool(files=[changed_fe], depth=2)`** — Visualize which other components, pages, or API routes are affected by a frontend change. Prioritize test coverage by impact radius.
+3. **`query_graph(query_type="dependents", target=<api_route_or_service>)`** — Before writing mock data, find all API consumers to ensure mocks match real usage.
+4. **`get_knowledge_gaps_tool()`** — Find untested frontend files. Prioritize tests for high-impact untested components.
+
+After tests pass, re-run `get_affected_flows_tool()` to confirm all flows are covered.
 
 **Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is abslutely necessary. These scripts can be very large and thus pollute your context window. They exist to be called directly as black-box scripts rather than ingested into your context window.
 

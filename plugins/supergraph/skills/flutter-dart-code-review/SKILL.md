@@ -1,11 +1,25 @@
 ---
 name: flutter-dart-code-review
 description: Library-agnostic Flutter/Dart code review checklist covering widget best practices, state management patterns (BLoC, Riverpod, Provider, GetX, MobX, Signals), Dart idioms, performance, accessibility, security, and clean architecture.
+mcp: code-review-graph
 ---
 
 # Flutter/Dart Code Review Best Practices
 
 Comprehensive, library-agnostic checklist for reviewing Flutter/Dart applications. These principles apply regardless of which state management solution, routing library, or DI framework is used.
+
+## MCP-Integrated Review
+
+Before the manual checklist, use graph tools to surface hotspots:
+
+1. **`find_large_functions_tool()`** — Automatically find widget `build()` methods exceeding 80-100 lines (section 3), and state managers violating single-responsibility (section 4)
+2. **`get_hub_nodes_tool()`** — Identify most-connected widgets and services. Hub widgets with 10+ dependents likely violate separation of concerns (section 3-4)
+3. **`query_graph(query_type="cycles")`** — Find circular dependencies in the DI graph (section 14) or inter-controller coupling (section 4)
+4. **`get_surprising_connections_tool()`** — Flag unexpected coupling between layers (widgets importing data-layer internals, section 3)
+5. **`get_knowledge_gaps_tool()`** — Find untested files (section 6), cross-reference with hub nodes to prioritize coverage gaps
+6. **`query_graph(query_type="callers", target=<deprecated_api>)`** — Before removing deprecated APIs, find all callers to prevent missed updates
+
+Use the checklist below to act on graph findings.
 
 ---
 
