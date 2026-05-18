@@ -8,7 +8,7 @@
     {
       "name": "supergraph",
       "source": "./plugins/supergraph",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "description": "Mandatory AI workflows + intelligent codebase graph analysis for Claude Code"
     }
   ]

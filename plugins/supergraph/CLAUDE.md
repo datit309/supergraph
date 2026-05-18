@@ -13,13 +13,14 @@ Agent MUST read and follow the relevant skill before each phase.
 | Skill            | When to read                            |
 | ---------------- | --------------------------------------- |
 | `/supergraph:scan`        | Start of every session                  |
-| `/supergraph:plan`        | Before writing any code                 |
-| `/supergraph:tdd`         | When implementing any feature or fix    |
-| `/supergraph:fix`         | After all coding is complete            |
-| `/supergraph:integration` | After unit tests pass                   |
-| `/supergraph:verify`      | Before claiming done/ready or committing |
-| `/supergraph:review`      | Before merging or when review is needed |
-| `/supergraph:execute`     | When executing saved plans              |
+| `/supergraph:analyze`      | Ambiguous scope, touching hub/bridge     |
+| `/supergraph:plan`         | Before writing any code                 |
+| `/supergraph:tdd`          | When implementing any feature or fix    |
+| `/supergraph:execute`      | When executing saved plans              |
+| `/supergraph:fix`          | After all coding is complete            |
+| `/supergraph:integration`  | After unit tests pass                   |
+| `/supergraph:verify`       | Before claiming done/ready or committing |
+| `/supergraph:review`       | Before merging or when review is needed |
 
 
 ---
