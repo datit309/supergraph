@@ -1,7 +1,7 @@
 {
   "name": "supergraph",
-  "version": "2.0.2",
-  "description": "Mandatory AI workflows + intelligent codebase graph analysis. Combines superpowers methodology with code-review-graph AST analysis. Supports Node.js, Flutter, PHP.",
+  "version": "2.1.0",
+  "description": "Graph-driven AI coding workflows with Serena MCP integration. Covers the full dev cycle: scan → plan → TDD → fix → integration → verify → review. Graph analysis (blast radius, hub nodes, communities) + Serena LSP tools (diagnostics, symbol navigation, safe rename/replace). Skills optimized for token efficiency. Supports Node.js, Flutter, PHP, Python, Go, Rust, and more.",
   "author": {
     "name": "datit309",
     "email": "trantandat0919@gmail.com"
@@ -9,15 +9,18 @@
   "license": "MIT",
   "keywords": [
     "code-review-graph",
-    "superpowers",
     "supergraph",
+    "serena",
     "tdd",
     "blast-radius",
     "code-review",
     "workflow",
     "nodejs",
     "flutter",
-    "php"
+    "php",
+    "python",
+    "go",
+    "rust"
   ],
   "homepage": "https://github.com/datit309/supergraph",
   "repository": "https://github.com/datit309/supergraph",
