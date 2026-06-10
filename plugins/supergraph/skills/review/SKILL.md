@@ -43,6 +43,18 @@ mcp__code-review-graph__get_knowledge_gaps_tool()
 ```
 Per file: `query_graph(query_type="tests", target=file)`.
 
+**3b. Serena code intelligence (optional):**
+For each changed symbol/function:
+```
+mcp__serena__find_referencing_symbols(symbol=<changed_symbol>)
+```
+For each changed file:
+```
+mcp__serena__get_diagnostics_for_file(file=<changed_file>)
+```
+Pass results to code-reviewer agent prompt under "Serena findings: [callers, diagnostics]".
+Skip if Serena unavailable.
+
 ### 4. Dispatch Code Reviewer (2-Stage Review)
 
 **Stage 1 — Spec Compliance:** Verify implementation matches plan requirements.
@@ -67,9 +79,13 @@ Graph context:
 - Affected flows: [list/none]
 - Knowledge gaps: [list/none]
 
+Serena findings (if available):
+- find_referencing_symbols: [callers per changed symbol]
+- get_diagnostics_for_file: [diagnostics per changed file]
+
 Plan requirements: [task sections or none]
 
-Focus: plan alignment, bugs, security, architecture, tests, graph risks.
+Focus: plan alignment, bugs, security, architecture, tests, graph risks, Serena diagnostics (if provided).
 Output: strengths, Critical, Important, Minor, verdict (YES|WITH_FIXES|NO)"
 )
 ```
