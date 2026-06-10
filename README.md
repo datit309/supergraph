@@ -19,6 +19,8 @@ Combines [superpowers](https://github.com/obra/superpowers) methodology with [co
 # From Git repository
 /plugin marketplace add https://github.com/datit309/supergraph.git
 /plugin install supergraph
+# Update plugin
+/plugin marketplace update supergraph
 
 # Or from local directory
 git clone https://github.com/datit309/supergraph.git
