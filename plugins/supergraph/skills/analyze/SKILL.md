@@ -29,6 +29,14 @@ Skip for: typo fixes, config changes, clear mechanical edits.
 Reuse graph context from `/supergraph:scan`. Only call `get_impact_radius_tool(files=[likely_targets], depth=2)` if targets are identified.
 If files involve hub/bridge nodes → flag risk.
 
+**2b. Serena dependency check (optional):**
+For each likely target symbol:
+```
+mcp__serena__find_referencing_symbols(symbol=<likely_target>)
+```
+Adds symbol-level callers that graph may not surface. Results enrich approach comparison in step 3.
+Skip if Serena unavailable.
+
 **3. Propose 2-3 approaches:**
 For each: pros, cons, risk level, effort. Prefer minimal viable.
 
