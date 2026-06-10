@@ -12,7 +12,7 @@ if ! printf '%s' "$file" | grep -qE '\.(py|js|ts|jsx|tsx|go|rs|java|php|dart|vue
   exit 0
 fi
 
-plan=$(ls docs/superpowers/plans/*.md 2>/dev/null | head -1 || true)
+plan=$(ls docs/supergraph/plans/*.md 2>/dev/null | head -1 || true)
 
 if [ -z "$plan" ]; then
   echo '⚠️ No plan file. Run /supergraph:plan first, or /supergraph:tdd for small changes.'

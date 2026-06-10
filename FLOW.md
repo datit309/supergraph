@@ -32,7 +32,7 @@
 │                    PLANNING                              │
 │  /supergraph:plan (or supergraph-planner agent)         │
 │  → Scan codebase, graph analysis, create tasks          │
-│  → Save to docs/superpowers/plans/                      │
+│  → Save to docs/supergraph/plans/                      │
 └──────────────────────────┬──────────────────────────────┘
                            │
               ┌────────────┴────────────┐

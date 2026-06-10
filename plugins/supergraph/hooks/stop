@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-plan=$(ls docs/superpowers/plans/*.md 2>/dev/null | head -1 || true)
+plan=$(ls docs/supergraph/plans/*.md 2>/dev/null | head -1 || true)
 
 if [ -n "$plan" ]; then
   pending=$(grep -c '^Status: pending' "$plan" 2>/dev/null || true)

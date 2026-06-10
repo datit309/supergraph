@@ -11,6 +11,7 @@
 ✅ **PASS** — Bộ skills đã chuẩn từng bước và tích hợp đúng với `superpowers` + `code-review-graph`.
 
 **Strengths:**
+
 - Workflow rõ ràng: context → plan → tdd → fix → integration → review
 - Tích hợp đầy đủ MCP tools từ code-review-graph
 - Environment Context mandatory trong plan files
@@ -18,6 +19,7 @@
 - Hooks tự động kiểm tra plan và cập nhật graph
 
 **Issues Found:**
+
 1. ⚠️ **CRITICAL:** Tên skill trong CLAUDE.md không khớp với tên thực tế
 2. ⚠️ **WARNING:** Thiếu skills `brainstorm`, `blast`, `refactor`, `inspect`, `finish` được liệt kê trong CLAUDE.md
 3. ⚠️ **WARNING:** Settings.json thiếu một số MCP tools mới từ code-review-graph
@@ -30,15 +32,15 @@
 
 #### ✅ Existing Skills (7/12)
 
-| Skill | Path | Status | Integration |
-|-------|------|--------|-------------|
-| `context` | `skills/context/SKILL.md` | ✅ GOOD | Loads graph, detects project |
-| `plan` | `skills/plan/SKILL.md` | ✅ GOOD | Uses blast_radius, hub_nodes, bridge_nodes |
-| `tdd` | `skills/tdd/SKILL.md` | ✅ GOOD | RED-GREEN-REFACTOR with graph validation |
-| `fix` | `skills/fix/SKILL.md` | ✅ GOOD | Auto-fix loop with graph review |
-| `review` | `skills/review/SKILL.md` | ✅ GOOD | Graph-enhanced review with severity levels |
-| `execute` | `skills/execute/SKILL.md` | ✅ GOOD | Orchestrates TDD with checkpoints |
-| `integration` | `skills/integration/SKILL.md` | ✅ GOOD | Integration + e2e tests |
+| Skill         | Path                          | Status  | Integration                                |
+| ------------- | ----------------------------- | ------- | ------------------------------------------ |
+| `context`     | `skills/context/SKILL.md`     | ✅ GOOD | Loads graph, detects project               |
+| `plan`        | `skills/plan/SKILL.md`        | ✅ GOOD | Uses blast_radius, hub_nodes, bridge_nodes |
+| `tdd`         | `skills/tdd/SKILL.md`         | ✅ GOOD | RED-GREEN-REFACTOR with graph validation   |
+| `fix`         | `skills/fix/SKILL.md`         | ✅ GOOD | Auto-fix loop with graph review            |
+| `review`      | `skills/review/SKILL.md`      | ✅ GOOD | Graph-enhanced review with severity levels |
+| `execute`     | `skills/execute/SKILL.md`     | ✅ GOOD | Orchestrates TDD with checkpoints          |
+| `integration` | `skills/integration/SKILL.md` | ✅ GOOD | Integration + e2e tests                    |
 
 #### ❌ Missing Skills (5/12)
 
@@ -55,14 +57,17 @@ Listed in CLAUDE.md but not implemented:
 ### 2. Naming Inconsistency
 
 **CLAUDE.md declares:**
+
 - `sg-context`, `sg-brainstorm`, `sg-plan`, `sg-tdd`, `sg-review`, `sg-blast`, `sg-fix`, `sg-refactor`, `sg-inspect`, `sg-execute`, `sg-finish`
 
 **Actual skill names (from SKILL.md frontmatter):**
+
 - `supergraph-context`, `supergraph-plan`, `supergraph-tdd`, `supergraph-fix`, `supergraph-review`, `supergraph-execute`, `supergraph-integration`
 
 **Impact:** Agent sẽ gọi `/sg-context` nhưng skill thực tế là `supergraph-context` → skill không load được.
 
 **Fix Required:**
+
 - Option A: Đổi tên trong SKILL.md frontmatter từ `supergraph-*` → `sg-*`
 - Option B: Đổi tên trong CLAUDE.md từ `sg-*` → `supergraph-*`
 - **Recommended:** Option A (ngắn gọn hơn, dễ gõ)
@@ -73,37 +78,38 @@ Listed in CLAUDE.md but not implemented:
 
 #### ✅ Superpowers Methodology
 
-| Principle | Implementation | Status |
-|-----------|----------------|--------|
-| Mandatory workflows | CLAUDE.md enforces step-by-step | ✅ |
-| Plan-first approach | `/plan` creates `docs/superpowers/plans/*.md` | ✅ |
-| TDD cycle | RED-GREEN-REFACTOR in `/tdd` | ✅ |
-| Environment Context | Mandatory in plan files | ✅ |
-| Checkpoint commits | After each task in `/execute` | ✅ |
-| Auto-fix loop | Max 3 iterations in `/fix` | ✅ |
-| Graph-enhanced review | `/review` uses graph analysis | ✅ |
+| Principle             | Implementation                               | Status |
+| --------------------- | -------------------------------------------- | ------ |
+| Mandatory workflows   | CLAUDE.md enforces step-by-step              | ✅     |
+| Plan-first approach   | `/plan` creates `docs/supergraph/plans/*.md` | ✅     |
+| TDD cycle             | RED-GREEN-REFACTOR in `/tdd`                 | ✅     |
+| Environment Context   | Mandatory in plan files                      | ✅     |
+| Checkpoint commits    | After each task in `/execute`                | ✅     |
+| Auto-fix loop         | Max 3 iterations in `/fix`                   | ✅     |
+| Graph-enhanced review | `/review` uses graph analysis                | ✅     |
 
 #### ✅ code-review-graph Integration
 
 **MCP Tools Used:**
 
-| Tool | Used In | Purpose |
-|------|---------|---------|
-| `list_graph_stats_tool` | context, plan, fix | Graph health check |
-| `build_or_update_graph_tool` | context, execute | Build/refresh graph |
-| `get_impact_radius_tool` | plan, tdd, fix, review | Blast radius analysis |
-| `get_hub_nodes_tool` | context, plan, review | Most-connected nodes |
-| `get_bridge_nodes_tool` | context, plan, review | Chokepoints |
-| `list_communities_tool` | context, plan, review | Code clusters |
-| `get_surprising_connections_tool` | plan, fix, review | Unexpected coupling |
-| `get_knowledge_gaps_tool` | context, fix, integration | Untested hotspots |
-| `get_review_context_tool` | plan | Token-optimized context |
-| `query_graph_tool` | plan, tdd, review | Callers/callees/tests |
-| `get_affected_flows_tool` | plan, integration | Flows affected |
-| `detect_changes_tool` | execute, review | Risk-scored impact |
-| `get_architecture_overview_tool` | context | Architecture map |
+| Tool                              | Used In                   | Purpose                 |
+| --------------------------------- | ------------------------- | ----------------------- |
+| `list_graph_stats_tool`           | context, plan, fix        | Graph health check      |
+| `build_or_update_graph_tool`      | context, execute          | Build/refresh graph     |
+| `get_impact_radius_tool`          | plan, tdd, fix, review    | Blast radius analysis   |
+| `get_hub_nodes_tool`              | context, plan, review     | Most-connected nodes    |
+| `get_bridge_nodes_tool`           | context, plan, review     | Chokepoints             |
+| `list_communities_tool`           | context, plan, review     | Code clusters           |
+| `get_surprising_connections_tool` | plan, fix, review         | Unexpected coupling     |
+| `get_knowledge_gaps_tool`         | context, fix, integration | Untested hotspots       |
+| `get_review_context_tool`         | plan                      | Token-optimized context |
+| `query_graph_tool`                | plan, tdd, review         | Callers/callees/tests   |
+| `get_affected_flows_tool`         | plan, integration         | Flows affected          |
+| `detect_changes_tool`             | execute, review           | Risk-scored impact      |
+| `get_architecture_overview_tool`  | context                   | Architecture map        |
 
 **Missing from settings.json:**
+
 - `get_review_context_tool`
 - `get_architecture_overview_tool`
 - `get_affected_flows_tool`
@@ -135,6 +141,7 @@ Complete → /supergraph:finish (merge/PR/keep/discard)
 ```
 
 **Issues:**
+
 - `/supergraph:finish` skill missing → workflow incomplete
 
 #### ✅ Quick Path (small changes)
@@ -152,6 +159,7 @@ Complete → /supergraph:finish (merge/PR/keep/discard)
 ```
 
 **Status:** Works
+
 - `supergraph-planner` agent: creates plans, never codes
 - `supergraph-executor` agent: executes plans with TDD
 
@@ -162,6 +170,7 @@ Complete → /supergraph:finish (merge/PR/keep/discard)
 #### ✅ PreToolUse Hooks
 
 **Write|Edit matcher:**
+
 - Checks for plan file existence
 - Reports progress (done/remaining tasks)
 - **Good:** Prevents coding without plan
@@ -169,10 +178,12 @@ Complete → /supergraph:finish (merge/PR/keep/discard)
 #### ✅ PostToolUse Hooks
 
 **Write|Edit matcher:**
+
 - Auto-updates graph after code changes
 - **Good:** Keeps graph fresh
 
 **Bash matcher:**
+
 - Blocks destructive commands (rm -rf, DROP TABLE, etc.)
 - **Good:** Safety guard
 
@@ -190,12 +201,14 @@ Complete → /supergraph:finish (merge/PR/keep/discard)
 #### ✅ Permissions
 
 **Allowed MCP tools (old naming):**
+
 - `mcp__code-review-graph__get_stats` ✅
 - `mcp__code-review-graph__blast_radius` ✅
 - `mcp__code-review-graph__find_hub_nodes` ✅
 - ... (18 tools total)
 
 **Missing (new naming from README):**
+
 - `mcp__code-review-graph__list_graph_stats_tool`
 - `mcp__code-review-graph__get_impact_radius_tool`
 - `mcp__code-review-graph__get_hub_nodes_tool`
@@ -250,6 +263,7 @@ Complete → /supergraph:finish (merge/PR/keep/discard)
 Bộ skills đã tích hợp tốt với `superpowers` methodology và `code-review-graph` MCP tools. Workflow rõ ràng, TDD bắt buộc, graph analysis đầy đủ.
 
 **Blockers:**
+
 - Naming inconsistency → skills không load được
 - Missing permissions → permission prompts liên tục
 

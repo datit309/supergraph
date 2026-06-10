@@ -8,8 +8,8 @@
     {
       "name": "supergraph",
       "source": "./plugins/supergraph",
-      "version": "2.0.2",
-      "description": "Mandatory AI workflows + intelligent codebase graph analysis for Claude Code"
+      "version": "2.1.0",
+      "description": "Supergraph enforces a complete, evidence-based coding workflow: scan → plan → TDD → fix → integration → verify → review. Every step is grounded in codebase graph analysis (blast radius, hub nodes, community boundaries) and optionally enhanced by Serena MCP for LSP-level intelligence (type diagnostics, symbol navigation, safe rename/replace).\n\nSkills are optimized for token efficiency — reference material is separated from executable steps so each invocation loads only what's needed.\n\nIncludes specialized skills for Flutter/Dart code review, database migrations, frontend design, and webapp testing with Playwright."
     }
   ]
 }

@@ -36,17 +36,17 @@ code-review-graph build
 
 ## Skills — What They Do & When to Run
 
-| Skill | File | Purpose | When |
-|-------|------|---------|------|
-| **Scan** | `skills/scan/SKILL.md` | Load graph, detect project, save env | Session start — **first thing** |
-| **Analyze** | `skills/analyze/SKILL.md` | Risk analysis, approach selection | Ambiguous requirements, hub/bridge nodes |
-| **Plan** | `skills/plan/SKILL.md` | Graph scan, blast radius, task breakdown | Before writing **any** code |
-| **Execute** | `skills/execute/SKILL.md` | Dispatch plan, orchestrate tasks | Plan saved, ready to implement |
-| **TDD** | `skills/tdd/SKILL.md` | Per-task RED → GREEN → REFACTOR | Implementing feature/fix |
-| **Fix** | `skills/fix/SKILL.md` | Auto-fix: test + lint + format + graph | After all coding, before verify |
-| **Integration** | `skills/integration/SKILL.md` | Integration + e2e tests | After unit tests pass |
-| **Verify** | `skills/verify/SKILL.md` | Fresh evidence gate | Before claiming done/ready/commit |
-| **Review** | `skills/review/SKILL.md` | Graph review → verdict | Before merge/PR |
+| Skill           | File                          | Purpose                                  | When                                     |
+| --------------- | ----------------------------- | ---------------------------------------- | ---------------------------------------- |
+| **Scan**        | `skills/scan/SKILL.md`        | Load graph, detect project, save env     | Session start — **first thing**          |
+| **Analyze**     | `skills/analyze/SKILL.md`     | Risk analysis, approach selection        | Ambiguous requirements, hub/bridge nodes |
+| **Plan**        | `skills/plan/SKILL.md`        | Graph scan, blast radius, task breakdown | Before writing **any** code              |
+| **Execute**     | `skills/execute/SKILL.md`     | Dispatch plan, orchestrate tasks         | Plan saved, ready to implement           |
+| **TDD**         | `skills/tdd/SKILL.md`         | Per-task RED → GREEN → REFACTOR          | Implementing feature/fix                 |
+| **Fix**         | `skills/fix/SKILL.md`         | Auto-fix: test + lint + format + graph   | After all coding, before verify          |
+| **Integration** | `skills/integration/SKILL.md` | Integration + e2e tests                  | After unit tests pass                    |
+| **Verify**      | `skills/verify/SKILL.md`      | Fresh evidence gate                      | Before claiming done/ready/commit        |
+| **Review**      | `skills/review/SKILL.md`      | Graph review → verdict                   | Before merge/PR                          |
 
 ### Invocation
 
@@ -78,7 +78,7 @@ All skills use `/supergraph:` prefix to avoid conflicts with built-in commands:
 │ PLANNING PHASE                                              │
 │   → /supergraph:plan (or /supergraph:analyze + plan)        │
 │   → Graph analysis, blast radius, task breakdown            │
-│   → Save to docs/superpowers/plans/YYYY-MM-DD-*.md          │
+│   → Save to docs/supergraph/plans/YYYY-MM-DD-*.md          │
 └──────────────────────────┬──────────────────────────────────┘
                            │
             ┌──────────────┴──────────────┐
@@ -111,12 +111,12 @@ See [FLOW.md](./FLOW.md) for the complete flowchart with rollback paths and esca
 
 ## Agents — Who Does What
 
-| Agent | Role | Created By | Executes |
-|-------|------|-----------|----------|
-| **supergraph-planner** | Plan only, never code | `/supergraph:plan` | `/supergraph:analyze` → plan file |
-| **supergraph-executor** | Execute only, never plan | `/supergraph:execute` | Plan tasks via TDD + checkpoints |
-| **(subagent) plan-reviewer** | Review plans pre-execution | Auto-dispatched by plan | Completeness + spec alignment check |
-| **(subagent) code-reviewer** | Final code review | Auto-dispatched by review | Diff review → verdict |
+| Agent                        | Role                       | Created By                | Executes                            |
+| ---------------------------- | -------------------------- | ------------------------- | ----------------------------------- |
+| **supergraph-planner**       | Plan only, never code      | `/supergraph:plan`        | `/supergraph:analyze` → plan file   |
+| **supergraph-executor**      | Execute only, never plan   | `/supergraph:execute`     | Plan tasks via TDD + checkpoints    |
+| **(subagent) plan-reviewer** | Review plans pre-execution | Auto-dispatched by plan   | Completeness + spec alignment check |
+| **(subagent) code-reviewer** | Final code review          | Auto-dispatched by review | Diff review → verdict               |
 
 Agents are self-contained — they receive only the relevant context, no session history.
 
@@ -124,19 +124,20 @@ Agents are self-contained — they receive only the relevant context, no session
 
 Powered by `code-review-graph` AST indexing, Supergraph maps your entire codebase as an interconnected graph:
 
-| Analysis | Tool | Use When |
-|----------|------|----------|
-| Blast radius | `get_impact_radius_tool` | What files break if I change X? |
-| Hub nodes | `get_hub_nodes_tool` | Which files are high-risk central nodes? |
-| Bridge nodes | `get_bridge_nodes_tool` | Where does coupling cross module boundaries? |
-| Communities | `list_communities_tool` | How is the code clustered? |
-| Test coverage | `get_knowledge_gaps_tool` | Which files lack tests? |
-| Surprising connections | `get_surprising_connections_tool` | Unexpected dependencies lurking? |
-| Architecture overview | `get_architecture_overview_tool` | Module diagram of the codebase |
-| Affected flows | `get_affected_flows_tool` | Which user journeys break? |
-| Change detection | `detect_changes_tool` | Risk-scored impact of recent changes |
+| Analysis               | Tool                              | Use When                                     |
+| ---------------------- | --------------------------------- | -------------------------------------------- |
+| Blast radius           | `get_impact_radius_tool`          | What files break if I change X?              |
+| Hub nodes              | `get_hub_nodes_tool`              | Which files are high-risk central nodes?     |
+| Bridge nodes           | `get_bridge_nodes_tool`           | Where does coupling cross module boundaries? |
+| Communities            | `list_communities_tool`           | How is the code clustered?                   |
+| Test coverage          | `get_knowledge_gaps_tool`         | Which files lack tests?                      |
+| Surprising connections | `get_surprising_connections_tool` | Unexpected dependencies lurking?             |
+| Architecture overview  | `get_architecture_overview_tool`  | Module diagram of the codebase               |
+| Affected flows         | `get_affected_flows_tool`         | Which user journeys break?                   |
+| Change detection       | `detect_changes_tool`             | Risk-scored impact of recent changes         |
 
 The graph is used to:
+
 - **Warn before hub node edits** (require user approval)
 - **Flag high blast radius** (>20 files → discuss with user)
 - **Detect circular dependencies** (block merge)
@@ -154,20 +155,20 @@ The graph is used to:
 7. **Always use graph MCP tools** before assuming relationships
 8. **Always detect language** and use correct test/lint commands
 9. **Always read the skill file** before executing each phase
-10. **Always save plans** to `docs/superpowers/plans/` for long-running work
+10. **Always save plans** to `docs/supergraph/plans/` for long-running work
 
 ## Stuck / Escalation Table
 
-| Condition | Action |
-|-----------|--------|
-| TDD fails 3 times | Mark task `stuck`, skip, continue next |
-| Fix loop fails 3 iterations | STOP → report issues → never commit broken |
-| Review returns `NEEDS_CHANGES` | Return to fix (max 2 review cycles) |
-| Review returns `BLOCKED` | Escalate to human immediately |
-| Blast radius > 20 files | STOP — discuss with user before proceeding |
-| Hub node modification | REQUIRE explicit user approval |
-| Surprise score > 0.7 | REQUIRE investigation & justification |
-| New circular dependency | BLOCK — fix before merge |
+| Condition                      | Action                                     |
+| ------------------------------ | ------------------------------------------ |
+| TDD fails 3 times              | Mark task `stuck`, skip, continue next     |
+| Fix loop fails 3 iterations    | STOP → report issues → never commit broken |
+| Review returns `NEEDS_CHANGES` | Return to fix (max 2 review cycles)        |
+| Review returns `BLOCKED`       | Escalate to human immediately              |
+| Blast radius > 20 files        | STOP — discuss with user before proceeding |
+| Hub node modification          | REQUIRE explicit user approval             |
+| Surprise score > 0.7           | REQUIRE investigation & justification      |
+| New circular dependency        | BLOCK — fix before merge                   |
 
 ## Auto Language Detection
 
@@ -223,6 +224,7 @@ The correct test/lint/build commands are loaded from `.supergraph-env` or projec
 ```
 
 **Skill files** are discovered by directory convention:
+
 - Each skill directory contains a `SKILL.md` file
 - The plugin manifest (`plugin.json`) maps skill names to these directories
 - Agents are defined as markdown prompt templates in `agents/`
@@ -278,21 +280,21 @@ Security is not a feature — it's the baseline. The plugin enforces:
 The plugin exposes a suite of graph analysis tools:
 
 ```yaml
-build_or_update_graph_tool:    Build/refresh AST graph from codebase
-list_graph_stats_tool:         Graph health + index status
-get_impact_radius_tool:        Blast radius for file changes
-get_hub_nodes_tool:            High-centrality files (risk hotspots)
-get_bridge_nodes_tool:         Cross-module coupling chokepoints
-list_communities_tool:         Detected code clusters/modules
+build_or_update_graph_tool: Build/refresh AST graph from codebase
+list_graph_stats_tool: Graph health + index status
+get_impact_radius_tool: Blast radius for file changes
+get_hub_nodes_tool: High-centrality files (risk hotspots)
+get_bridge_nodes_tool: Cross-module coupling chokepoints
+list_communities_tool: Detected code clusters/modules
 get_surprising_connections_tool: Unexpected coupling warnings
-get_knowledge_gaps_tool:       Untested files coverage gaps
-get_review_context_tool:       Token-optimized relevant context
+get_knowledge_gaps_tool: Untested files coverage gaps
+get_review_context_tool: Token-optimized relevant context
 get_architecture_overview_tool: Module dependency diagram
-get_affected_flows_tool:       Affected user journeys
-detect_changes_tool:           Risk-scored impact analysis
-query_graph_tool:              Symbol lookup (callers/callees/tests)
-traverse_graph_tool:           BFS/DFS path exploration
-semantic_search_nodes_tool:    Search by semantic meaning
+get_affected_flows_tool: Affected user journeys
+detect_changes_tool: Risk-scored impact analysis
+query_graph_tool: Symbol lookup (callers/callees/tests)
+traverse_graph_tool: BFS/DFS path exploration
+semantic_search_nodes_tool: Search by semantic meaning
 ```
 
 All tools powered by `code-review-graph` — see its documentation for API details.
