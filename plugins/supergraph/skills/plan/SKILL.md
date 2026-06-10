@@ -34,6 +34,15 @@ mcp__code-review-graph__get_affected_flows_tool(files=[targets])
 ```
 Fetch additional context (communities, surprising connections) only if task crosses boundaries.
 
+**3b. Serena symbol analysis (optional — deepens blast radius):**
+For key symbols in target files:
+```
+mcp__serena__find_referencing_symbols(symbol=<key_symbol>)
+mcp__serena__find_implementations(symbol=<interface_or_abstract>)
+```
+Cross-reference with graph blast radius — add any missed callers to task `Blast radius` fields.
+Skip if Serena unavailable.
+
 **4. Discuss approach with user (MANDATORY, use user's language):**
 Before creating tasks, present findings from steps 1-3 to the user:
 - What was found in codebase (naming, conventions, patterns)
