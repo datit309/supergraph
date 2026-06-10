@@ -12,9 +12,9 @@ Announce: "📡 /supergraph:scan — loading project context..."
 
 ## Steps
 
-**1. Detect project type:**
+**1. Detect project type + branch:**
 ```bash
-git branch --show-current
+CURRENT_BRANCH=$(git branch --show-current)
 ```
 Run project detection script if available:
 ```bash
@@ -38,14 +38,31 @@ If script missing, check config files:
 
 If none match → ASK user for commands.
 
-**2. Load graph context (lazy, token-efficient):**
+**2. Check existing `.supergraph-env` (BEFORE any expensive calls):**
+
+| Condition | Action |
+|---|---|
+| `.supergraph-env` missing | Proceed to step 3 (full scan) |
+| `.supergraph-env` exists, `BRANCH` matches `$CURRENT_BRANCH` | Go to step 2b (reuse path) |
+| `.supergraph-env` exists, `BRANCH` differs | Proceed to step 3, log "Branch changed: $OLD_BRANCH → $CURRENT_BRANCH" |
+
+**2b. Reuse path (branch matches) — skip graph calls:**
+Log: "♻️ Reusing scan context from $SCAN_TIMESTAMP (branch: $BRANCH)"
+Re-verify Serena only (never skip — MCP availability changes per session):
+```
+mcp__plugin_serena_serena__initial_instructions()
+```
+If Serena responds → update `SERENA_ACTIVE=true` in file. If not → update `SERENA_ACTIVE=false`.
+Jump to step 5 (report).
+
+**3. Full scan — load graph + Serena context:**
 ```
 mcp__code-review-graph__get_minimal_context_tool()
 mcp__code-review-graph__list_graph_stats_tool()
 ```
-Only these 2 calls are enough for most tasks. Fetch communities, hubs, bridges only when the specific task needs them.
+Only these 2 calls are needed for most tasks. Fetch communities, hubs, bridges only when the specific task needs them.
 
-**2b. Serena context (optional — if Serena MCP available):**
+**3b. Serena context (optional — if Serena MCP available):**
 ```
 mcp__plugin_serena_serena__initial_instructions() # CRITICAL: load Serena Instructions Manual first
 mcp__plugin_serena_serena__activate_project()     # activate_project requires plugin namespace
@@ -54,7 +71,7 @@ mcp__serena__get_symbols_overview()               # fast top-level symbols map
 Note: `activate_project` is only in `mcp__plugin_serena_serena__`; all other Serena tools work with either `mcp__serena__` or `mcp__plugin_serena_serena__`.
 Skip gracefully if Serena unavailable — log "Serena unavailable, skipping symbol overview".
 
-**3. Save to `.supergraph-env`:**
+**4. Write `.supergraph-env`:**
 ```
 PROJECT_TYPE=...
 TEST_CMD=...
@@ -63,18 +80,23 @@ FORMAT_CMD=...
 BUILD_CMD=...
 BRANCH=...
 SERENA_ACTIVE=true|false
+SCAN_TIMESTAMP=YYYY-MM-DDTHH:MM:SS
 ```
+`SERENA_ACTIVE`: set based on step 3b result. `SCAN_TIMESTAMP`: current datetime.
 
-**4. Report completion:**
+**5. Report completion:**
 ```
 ## Graph Context
 - Type: $PROJECT_TYPE | Test: $TEST_CMD | Lint: $LINT_CMD
 - Files: N | Communities: N | Hub nodes: [list]
 - Serena: active | symbols: loaded | skipped
+- Scan: fresh | reused from $SCAN_TIMESTAMP
 ```
 
 ## Rules
-- Run once per session — other skills reuse results
+- Full scan only when `.supergraph-env` is missing or branch changed
+- Reuse existing context when branch matches — skip graph + Serena calls
+- `SERENA_ACTIVE` is NEVER blindly reused — always re-verified each session
+- `SCAN_TIMESTAMP` lets downstream skills know how fresh the context is
 - Never guess commands — ask if detection fails
 - For 1-file trivial changes, skip graph tools after detecting project type
-- Save to `.supergraph-env` for reuse across sessions
