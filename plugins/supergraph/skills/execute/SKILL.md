@@ -107,7 +107,12 @@ Your job:
 3. Do NOT edit files outside Task N
 4. Do NOT refactor unrelated code
 5. Max 3 retries per step → mark stuck
-6. Return: success/fail, files changed, commit hash, risks
+6. Prefer Serena symbol surgery over raw text edits when available:
+   - Use `mcp__serena__replace_symbol_body()` for function body replacements
+   - Use `mcp__serena__rename_symbol()` for cross-file renames
+   - Use `mcp__serena__insert_after_symbol()` / `insert_before_symbol()` for targeted insertions
+   - Fall back to Edit/Write tools if Serena unavailable
+7. Return: success/fail, files changed, commit hash, risks
 
 Stop conditions (ask instead of guessing):
 - File outside scope needed / task unclear / any blocker"
@@ -155,3 +160,4 @@ Announce task completion to user in their language with a clear summary of what 
 - Max 3 retries per step | Self-contained prompt per parallel agent
 - Always verify after parallel | Always review plan before dispatch
 - Never create plan — only execute
+- Prefer Serena symbol tools (`replace_symbol_body`, `rename_symbol`) over text edits when Serena is available
