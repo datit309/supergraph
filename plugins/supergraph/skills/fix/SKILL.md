@@ -35,6 +35,16 @@ git diff --name-only && git diff --cached --name-only
 Graph: `get_minimal_context_tool()`, `get_impact_radius_tool(files=[changed], depth=3)`, `query_graph(query_type="tests", target=each_file)`.
 No changed files and no in-progress/stuck tasks → STOP: nothing to fix.
 
+### 3b. Serena pre-loop diagnostics (optional)
+
+Before starting the fix loop, triage IDE-level errors with Serena:
+```
+for each changed_file:
+    mcp__serena__get_diagnostics_for_file(file=changed_file)
+```
+Fix any type errors found before entering the loop — reduces iterations by catching obvious errors early.
+Skip if Serena unavailable.
+
 ### 4. Auto-Fix Loop (max 3 iterations)
 
 At iteration start: "🔧 Fix iteration N/3 — running tests..."
