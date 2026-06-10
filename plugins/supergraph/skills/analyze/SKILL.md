@@ -8,6 +8,8 @@ mcp: code-review-graph
 
 Analyze first, implement never. No code until approach is approved.
 
+Announce: "🔍 /supergraph:analyze — framing problem, checking graph risk..."
+
 ## When
 
 - Ambiguous requirements
@@ -26,7 +28,10 @@ Skip for: typo fixes, config changes, clear mechanical edits.
 - Open questions
 
 **2. Check graph risk:**
-Reuse graph context from `/supergraph:scan`. Only call `get_impact_radius_tool(files=[likely_targets], depth=2)` if targets are identified.
+Reuse graph context from `/supergraph:scan`. Only call if targets are identified:
+```
+mcp__code-review-graph__get_impact_radius_tool(files=[likely_targets], depth=2)
+```
 If files involve hub/bridge nodes → flag risk.
 
 **2b. Serena dependency check (optional):**

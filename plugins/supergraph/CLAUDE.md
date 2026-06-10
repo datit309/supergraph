@@ -97,7 +97,7 @@ All checks pass before merge.
 8. ALWAYS detect language and use correct commands
 9. ALWAYS read the relevant skill file before executing each phase
 10. ALWAYS save plan to file for long-running/team work
-11. USE Serena MCP tools for symbol surgery — prefer `replace_symbol_body` and `rename_symbol` over raw text edits when Serena is available
+11. USE Serena MCP tools when available — `get_diagnostics_for_file` for type errors, `find_referencing_symbols`/`find_implementations` for impact analysis, `replace_symbol_body`/`rename_symbol` for targeted edits (prefer over raw text edits)
 
 ---
 
@@ -137,8 +137,10 @@ All checks pass before merge.
 | `surprise_score`         | Unexpected deps           |
 | `find_tests_for`         | Tests for file            |
 | `find_untested_files`    | Coverage gaps             |
-| `serena.find_referencing_symbols` | Find all callers/usages of a symbol |
-| `serena.get_diagnostics_for_file` | IDE-level type errors for a file     |
-| `serena.rename_symbol`            | Safe codebase-wide symbol rename     |
-| `serena.replace_symbol_body`      | Targeted function body replacement   |
-| `serena.get_symbols_overview`     | Project structure map                |
+| **Serena tools** (via `mcp__serena__*`) | |
+| `serena.find_referencing_symbols` | Find all callers/usages of a symbol       |
+| `serena.find_implementations`     | All implementations of interface/abstract |
+| `serena.get_diagnostics_for_file` | IDE-level type errors for a file          |
+| `serena.rename_symbol`            | Safe codebase-wide symbol rename          |
+| `serena.replace_symbol_body`      | Targeted function body replacement        |
+| `serena.get_symbols_overview`     | Project structure map                     |

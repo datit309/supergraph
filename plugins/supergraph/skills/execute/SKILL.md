@@ -79,9 +79,14 @@ Your job:
 2. Execute tasks IN ORDER (respect dependencies)
 3. Per task: RED → GREEN → REFACTOR → Lint → Format
 4. Commit once per task AFTER all tests pass (use Checkpoint files/message from plan)
-5. Max 3 retries per step → mark stuck if blocked
-6. Final verification: tests, lint, build
-7. Report: tasks done/stuck, files changed, risks
+5. Prefer Serena symbol surgery over raw text edits when available:
+   - Use `mcp__serena__replace_symbol_body()` for function body replacements
+   - Use `mcp__serena__rename_symbol()` for cross-file renames
+   - Use `mcp__serena__insert_after_symbol()` / `insert_before_symbol()` for targeted insertions
+   - Fall back to Edit/Write tools if Serena unavailable
+6. Max 3 retries per step → mark stuck if blocked
+7. Final verification: tests, lint, build
+8. Report: tasks done/stuck, files changed, risks
 
 Stop conditions (ask instead of guessing):
 - Plan instruction unclear / test command missing / dependency not met / placeholder found / any blocker"

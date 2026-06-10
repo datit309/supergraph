@@ -47,9 +47,11 @@ Only these 2 calls are enough for most tasks. Fetch communities, hubs, bridges o
 
 **2b. Serena context (optional — if Serena MCP available):**
 ```
-mcp__plugin_serena_serena__activate_project()    # register project with Serena
-mcp__plugin_serena_serena__get_symbols_overview() # fast top-level symbols map
+mcp__plugin_serena_serena__initial_instructions() # CRITICAL: load Serena Instructions Manual first
+mcp__plugin_serena_serena__activate_project()     # activate_project requires plugin namespace
+mcp__serena__get_symbols_overview()               # fast top-level symbols map
 ```
+Note: `activate_project` is only in `mcp__plugin_serena_serena__`; all other Serena tools work with either `mcp__serena__` or `mcp__plugin_serena_serena__`.
 Skip gracefully if Serena unavailable — log "Serena unavailable, skipping symbol overview".
 
 **3. Save to `.supergraph-env`:**
