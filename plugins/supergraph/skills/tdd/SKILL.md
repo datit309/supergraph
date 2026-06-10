@@ -53,6 +53,8 @@ Record evidence:
 - RED: `[command]` → FAIL ([expected missing behavior])
 ```
 
+**Serena diagnostics (optional):** `mcp__serena__get_diagnostics_for_file(file=<test_file>)` — confirm no type errors mask the real missing behavior. Skip if Serena unavailable.
+
 Invalid RED → fix test setup, don't write production code yet.
 
 ### 3. GREEN — Minimal Implementation
@@ -69,6 +71,8 @@ Run focused test → broader suite:
 - GREEN: `[command]` → PASS
 - Suite: PASS
 ```
+
+**Serena diagnostics (optional):** `mcp__serena__get_diagnostics_for_file(file=<source_file>)` — confirm no new type errors introduced by implementation. Skip if Serena unavailable.
 
 Failing test → fix code, not test. Other tests fail → fix now.
 
