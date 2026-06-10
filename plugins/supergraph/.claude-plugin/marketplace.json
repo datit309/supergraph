@@ -1,0 +1,114 @@
+{
+  "name": "supergraph",
+  "version": "2.1.0",
+  "displayName": "Supergraph — Graph-Driven AI Workflows",
+  "tagline": "Full dev-cycle AI workflows powered by graph analysis and Serena LSP.",
+  "description": "Supergraph enforces a complete, evidence-based coding workflow: scan → plan → TDD → fix → integration → verify → review. Every step is grounded in codebase graph analysis (blast radius, hub nodes, community boundaries) and optionally enhanced by Serena MCP for LSP-level intelligence (type diagnostics, symbol navigation, safe rename/replace).\n\nSkills are optimized for token efficiency — reference material is separated from executable steps so each invocation loads only what's needed.\n\nIncludes specialized skills for Flutter/Dart code review, database migrations, frontend design, and webapp testing with Playwright.",
+  "author": {
+    "name": "datit309",
+    "email": "trantandat0919@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/datit309/supergraph",
+  "repository": "https://github.com/datit309/supergraph",
+  "categories": [
+    "workflow",
+    "code-review",
+    "testing",
+    "developer-tools"
+  ],
+  "keywords": [
+    "code-review-graph",
+    "supergraph",
+    "serena",
+    "tdd",
+    "blast-radius",
+    "code-review",
+    "workflow",
+    "nodejs",
+    "flutter",
+    "php",
+    "python",
+    "go",
+    "rust"
+  ],
+  "skills": [
+    {
+      "name": "scan",
+      "displayName": "Scan",
+      "description": "Load project context once per session. Detects project type, runs graph analysis, activates Serena. Reuses cached context when branch unchanged."
+    },
+    {
+      "name": "analyze",
+      "displayName": "Analyze",
+      "description": "Assess blast radius and impact before touching hub/bridge nodes. Run when scope is ambiguous or changes are risky."
+    },
+    {
+      "name": "plan",
+      "displayName": "Plan",
+      "description": "Create a machine-readable task plan with TDD steps, risk assessment, and environment context. Saved to docs/supergraph/plans/ for team resume."
+    },
+    {
+      "name": "tdd",
+      "displayName": "TDD",
+      "description": "Strict RED → GREEN → REFACTOR cycle. No production code without a failing test first."
+    },
+    {
+      "name": "execute",
+      "displayName": "Execute",
+      "description": "Dispatch plan tasks via parallel or sequential sub-agents. One commit per task after all tests pass."
+    },
+    {
+      "name": "fix",
+      "displayName": "Fix",
+      "description": "Systematic auto-fix loop: tests → lint → graph review. Max 3 iterations, then escalate."
+    },
+    {
+      "name": "integration",
+      "displayName": "Integration",
+      "description": "Run integration and e2e tests after unit tests pass. Detects Jest, Vitest, pytest, Cypress, Playwright, docker-compose configs automatically."
+    },
+    {
+      "name": "verify",
+      "displayName": "Verify",
+      "description": "Evidence gate before claiming done. Maps every completion claim to a fresh proof (test output, lint pass, build success)."
+    },
+    {
+      "name": "review",
+      "displayName": "Review",
+      "description": "Independent code review using a dedicated reviewer agent + graph analysis. Returns APPROVED / NEEDS_CHANGES / BLOCKED verdict."
+    },
+    {
+      "name": "serena",
+      "displayName": "Serena",
+      "description": "Foundation skill for Serena MCP. Setup guide, tool reference, memory workflow. Invoked automatically by other skills when Serena is available."
+    },
+    {
+      "name": "flutter-dart-code-review",
+      "displayName": "Flutter/Dart Code Review",
+      "description": "Library-agnostic Flutter/Dart review: graph hotspot analysis + 15-section checklist covering widgets, state management (BLoC, Riverpod, GetX, MobX, Signals), performance, accessibility, security, and static analysis."
+    },
+    {
+      "name": "database-migrations",
+      "displayName": "Database Migrations",
+      "description": "Safe, reversible schema changes for PostgreSQL, Prisma, Drizzle, Kysely, Django, and golang-migrate. Blast radius check before every migration. Zero-downtime expand-contract patterns."
+    },
+    {
+      "name": "frontend-design",
+      "displayName": "Frontend Design",
+      "description": "Production-grade frontend with bold, intentional aesthetics. Avoids generic AI-generated styles. Covers typography, color, motion, spatial composition."
+    },
+    {
+      "name": "webapp-testing",
+      "displayName": "Webapp Testing",
+      "description": "Test local web apps with Playwright (MCP or script). Recon-first approach: wait for networkidle, discover selectors from rendered state, verify all affected flows."
+    }
+  ],
+  "minClaudeVersion": "1.0.0",
+  "screenshots": [],
+  "changelog": {
+    "2.1.0": "Integrated Serena MCP across all skills (diagnostics, symbol navigation, safe rename/replace). Added /supergraph:serena foundation skill. Optimized skills for token efficiency — flutter-dart-code-review and database-migrations reduced by ~85% with reference content in companion files. Scan now reuses .supergraph-env when branch unchanged. Added SCAN_TIMESTAMP and always re-verifies SERENA_ACTIVE per session.",
+    "2.0.2": "Added Flutter/Dart code review checklist, frontend design guidelines, and webapp testing toolkit.",
+    "2.0.0": "Initial public release with graph-driven workflow skills."
+  }
+}
