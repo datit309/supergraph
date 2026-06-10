@@ -18,6 +18,9 @@ Before the manual checklist, use graph tools to surface hotspots:
 4. **`get_surprising_connections_tool()`** — Flag unexpected coupling between layers (widgets importing data-layer internals, section 3)
 5. **`get_knowledge_gaps_tool()`** — Find untested files (section 6), cross-reference with hub nodes to prioritize coverage gaps
 6. **`query_graph(query_type="callers", target=<deprecated_api>)`** — Before removing deprecated APIs, find all callers to prevent missed updates
+7. **`mcp__serena__get_diagnostics_for_file()`** — Run Dart analyzer diagnostics on each file under review; surfaces type errors, null safety violations, and missing imports that manual inspection misses
+8. **`mcp__serena__find_referencing_symbols()`** — Find all usages of changed public APIs across the codebase; critical before removing or renaming public symbols to verify every call site is updated
+9. **`mcp__serena__find_implementations()`** — Find all concrete implementations of abstract classes and interfaces; ensures subclasses comply after interface changes
 
 Use the checklist below to act on graph findings.
 
