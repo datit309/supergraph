@@ -45,6 +45,13 @@ mcp__code-review-graph__list_graph_stats_tool()
 ```
 Only these 2 calls are enough for most tasks. Fetch communities, hubs, bridges only when the specific task needs them.
 
+**2b. Serena context (optional — if Serena MCP available):**
+```
+mcp__plugin_serena_serena__activate_project()    # register project with Serena
+mcp__plugin_serena_serena__get_symbols_overview() # fast top-level symbols map
+```
+Skip gracefully if Serena unavailable — log "Serena unavailable, skipping symbol overview".
+
 **3. Save to `.supergraph-env`:**
 ```
 PROJECT_TYPE=...
@@ -60,6 +67,7 @@ BRANCH=...
 ## Graph Context
 - Type: $PROJECT_TYPE | Test: $TEST_CMD | Lint: $LINT_CMD
 - Files: N | Communities: N | Hub nodes: [list]
+- Serena: active | symbols: N | skipped
 ```
 
 ## Rules
