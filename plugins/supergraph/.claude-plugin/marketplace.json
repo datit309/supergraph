@@ -1,9 +1,9 @@
 {
   "name": "supergraph",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "displayName": "Supergraph — Graph-Driven AI Workflows",
-  "tagline": "Full dev-cycle AI workflows powered by graph analysis and Serena LSP.",
-  "description": "Supergraph enforces a complete, evidence-based coding workflow: scan → plan → TDD → fix → integration → verify → review. Every step is grounded in codebase graph analysis (blast radius, hub nodes, community boundaries) and optionally enhanced by Serena MCP for LSP-level intelligence (type diagnostics, symbol navigation, safe rename/replace).\n\nSkills are optimized for token efficiency — reference material is separated from executable steps so each invocation loads only what's needed.\n\nIncludes specialized skills for Flutter/Dart code review, database migrations, frontend design, and webapp testing with Playwright.",
+  "tagline": "Stop Claude from guessing. Give it a real map of your codebase.",
+  "description": "Most AI coding tools work blind — they read a few files, guess what else might break, and hope for the best. Supergraph fixes that.\n\nBefore writing a single line, Supergraph builds an AST dependency graph of your entire codebase and uses it to answer questions that matter: Which files does this change actually affect? Is this a hub node connected to 20 other modules? Will this rename orphan a caller three layers deep?\n\nEvery step of the coding workflow — plan, implement, fix, review — is grounded in that graph. Claude stops guessing and starts reasoning from evidence.\n\n---\n\nHOW IT WORKS\n\nSupergraph is a chain of 22 skills that enforce a complete, evidence-based dev cycle:\n\n  scan → analyze → plan → tdd → execute → fix → integration → verify → review\n\nEach skill has a single job and hands off to the next. The chain cannot be shortcut: no production code without a failing test, no merge without a graph-aware review, no \"done\" claim without fresh proof.\n\nSmart hooks fire automatically in the background — detecting test failures and suggesting diagnose, warning before context compacts, blocking writes when no approved plan exists, auto-updating the graph after every file change.\n\n---\n\nWHAT MAKES IT DIFFERENT\n\n• Blast radius before every change — know exactly which files break before you touch anything\n• Hub node protection — Claude stops and asks before modifying highly-connected files\n• Serena LSP integration — find every caller, safe codebase-wide rename, type diagnostics from the language server\n• Structured debugging — 6-phase diagnose loop with deterministic hypothesis/instrument/fix cycle\n• Session handoff — compress full session state in seconds; resume in a new window with zero context loss\n• Token-compression mode — ~75% output reduction for long sessions (caveman mode)\n• CONTEXT.md vocabulary — shared domain glossary that grows across sessions, reducing inconsistency in plans and reviews\n\n---\n\nSUPPORTED STACKS\n\nAuto-detected from config files: Node.js/TypeScript, Flutter/Dart, PHP, Python, Go, Rust.\nSpecialized skills for Flutter/Dart code review, database migrations (PostgreSQL, Prisma, Drizzle, Django, golang-migrate), frontend UI design, and Playwright web testing.\n\n---\n\nSKILLS INCLUDED (22 total)\n\nCore workflow: scan, analyze, plan, execute, tdd, fix, integration, verify, review\nDebugging: diagnose, zoom-out, architecture\nRequirements: prd, triage, prototype\nProductivity: handoff, caveman\nDomain: serena, database-migrations, flutter-dart-code-review, frontend-design, webapp-testing",
   "author": {
     "name": "datit309",
     "email": "trantandat0919@gmail.com"
@@ -35,80 +35,121 @@
   "skills": [
     {
       "name": "scan",
-      "displayName": "Scan",
-      "description": "Load project context once per session. Detects project type, runs graph analysis, activates Serena. Reuses cached context when branch unchanged."
+      "displayName": "Scan — Session Start",
+      "description": "Run this first, every session. Builds the codebase graph, detects your project language and test/lint tools, activates Serena if available, and saves environment state to .supergraph-env. Subsequent skills read from this context instead of re-scanning. Required by all other skills."
     },
     {
       "name": "analyze",
-      "displayName": "Analyze",
-      "description": "Assess blast radius and impact before touching hub/bridge nodes. Run when scope is ambiguous or changes are risky."
+      "displayName": "Analyze — Risk & Approach",
+      "description": "Use before planning when the task is ambiguous or touches hub/bridge nodes. Runs a structured grill (up to 3 focused questions with recommended answers), computes blast radius, identifies risky nodes, and selects the safest approach. Reads and updates CONTEXT.md with new domain terms."
     },
     {
       "name": "plan",
-      "displayName": "Plan",
-      "description": "Create a machine-readable task plan with TDD steps, risk assessment, and environment context. Saved to docs/supergraph/plans/ for team resume."
+      "displayName": "Plan — Graph-Informed Task Breakdown",
+      "description": "Turns a requirement into a machine-readable plan with TDD steps, blast radius per task, and risk flags. Saved to docs/supergraph/plans/ so work can be resumed across sessions or picked up by a teammate. Requires user approval before execution starts."
     },
     {
       "name": "tdd",
-      "displayName": "TDD",
-      "description": "Strict RED → GREEN → REFACTOR cycle. No production code without a failing test first."
+      "displayName": "TDD — Red → Green → Refactor",
+      "description": "Enforces strict test-driven development per task: write a failing test (RED), write the minimum code to pass it (GREEN), clean up without breaking it (REFACTOR), then commit. Production code without a verified failing test first is blocked."
     },
     {
       "name": "execute",
-      "displayName": "Execute",
-      "description": "Dispatch plan tasks via parallel or sequential sub-agents. One commit per task after all tests pass."
+      "displayName": "Execute — Dispatch Saved Plan",
+      "description": "Takes a saved plan file and runs all tasks — independent tasks in parallel, dependent tasks in sequence. Each task goes through the full TDD cycle and gets its own commit. Stops and reports if any task gets stuck after 3 retries."
     },
     {
       "name": "fix",
-      "displayName": "Fix",
-      "description": "Systematic auto-fix loop: tests → lint → graph review. Max 3 iterations, then escalate."
+      "displayName": "Fix — Auto-Fix Loop",
+      "description": "Runs after all coding is done. Executes tests, lint, and format in a loop — if anything fails, fixes the issue and retries. Also checks the graph for new circular dependencies or surprise connections introduced by the change. Stops after 3 failed iterations and asks the user."
     },
     {
       "name": "integration",
-      "displayName": "Integration",
-      "description": "Run integration and e2e tests after unit tests pass. Detects Jest, Vitest, pytest, Cypress, Playwright, docker-compose configs automatically."
+      "displayName": "Integration — E2E Tests",
+      "description": "Runs integration and end-to-end tests after unit tests pass. Auto-detects test runners (Jest, Vitest, pytest, Cypress, Playwright) and docker-compose environments. Skipped automatically when no integration test config is found."
     },
     {
       "name": "verify",
-      "displayName": "Verify",
-      "description": "Evidence gate before claiming done. Maps every completion claim to a fresh proof (test output, lint pass, build success)."
+      "displayName": "Verify — Evidence Gate",
+      "description": "Blocks any completion claim unless backed by fresh evidence: test output, lint pass, build log. Claude cannot say 'done', 'fixed', or 'ready' without running this first. Prevents false-positive sign-offs that pass review but fail in CI."
     },
     {
       "name": "review",
-      "displayName": "Review",
-      "description": "Independent code review using a dedicated reviewer agent + graph analysis. Returns APPROVED / NEEDS_CHANGES / BLOCKED verdict."
+      "displayName": "Review — Pre-Merge Code Review",
+      "description": "Spawns an independent reviewer agent that cannot see the session history — only the diff and the graph. Checks for correctness, graph regressions (new hub node edits, circular deps, surprise connections), and security patterns. Returns a clear verdict: APPROVED, NEEDS_CHANGES, or BLOCKED."
+    },
+    {
+      "name": "diagnose",
+      "displayName": "Diagnose — Structured Debugging",
+      "description": "Use when a bug exists but the cause is unknown. Runs a 6-phase loop: build a feedback loop to reproduce reliably → generate 3–5 ranked falsifiable hypotheses → instrument one variable at a time → apply fix → write regression test → post-mortem. Avoids the shotgun approach of changing multiple things at once."
+    },
+    {
+      "name": "zoom-out",
+      "displayName": "Zoom Out — Module Map",
+      "description": "Generates a one-shot domain-vocabulary module map of the codebase. Uses graph community detection to identify clusters, then labels each with plain-English domain terms from CONTEXT.md. Useful when disoriented after a deep-dive or when onboarding to an unfamiliar repo."
+    },
+    {
+      "name": "architecture",
+      "displayName": "Architecture — Review Report",
+      "description": "Produces a self-contained HTML report with Mermaid before/after diagrams, recommendation strength badges, and a structured grill on architectural decisions. Designed for pre-refactor planning, team onboarding, and architecture review meetings."
+    },
+    {
+      "name": "prd",
+      "displayName": "PRD — Requirements to Spec",
+      "description": "Converts an informal conversation into a structured Product Requirements Document: problem statement, proposed solution, user stories, acceptance criteria, and explicit out-of-scope items. Optionally posts to GitHub Issues with a 'ready-for-agent' label so it feeds directly into the triage pipeline."
+    },
+    {
+      "name": "triage",
+      "displayName": "Triage — Backlog Processing",
+      "description": "Processes a list of issues through a formal state machine: needs-triage → needs-info → ready-for-agent → ready-for-human → wontfix. Each classification includes reasoning. Issues marked 'ready-for-agent' are formatted as self-contained inputs for the supergraph pipeline."
+    },
+    {
+      "name": "prototype",
+      "displayName": "Prototype — Validate Before Planning",
+      "description": "Generates throwaway code to validate an approach before committing to a full plan. Two branches: Logic (terminal state machine) for backend approaches, UI (multiple designs on one route) for frontend options. No tests, no persistence — explicitly deleted after a winner is chosen."
+    },
+    {
+      "name": "handoff",
+      "displayName": "Handoff — Session Compaction",
+      "description": "Compresses the full session state into a compact file: active plan tasks with status, uncommitted changes, key decisions made, and exact next steps. Designed for when the context window is running out or when switching to a new session. The next session reads the handoff file as its first step."
+    },
+    {
+      "name": "caveman",
+      "displayName": "Caveman — Token Compression",
+      "description": "Activates ~75% output compression across all skills. Strips explanatory prose, redundant formatting, and filler phrases — keeps code, numbers, file paths, and error messages exact. Auto-suspends for safety warnings. Trigger with the word 'caveman' or set SUPERGRAPH_CAVEMAN=true in .supergraph-env to persist across sessions."
     },
     {
       "name": "serena",
-      "displayName": "Serena",
-      "description": "Foundation skill for Serena MCP. Setup guide, tool reference, memory workflow. Invoked automatically by other skills when Serena is available."
+      "displayName": "Serena — LSP Intelligence",
+      "description": "Foundation skill for Serena MCP integration. Provides setup instructions, tool reference, and the memory workflow for storing LSP findings. Other skills call Serena tools automatically when available: find_referencing_symbols before any rename, get_diagnostics_for_file during fix, replace_symbol_body for targeted edits."
     },
     {
       "name": "flutter-dart-code-review",
       "displayName": "Flutter/Dart Code Review",
-      "description": "Library-agnostic Flutter/Dart review: graph hotspot analysis + 15-section checklist covering widgets, state management (BLoC, Riverpod, GetX, MobX, Signals), performance, accessibility, security, and static analysis."
+      "description": "Library-agnostic review checklist for Flutter/Dart codebases. Covers 15 sections: widget lifecycle, build method hygiene, state management patterns (BLoC, Riverpod, Provider, GetX, MobX, Signals), Dart idioms, performance (unnecessary rebuilds, const usage), accessibility, security, and static analysis integration."
     },
     {
       "name": "database-migrations",
       "displayName": "Database Migrations",
-      "description": "Safe, reversible schema changes for PostgreSQL, Prisma, Drizzle, Kysely, Django, and golang-migrate. Blast radius check before every migration. Zero-downtime expand-contract patterns."
+      "description": "Guides safe, reversible schema changes with graph-informed blast radius checks before every migration. Covers expand-contract for zero-downtime deploys, backfill strategies for large tables, and rollback scripts at each step. Supports PostgreSQL, Prisma, Drizzle, Kysely, Django ORM, TypeORM, and golang-migrate."
     },
     {
       "name": "frontend-design",
       "displayName": "Frontend Design",
-      "description": "Production-grade frontend with bold, intentional aesthetics. Avoids generic AI-generated styles. Covers typography, color, motion, spatial composition."
+      "description": "Generates production-grade frontend code with intentional, distinctive aesthetics — not the generic AI look. Focuses on typographic hierarchy, deliberate color systems, spatial composition, and motion that communicates meaning. For React, Next.js, and plain HTML/CSS."
     },
     {
       "name": "webapp-testing",
       "displayName": "Webapp Testing",
-      "description": "Test local web apps with Playwright (MCP or script). Recon-first approach: wait for networkidle, discover selectors from rendered state, verify all affected flows."
+      "description": "Tests running web applications using Playwright (via MCP or script). Recon-first: waits for networkidle before interacting, discovers real selectors from rendered state rather than guessing from source, then verifies all flows affected by the current change."
     }
   ],
   "minClaudeVersion": "1.0.0",
   "screenshots": [],
   "changelog": {
-    "2.1.0": "Integrated Serena MCP across all skills (diagnostics, symbol navigation, safe rename/replace). Added /supergraph:serena foundation skill. Optimized skills for token efficiency — flutter-dart-code-review and database-migrations reduced by ~85% with reference content in companion files. Scan now reuses .supergraph-env when branch unchanged. Added SCAN_TIMESTAMP and always re-verifies SERENA_ACTIVE per session.",
-    "2.0.2": "Added Flutter/Dart code review checklist, frontend design guidelines, and webapp testing toolkit.",
-    "2.0.0": "Initial public release with graph-driven workflow skills."
+    "2.2.0": "Added 8 new skills: diagnose (6-phase structured debugging), handoff (session compaction), triage (issue state machine), caveman (~75% token compression), prd (conversation → PRD → GitHub Issue), architecture (HTML + Mermaid report), prototype (throwaway validation), zoom-out (domain module map). Added CONTEXT.md shared vocabulary system — analyze, plan, and review read/write it to reduce cross-session inconsistency. Added 4 smart automation hooks: SessionStart (loads vocab, reminds about handoff, activates caveman flag), PostToolUse Bash (detects test failures → suggests diagnose), PreCompact (urgent handoff reminder with plan status), UserPromptSubmit (detects caveman/triage trigger phrases).",
+    "2.1.0": "Integrated Serena MCP across all skills — diagnostics, symbol navigation, safe rename/replace. Added /supergraph:serena foundation skill. Optimized skills for token efficiency: flutter-dart-code-review and database-migrations reduced by ~85% with reference content in separate companion files. Scan now reuses .supergraph-env when branch unchanged.",
+    "2.0.2": "Added Flutter/Dart code review checklist (15 sections), frontend design guidelines, and webapp testing toolkit with Playwright.",
+    "2.0.0": "Initial public release. 9 core workflow skills, 4 specialized agents, MCP integration with code-review-graph, auto language detection for Node.js, Flutter, and PHP."
   }
 }

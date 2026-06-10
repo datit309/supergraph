@@ -1,7 +1,7 @@
 {
   "name": "supergraph",
   "version": "2.2.0",
-  "description": "Graph-driven AI coding workflows with Serena MCP integration. Full dev cycle: scan → analyze → plan → TDD → fix → verify → review. Structured debugging (diagnose), architecture review with HTML reports, PRD generation, issue triage, throwaway prototyping, handoff for context compaction, caveman token-compression mode, and CONTEXT.md cross-skill vocabulary. Supports Node.js, Flutter, PHP, Python, Go, Rust.",
+  "description": "Supergraph enforces a complete, evidence-based coding pipeline — scan → plan → TDD → fix → verify → review — grounded in real codebase analysis at every step. It combines AST dependency graphs, LSP-level code intelligence, and a structured skill chain so Claude never guesses about impact before making a change.",
   "author": {
     "name": "datit309",
     "email": "trantandat0919@gmail.com"
