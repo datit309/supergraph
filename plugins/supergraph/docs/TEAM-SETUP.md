@@ -25,7 +25,7 @@ Claude Code will auto-load the plugin from `.claude-plugin/`.
 | `.claude-plugin/` | ✅ Yes | Plugin manifest + skills |
 | `.mcp.json` | ✅ Yes | MCP server config |
 | `.code-review-graph/` | ✅ Yes | Graph data (shared across team) |
-| `docs/superpowers/plans/` | ✅ Yes | Plans are contracts — team can see/track |
+| `docs/supergraph/plans/` | ✅ Yes | Plans are contracts — team can see/track |
 | `CLAUDE.md` | ✅ Yes | Project instructions |
 | `.claude/settings.local.json` | ❌ No | Personal overrides |
 
@@ -59,9 +59,9 @@ main          ← stable, always deployable
 
 ### Plan Files
 
-Plans go in `docs/superpowers/plans/`. Naming:
+Plans go in `docs/supergraph/plans/`. Naming:
 ```
-docs/superpowers/plans/2026-05-11-user-auth.md
+docs/supergraph/plans/2026-05-11-user-auth.md
 ```
 
 Format: `YYYY-MM-DD-<feature-slug>.md`

@@ -49,7 +49,7 @@ NEVER start work without graph context.
 
 Read `/supergraph:plan` and execute it.
 blast_radius → identify affected files. Tasks 2-5 min each. User approval.
-Save plan to `docs/superpowers/plans/` for resume capability.
+Save plan to `docs/supergraph/plans/` for resume capability.
 
 ### Step 2: Execute TDD
 

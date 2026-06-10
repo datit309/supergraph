@@ -113,7 +113,7 @@ Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by e
 - [ ] NO indentation under field lines — `Status: pending` starts at column 0, not spaces
 - [ ] No extra blank lines between fields within a task section
 
-**7. Save plan:** `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`
+**7. Save plan:** `docs/supergraph/plans/YYYY-MM-DD-<slug>.md`
 
 **8. Analysis Review Gate (if /supergraph:analyze was used):**
 If analyze step was completed — verify plan aligns with documented analysis decisions:
@@ -160,7 +160,7 @@ If rejected → ask for direction, return to design.
 **12. Report:**
 ```
 ✅ /supergraph:plan complete
-- Plan: docs/superpowers/plans/YYYY-MM-DD-<slug>.md
+- Plan: docs/supergraph/plans/YYYY-MM-DD-<slug>.md
 - Tasks: N | Blast radius: M files | Review: Approved
 - User: yes | modify | rejected
 - Next: /supergraph:execute plan <slug> (multi-task) or /supergraph:tdd (single-task)

@@ -20,7 +20,7 @@ Usage: `/supergraph:execute` | `task N` | `tasks N,M` | `from task N` | `plan au
 - Commands from `.supergraph-env` (if present) or plan `## Environment Context`
 
 ### 2. Select Plan
-Count plan files in `docs/superpowers/plans/*.md`:
+Count plan files in `docs/supergraph/plans/*.md`:
 
 | Count | Action |
 |---|---|

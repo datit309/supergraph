@@ -30,6 +30,8 @@
       "mcp__code-review-graph__get_wiki_page_tool",
       "mcp__code-review-graph__list_repos_tool",
       "mcp__code-review-graph__cross_repo_search_tool",
+      "mcp__code-review-graph__*",
+      "mcp__serena__*",
       "Bash(npm test:*)",
       "Bash(npm run test:*)",
       "Bash(npx jest:*)",

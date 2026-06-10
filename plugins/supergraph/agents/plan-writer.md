@@ -81,7 +81,7 @@ Each 2-5 min. Exact files, exact code, exact commands. Use format from plan skil
 
 ### 6. Save Plan
 
-After approval → `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`
+After approval → `docs/supergraph/plans/YYYY-MM-DD-<slug>.md`
 
 ### 7. Plan Review
 
