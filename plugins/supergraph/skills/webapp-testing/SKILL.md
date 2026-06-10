@@ -4,109 +4,143 @@ description: Toolkit for interacting with and testing local web applications usi
 mcp: code-review-graph
 ---
 
-# Web Application Testing
+# /supergraph:webapp-testing
 
-To test local web applications, write native Python Playwright scripts.
+Test and verify local web application UI behavior using Playwright.
 
-**Helper Scripts Available**:
+Announce: "🌐 /supergraph:webapp-testing — testing web application..."
 
-- `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)
+## When to Use
 
-## MCP-Integrated Testing
+- Verifying a frontend change works correctly in the browser
+- Debugging UI behavior or unexpected rendering
+- Capturing screenshots for visual verification
+- Checking browser console logs for errors
+- After `/supergraph:frontend-design` to confirm feature works end-to-end
 
-Before writing tests, use graph context to understand what to test and what changed:
+## Steps
 
-1. **`get_affected_flows_tool(files=[changed_frontend_pages])`** — When a page/component changes, find all user flows (navigation paths, data pipelines) that need testing. Never miss a regression flow.
-2. **`get_impact_radius_tool(files=[changed_fe], depth=2)`** — Visualize which other components, pages, or API routes are affected by a frontend change. Prioritize test coverage by impact radius.
-3. **`query_graph(query_type="dependents", target=<api_route_or_service>)`** — Before writing mock data, find all API consumers to ensure mocks match real usage.
-4. **`get_knowledge_gaps_tool()`** — Find untested frontend files. Prioritize tests for high-impact untested components.
+### 0. Announce
+"🌐 /supergraph:webapp-testing — testing [feature/page]..."
 
-After tests pass, re-run `get_affected_flows_tool()` to confirm all flows are covered.
+### 1. Understand what changed (graph context)
 
-**Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is abslutely necessary. These scripts can be very large and thus pollute your context window. They exist to be called directly as black-box scripts rather than ingested into your context window.
+Before writing tests, use graph context to prioritize coverage:
+```
+mcp__code-review-graph__get_affected_flows_tool(files=[changed_frontend_pages])
+mcp__code-review-graph__get_impact_radius_tool(files=[changed_fe], depth=2)
+mcp__code-review-graph__get_knowledge_gaps_tool()
+```
+- `get_affected_flows_tool` — find all user flows that need testing when a page/component changes
+- `get_impact_radius_tool` — which other pages, components, or API routes are affected
+- `get_knowledge_gaps_tool` — find untested frontend files; prioritize high-impact ones
 
-## Decision Tree: Choosing Your Approach
+**Serena (optional):** For changed component symbols:
+```
+mcp__serena__find_referencing_symbols(symbol=<changed_component>)
+```
+If a Playwright test fails on a renamed component/route, `find_referencing_symbols` surfaces all import sites. Skip if Serena unavailable.
+
+### 2. Choose approach
 
 ```
-User task → Is it static HTML?
-    ├─ Yes → Read HTML file directly to identify selectors
-    │         ├─ Success → Write Playwright script using selectors
-    │         └─ Fails/Incomplete → Treat as dynamic (below)
+Is it static HTML?
+├─ Yes → Read HTML file directly to identify selectors
+│         Then write Playwright script using those selectors
+│
+└─ No (dynamic webapp) → Is server already running?
+    ├─ No → Run: python scripts/with_server.py --help
+    │        Then start server + write Playwright script
     │
-    └─ No (dynamic webapp) → Is the server already running?
-        ├─ No → Run: python scripts/with_server.py --help
-        │        Then use the helper + write simplified Playwright script
-        │
-        └─ Yes → Reconnaissance-then-action:
-            1. Navigate and wait for networkidle
-            2. Take screenshot or inspect DOM
-            3. Identify selectors from rendered state
-            4. Execute actions with discovered selectors
+    └─ Yes → Reconnaissance-then-action:
+        1. Navigate and wait for networkidle
+        2. Screenshot or inspect DOM
+        3. Identify selectors from rendered state
+        4. Execute actions with discovered selectors
 ```
 
-## Example: Using with_server.py
+**MCP Playwright option:** If `mcp__plugin_playwright_playwright__*` tools are available, prefer them over writing Python scripts — no script file needed:
+```
+mcp__plugin_playwright_playwright__browser_navigate(url="http://localhost:3000")
+mcp__plugin_playwright_playwright__browser_snapshot()
+mcp__plugin_playwright_playwright__browser_click(selector="...")
+mcp__plugin_playwright_playwright__browser_take_screenshot()
+mcp__plugin_playwright_playwright__browser_console_messages()
+```
 
-To start a server, run `--help` first, then use the helper:
+### 3. Recon before action (dynamic apps)
+
+```python
+page.wait_for_load_state('networkidle')  # CRITICAL: wait before inspecting
+page.screenshot(path='/tmp/inspect.png', full_page=True)
+content = page.content()
+page.locator('button').all()
+```
+Never inspect DOM before `networkidle` on dynamic apps — selectors may not exist yet.
+
+### 4. Execute test actions
+
+Use discovered selectors from step 3. Write targeted Playwright assertions.
+
+### 5. Verify flows covered
+
+After tests pass, re-run:
+```
+mcp__code-review-graph__get_affected_flows_tool(files=[changed_files])
+```
+All impacted flows tested? Any gaps → add tests.
+
+### 6. Report
+```
+✅ /supergraph:webapp-testing
+- Flows tested: N/M | Console errors: [list/none]
+- Screenshots: [paths] | Selectors verified: [list]
+- Next: /supergraph:verify → /supergraph:review
+```
+
+## Using with_server.py
+
+Helper script `scripts/with_server.py` manages server lifecycle. **Always run `--help` first** — do NOT read the source unless absolutely necessary (large file, pollutes context window).
 
 **Single server:**
-
 ```bash
-python scripts/with_server.py --server "npm run dev" --port 5173 -- python your_automation.py
+python scripts/with_server.py --server "npm run dev" --port 5173 -- python your_test.py
 ```
 
-**Multiple servers (e.g., backend + frontend):**
-
+**Multiple servers:**
 ```bash
 python scripts/with_server.py \
   --server "cd backend && python server.py" --port 3000 \
   --server "cd frontend && npm run dev" --port 5173 \
-  -- python your_automation.py
+  -- python your_test.py
 ```
 
-To create an automation script, include only Playwright logic (servers are managed automatically):
-
+**Automation script template** (server managed externally by with_server.py):
 ```python
 from playwright.sync_api import sync_playwright
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True) # Always launch chromium in headless mode
+    browser = p.chromium.launch(headless=True)
     page = browser.new_page()
-    page.goto('http://localhost:5173') # Server already running and ready
-    page.wait_for_load_state('networkidle') # CRITICAL: Wait for JS to execute
-    # ... your automation logic
+    page.goto('http://localhost:5173')
+    page.wait_for_load_state('networkidle')  # CRITICAL
+    # ... test logic
     browser.close()
 ```
 
-## Reconnaissance-Then-Action Pattern
+## Reference Examples
 
-1. **Inspect rendered DOM**:
+If `examples/` directory exists in project:
+- `examples/element_discovery.py` — discovering buttons, links, inputs
+- `examples/static_html_automation.py` — file:// URLs for local HTML
+- `examples/console_logging.py` — capturing console logs
 
-   ```python
-   page.screenshot(path='/tmp/inspect.png', full_page=True)
-   content = page.content()
-   page.locator('button').all()
-   ```
+## Rules
 
-2. **Identify selectors** from inspection results
-
-3. **Execute actions** using discovered selectors
-
-## Common Pitfall
-
-❌ **Don't** inspect the DOM before waiting for `networkidle` on dynamic apps
-✅ **Do** wait for `page.wait_for_load_state('networkidle')` before inspection
-
-## Best Practices
-
-- **Use bundled scripts as black boxes** - To accomplish a task, consider whether one of the scripts available in `scripts/` can help. These scripts handle common, complex workflows reliably without cluttering the context window. Use `--help` to see usage, then invoke directly.
-- Use `sync_playwright()` for synchronous scripts
-- Always close the browser when done
-- Use descriptive selectors: `text=`, `role=`, CSS selectors, or IDs
-- Add appropriate waits: `page.wait_for_selector()` or `page.wait_for_timeout()`
-
-## Reference Files
-
-- **examples/** - Examples showing common patterns:
-  - `element_discovery.py` - Discovering buttons, links, and inputs on a page
-  - `static_html_automation.py` - Using file:// URLs for local HTML
-  - `console_logging.py` - Capturing console logs during automation
+- ALWAYS wait for `networkidle` before inspecting DOM on dynamic apps
+- NEVER read `scripts/with_server.py` source — use `--help` and invoke as black box
+- Prefer MCP Playwright tools (`mcp__plugin_playwright_playwright__*`) over writing Python scripts when available
+- Identify selectors from rendered state (recon-first), not from guessing
+- Use descriptive selectors: `text=`, `role=`, CSS, or IDs — never positional selectors like `nth-child`
+- Always close browser when done in Python scripts
+- Re-check `get_affected_flows_tool` after tests pass to confirm full coverage

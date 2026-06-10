@@ -3,11 +3,44 @@ name: frontend-design
 description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.
 ---
 
-This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+Create distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic detail and creative choices.
 
-The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
+Announce: "🎨 /supergraph:frontend-design — designing [component/page]..."
 
-## Design Thinking
+## When to Use
+
+- User asks to build a component, page, application, landing page, dashboard, or any web UI
+- Styling or beautifying an existing interface
+- Creating HTML/CSS/JS, React, Vue, or any frontend artifact
+
+## Steps
+
+### 1. Understand context
+Clarify if needed: purpose, target audience, technical constraints (framework, existing design system). Do NOT start coding yet.
+
+### 2. Commit to a bold aesthetic direction
+
+Before coding, decide:
+- **Tone** — pick an extreme: brutally minimal, maximalist, retro-futuristic, organic, luxury, editorial, brutalist, art deco, soft/pastel, industrial, etc.
+- **Differentiation** — what is the one thing someone will remember about this UI?
+- **Constraints** — framework, performance, accessibility requirements
+
+**CRITICAL:** Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work — the key is intentionality.
+
+### 3. Implement
+
+Produce working code (HTML/CSS/JS, React, Vue, etc.) that is:
+- Production-grade and functional
+- Visually striking and memorable
+- Cohesive with a clear aesthetic point-of-view
+- Meticulously refined in every detail
+
+### 4. Handoff
+Deliver the working code. If the user is in a supergraph workflow:
+- Static component → no further steps needed
+- Interactive feature → `/supergraph:webapp-testing` to verify UI behavior
+
+## Design Thinking Reference
 
 Before coding, understand the context and commit to a BOLD aesthetic direction:
 
@@ -42,3 +75,13 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+## Rules
+
+- NEVER use Inter, Roboto, Arial, or system fonts — choose distinctive typefaces
+- NEVER use purple gradients on white as a default color scheme
+- NEVER produce cookie-cutter layouts — every output must have a unique aesthetic point-of-view
+- ALWAYS commit to one clear aesthetic direction before coding
+- ALWAYS deliver working code, not mockups or pseudocode
+- Match implementation complexity to vision: maximalist designs need elaborate code, minimalist designs need precision and restraint
+- No two designs should converge on the same choices (fonts, colors, layout) across generations

@@ -4,9 +4,11 @@ description: Database migration best practices for schema changes, data migratio
 mcp: code-review-graph
 ---
 
-# Database Migration Patterns
+# /supergraph:database-migrations
 
 Safe, reversible database schema changes for production systems.
+
+Announce: "🗄️ /supergraph:database-migrations — checking blast radius and migration safety..."
 
 ## When to Activate
 
@@ -16,13 +18,50 @@ Safe, reversible database schema changes for production systems.
 - Planning zero-downtime schema changes
 - Setting up migration tooling for a new project
 
-## MCP-Integrated Workflow
+## Steps
+
+### 1. Check blast radius (MANDATORY before writing any migration)
+```
+mcp__code-review-graph__get_impact_radius_tool(files=[schema_files, model_files], depth=2)
+mcp__code-review-graph__query_graph_tool(query_type="dependents", target=<schema_file>)
+```
+Schema changes to hub tables (e.g. `users`, `orders`) ripple through repositories, queries, services. If blast radius > 20 files → STOP and discuss with user.
+
+**Serena symbol-level impact (optional):**
+```
+mcp__serena__find_referencing_symbols(symbol=<column_or_model_name>)
+```
+Finds ORM field references that graph tools see only at file level — e.g. a Prisma field rename that `query_graph` sees as "file touched" but Serena sees as "12 usages in service layer". Skip if Serena unavailable.
+
+### 2. Choose migration pattern
+Select the appropriate pattern from the sections below (PostgreSQL, Prisma, Drizzle, etc.) based on detected project type from `.supergraph-env`.
+
+### 3. Write migration
+Follow Migration Safety Checklist before writing SQL/ORM migration code.
+
+### 4. Verify flows
+After migration written:
+```
+mcp__code-review-graph__get_affected_flows_tool(files=[migration_and_related_code])
+```
+All data flows still intact? Application code updated to match schema?
+
+### 5. Report
+```
+✅ /supergraph:database-migrations
+- Pattern: [expand-contract | add-column | add-index | data-migration | ...]
+- Blast radius: N files | Hub tables: [list/none]
+- Safety checklist: PASS | BLOCKED (list issues)
+- Next: /supergraph:tdd → /supergraph:fix → /supergraph:verify
+```
+
+## MCP-Integrated Workflow Reference
 
 Before writing any migration, check graph context to understand blast radius:
 
-1. **`get_impact_radius_tool(files=[schema_files, model_files], depth=2)`** — Schema changes to hub tables (e.g. `users`, `orders`) touch repositories, queries, services across the entire codebase
-2. **`query_graph(query_type="dependents", target=<schema_file>)`** — Find all code that references the table/column being changed. This prevents "migration approved but application code forgot to update" bugs
-3. After migration written, **`get_affected_flows_tool(files=[migration_and_related_code])`** — Verify all data flows still work
+1. **`mcp__code-review-graph__get_impact_radius_tool(files=[schema_files, model_files], depth=2)`** — Schema changes to hub tables (e.g. `users`, `orders`) touch repositories, queries, services across the entire codebase
+2. **`mcp__code-review-graph__query_graph_tool(query_type="dependents", target=<schema_file>)`** — Find all code that references the table/column being changed. This prevents "migration approved but application code forgot to update" bugs
+3. After migration written, **`mcp__code-review-graph__get_affected_flows_tool(files=[migration_and_related_code])`** — Verify all data flows still work
 4. **`mcp__serena__find_referencing_symbols(symbol=<column_or_model_name>)`** *(optional — if Serena available)* — Symbol-level ORM impact: finds all TypeScript/Python/Go model fields and query builders that reference the changed column by name. Graph tools detect file-level edges; Serena detects symbol-level usages (e.g. a Prisma field rename that `query_graph` sees as "file touched" but Serena sees as "12 usages in service layer"). Skip if Serena unavailable.
 
 ## Core Principles
@@ -436,3 +475,14 @@ Day 7: Migration drops old status column
 | Inline index on large table          | Blocks writes during build           | CREATE INDEX CONCURRENTLY                   |
 | Schema + data in one migration       | Hard to rollback, long transactions  | Separate migrations                         |
 | Dropping column before removing code | Application errors on missing column | Remove code first, drop column next deploy  |
+
+## Rules
+
+- ALWAYS check blast radius before writing any migration — hub table changes need user approval
+- NEVER alter production databases manually — every change goes through migration files
+- NEVER mix DDL and DML in one migration — separate schema changes from data migrations
+- NEVER add NOT NULL column without a default to existing tables — locks and rewrites all rows
+- ALWAYS create indexes with CONCURRENTLY on live tables
+- ALWAYS test against production-sized data before deploying
+- NEVER edit a migration that has already run in production — create a new one
+- Use expand-contract pattern for zero-downtime column renames and removals
