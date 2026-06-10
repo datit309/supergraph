@@ -148,6 +148,14 @@ Verdict rules:
 PASS + all tasks reviewed → mark `Status: completed`, add review log.
 BLOCKED → mark affected tasks `stuck`, append blocker list.
 
+### 10b. Update CONTEXT.md (if review surfaced new domain invariants)
+
+If review revealed undocumented domain rules, invariants, or terminology:
+```bash
+printf '\n## <term or invariant>\n[what was discovered]\n' >> CONTEXT.md
+```
+Examples: hidden ordering constraints, shared state assumptions, boundary rules between modules.
+
 **Serena memory (optional — for non-PASS verdicts):**
 On BLOCKED or NEEDS_CHANGES, persist findings for the next fix cycle:
 ```

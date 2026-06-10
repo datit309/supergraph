@@ -59,7 +59,11 @@
       "Bash(git commit:*)",
       "Bash(git branch:*)",
       "Bash(git checkout:*)",
-      "Bash(eval:*)"
+      "Bash(eval:*)",
+      "Skill(deep-research)",
+      "Bash(fvm dart *)",
+      "Bash(fvm flutter *)",
+      "mcp__plugin_playwright_*"
     ]
   }
 }

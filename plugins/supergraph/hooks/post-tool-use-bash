@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+input=$(cat)
+
+exit_code=$(printf '%s' "$input" | python3 -c '
+import sys, json
+d = json.load(sys.stdin)
+print(d.get("tool_exit_code", d.get("exit_code", 0)))
+' 2>/dev/null || echo "0")
+
+[ "$exit_code" = "0" ] && exit 0
+
+output=$(printf '%s' "$input" | python3 -c '
+import sys, json
+d = json.load(sys.stdin)
+print(d.get("tool_output", d.get("output", "")))
+' 2>/dev/null || echo "")
+
+# Detect test failure patterns across languages
+if printf '%s' "$output" | grep -qEi \
+  '(FAIL|FAILED|failing|test.*failed|failed.*test|AssertionError|assertion.*failed|\
+  × |✗ |✕ |ERROR:|error:.*test|jest.*fail|vitest.*fail|pytest.*fail|\
+  cargo.*test.*FAILED|go test.*FAIL|flutter test.*FAIL|phpunit.*FAIL|pest.*FAIL|\
+  [0-9]+ failed|[0-9]+ error)'; then
+
+  msg='🐛 Test failures detected.\nConsider /supergraph:diagnose — 6-phase structured debugging:\n  Phase 1: Build a fast deterministic feedback loop first\n  Phase 3: List 3-5 ranked falsifiable hypotheses\n  Phase 4: Instrument ONE variable at a time\n  Phase 5: Fix + regression test'
+
+  escaped_msg="${msg//$'\n'/\\n}"
+  printf '{"additionalContext": "%s"}\n' "$escaped_msg"
+fi

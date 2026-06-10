@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+escape_for_json() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
+}
+
+plan=$(ls docs/supergraph/plans/*.md 2>/dev/null | sort -r | head -1 || true)
+
+if [ -n "$plan" ]; then
+  pending=$(grep -c '^Status: pending' "$plan" 2>/dev/null || echo "0")
+  in_progress=$(grep -c '^Status: in_progress' "$plan" 2>/dev/null || echo "0")
+  stuck=$(grep -c '^Status: stuck' "$plan" 2>/dev/null || echo "0")
+  plan_name=$(basename "$plan")
+
+  raw="⚠️ CONTEXT COMPACTION IMMINENT — run /supergraph:handoff NOW to preserve session state.
+Active plan: ${plan_name} | pending=${pending} in_progress=${in_progress} stuck=${stuck}
+Handoff saves to \$TMPDIR — safe to compact after handoff is written."
+else
+  raw="⚠️ CONTEXT COMPACTION IMMINENT — run /supergraph:handoff to save session state before context is lost."
+fi
+
+msg=$(escape_for_json "$raw")
+printf '{"additionalContext": "%s"}\n' "$msg"

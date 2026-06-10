@@ -14,8 +14,84 @@ escape_for_json() {
   printf '%s' "$s"
 }
 
-context="<EXTREMELY_IMPORTANT>\nYou have supergraph.\n\nMandatory workflow:\n1. /supergraph:context — load minimal graph context first\n2. /supergraph:plan — create machine-readable plan and get plan-reviewer approval\n3. /supergraph:execute — execute plan, parallel by default when tasks are independent\n4. /supergraph:fix — auto-fix with systematic debugging when needed\n5. /supergraph:integration — run integration/e2e when configured\n6. /supergraph:verify — no completion claims without fresh evidence\n7. /supergraph:review — independent code-reviewer + graph review before merge\n\nHard rules:\n- Use get_minimal_context_tool() first for graph context.\n- No production code without verified RED test first.\n- Ask instead of guessing when requirements or failures are unclear.\n- Do not proceed on main/master without explicit approval.\n- Never claim done/ready/fixed without fresh verification evidence.\n</EXTREMELY_IMPORTANT>"
+parts=()
 
-escaped=$(escape_for_json "$context")
+# ── 1. Mandatory workflow reminder ────────────────────────────────────────────
+parts+=("$(cat <<'EOF'
+<EXTREMELY_IMPORTANT>
+You have supergraph.
 
+Mandatory workflow:
+1. /supergraph:scan — load minimal graph context first
+2. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
+3. /supergraph:execute — execute plan, parallel by default when tasks are independent
+4. /supergraph:fix — auto-fix with systematic debugging when needed
+5. /supergraph:integration — run integration/e2e when configured
+6. /supergraph:verify — no completion claims without fresh evidence
+7. /supergraph:review — independent code-reviewer + graph review before merge
+
+Hard rules:
+- Use get_minimal_context_tool() first for graph context.
+- No production code without verified RED test first.
+- Ask instead of guessing when requirements or failures are unclear.
+- Do not proceed on main/master without explicit approval.
+- Never claim done/ready/fixed without fresh verification evidence.
+
+New skills available:
+- /supergraph:diagnose — structured 6-phase debugging (use when bug cause is unknown)
+- /supergraph:handoff — compact session state before context runs out
+- /supergraph:zoom-out — get a domain-vocabulary module map fast
+- /supergraph:architecture — HTML+Mermaid architecture review report
+- /supergraph:prd — convert conversation → structured PRD → GitHub Issue
+- /supergraph:triage — classify issues with state machine → ready-for-agent
+- /supergraph:prototype — throwaway Logic/UI code to validate approach
+- /supergraph:caveman — ~75% token compression (say "caveman" to activate)
+</EXTREMELY_IMPORTANT>
+EOF
+)")
+
+# ── 2. CONTEXT.md — inject domain vocabulary if present ───────────────────────
+if [ -f "CONTEXT.md" ] && [ -s "CONTEXT.md" ]; then
+  context_content=$(head -80 CONTEXT.md)
+  parts+=("$(printf '<DOMAIN_VOCABULARY>\nProject CONTEXT.md loaded — use these terms in all task descriptions and analysis:\n%s\n</DOMAIN_VOCABULARY>' "$context_content")")
+fi
+
+# ── 3. Handoff reminder — check $TMPDIR for recent handoff file ───────────────
+handoff_file=$(ls "${TMPDIR:-/tmp}"/supergraph-handoff-*.md 2>/dev/null | sort -r | head -1 || true)
+if [ -n "$handoff_file" ]; then
+  now=$(date +%s)
+  if stat -f%m "$handoff_file" >/dev/null 2>&1; then
+    mtime=$(stat -f%m "$handoff_file")
+  else
+    mtime=$(stat -c%Y "$handoff_file" 2>/dev/null || echo "$now")
+  fi
+  age_hours=$(( (now - mtime) / 3600 ))
+  if [ "$age_hours" -lt 48 ]; then
+    handoff_name=$(basename "$handoff_file")
+    parts+=("$(printf '📦 HANDOFF FILE FOUND: %s (%dh ago)\nRead this file BEFORE starting any work — it contains session state, remaining tasks, and resume instructions.' "$handoff_file" "$age_hours")")
+  fi
+fi
+
+# ── 4. Caveman mode — opt-in via .supergraph-env flag ─────────────────────────
+if grep -q 'SUPERGRAPH_CAVEMAN=true' .supergraph-env 2>/dev/null; then
+  parts+=("🦴 caveman mode ON (SUPERGRAPH_CAVEMAN=true in .supergraph-env) — strip filler, keep code exact, ~75% token reduction. Disable: set SUPERGRAPH_CAVEMAN=false or say 'normal mode'.")
+fi
+
+# ── 5. Zoom-out hint — no plan + no recent commits ────────────────────────────
+plan_count=$(ls docs/supergraph/plans/*.md 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+if [ "${plan_count:-0}" -eq 0 ]; then
+  parts+=("💡 No active plan found. If this is an unfamiliar codebase, run /supergraph:zoom-out to get oriented before planning.")
+fi
+
+# ── Assemble output ───────────────────────────────────────────────────────────
+combined=""
+for part in "${parts[@]}"; do
+  if [ -n "$combined" ]; then
+    combined="${combined}\n\n${part}"
+  else
+    combined="${part}"
+  fi
+done
+
+escaped=$(escape_for_json "$combined")
 printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$escaped"

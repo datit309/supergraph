@@ -1,6 +1,36 @@
 # Changelog
 
-## 2.0.0
+## 2.2.0
+
+### New Skills (8)
+
+- **diagnose** — 6-phase structured debugging: build feedback loop → reproduce → hypothesize (3-5 ranked falsifiable theories) → instrument one variable at a time → fix + regression test → cleanup + post-mortem
+- **handoff** — compact current session state to `$TMPDIR` for seamless continuation across sessions or agents; references artifacts by path, never duplicates content
+- **triage** — formal issue state machine: needs-triage → needs-info → ready-for-agent → ready-for-human → wontfix; `ready-for-agent` is the handoff trigger to the supergraph pipeline
+- **caveman** — persistent token-compression mode (~75% output reduction); strips filler while keeping code/numbers exact; auto-suspends for safety warnings
+- **prd** — convert conversation into a structured PRD (problem, solution, user stories, acceptance criteria, out-of-scope); optionally posts to GitHub Issues with `ready-for-agent` label
+- **architecture** — 3-phase architecture review: explore graph → self-contained HTML report with Mermaid before/after diagrams and recommendation strength badges → grilling loop
+- **prototype** — throwaway code validation in two branches: Logic (terminal state machine) or UI (multiple designs on one route with URL-param switcher); no persistence, no tests, delete after
+- **zoom-out** — one-shot module map using domain vocabulary; re-orient fast after deep-dive sessions
+
+### Updated Skills (3)
+
+- **analyze** — added structured grill phase (one question at a time with recommended answers, max 3 questions); reads CONTEXT.md for domain vocabulary; updates CONTEXT.md when new terms crystallize
+- **plan** — reads CONTEXT.md step 0; uses domain vocabulary in task descriptions
+- **review** — updates CONTEXT.md when review surfaces hidden domain invariants
+
+### CONTEXT.md Convention
+
+Cross-skill shared vocabulary system: `analyze`, `plan`, and `review` read CONTEXT.md before acting and write to it when new domain concepts emerge. Reduces token waste and inconsistency across the skill chain.
+
+### Automation — 4 Smart Hooks
+
+- **`SessionStart` (enhanced)** — loads CONTEXT.md vocabulary into context; reminds about handoff file if one exists in `$TMPDIR` (< 48h); activates caveman mode if `SUPERGRAPH_CAVEMAN=true` in `.supergraph-env`; suggests `/supergraph:zoom-out` when no active plan exists
+- **`PostToolUse Bash` (new)** — detects test failure patterns (`exit_code ≠ 0` + output match across jest/pytest/cargo/flutter/phpunit/go test) → injects `/supergraph:diagnose` suggestion into context
+- **`PreCompact` (new)** — fires immediately before context compaction; injects urgent handoff reminder with active plan status (`pending`/`in_progress`/`stuck` counts)
+- **`UserPromptSubmit` (new)** — detects caveman trigger phrases ("caveman", "compress", "token diet"...) → activates compression mode; detects "normal mode"/"verbose" → deactivates; detects triage keywords → suggests `/supergraph:triage`
+
+## 2.1.0
 
 ### Features
 

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+input=$(cat)
+
+prompt=$(printf '%s' "$input" | python3 -c '
+import sys, json
+d = json.load(sys.stdin)
+print(d.get("prompt", "").lower())
+' 2>/dev/null || echo "")
+
+[ -z "$prompt" ] && exit 0
+
+# ── Caveman activation ────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(caveman|compress|short mode|token diet|brief mode|terse mode)\b'; then
+  printf '{"additionalContext": "🦴 caveman mode ON — strip articles/filler, keep code/numbers/paths exact, ~75%% token reduction. Bullet lists over prose. Auto-suspend for safety warnings. Disable with: normal mode / full mode / verbose."}\n'
+  exit 0
+fi
+
+# ── Caveman deactivation ──────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(normal mode|full mode|verbose|disable caveman|caveman off|turn off caveman|disable compression)\b'; then
+  printf '{"additionalContext": "🦴 caveman mode OFF — returning to normal output."}\n'
+  exit 0
+fi
+
+# ── Triage hint ───────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(triage|triaging|backlog|needs.triage|issue queue|classify.*issue|issue.*classif)\b'; then
+  printf '{"additionalContext": "💡 Issue triage detected — /supergraph:triage applies the state machine: needs-triage → needs-info → ready-for-agent → ready-for-human → wontfix."}\n'
+  exit 0
+fi
+
+exit 0

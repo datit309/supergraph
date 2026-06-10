@@ -1,7 +1,7 @@
 {
   "name": "supergraph",
-  "version": "2.1.0",
-  "description": "Graph-driven AI coding workflows with Serena MCP integration. Covers the full dev cycle: scan → plan → TDD → fix → integration → verify → review. Graph analysis (blast radius, hub nodes, communities) + Serena LSP tools (diagnostics, symbol navigation, safe rename/replace). Skills optimized for token efficiency. Supports Node.js, Flutter, PHP, Python, Go, Rust, and more.",
+  "version": "2.2.0",
+  "description": "Graph-driven AI coding workflows with Serena MCP integration. Full dev cycle: scan → analyze → plan → TDD → fix → verify → review. Structured debugging (diagnose), architecture review with HTML reports, PRD generation, issue triage, throwaway prototyping, handoff for context compaction, caveman token-compression mode, and CONTEXT.md cross-skill vocabulary. Supports Node.js, Flutter, PHP, Python, Go, Rust.",
   "author": {
     "name": "datit309",
     "email": "trantandat0919@gmail.com"
@@ -15,6 +15,10 @@
     "blast-radius",
     "code-review",
     "workflow",
+    "debugging",
+    "architecture",
+    "triage",
+    "prd",
     "nodejs",
     "flutter",
     "php",

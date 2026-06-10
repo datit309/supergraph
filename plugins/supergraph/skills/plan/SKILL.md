@@ -15,6 +15,12 @@ Announce: "📐 /supergraph:plan — scanning codebase, creating plan..."
 
 ## Steps
 
+**0. Read CONTEXT.md (if exists):**
+```bash
+cat CONTEXT.md 2>/dev/null | head -60
+```
+Use domain vocabulary from CONTEXT.md in all plan task descriptions — never use raw file/class names where a domain term exists.
+
 **1. Read the codebase (MANDATORY before planning):**
 - Read config file → language, framework, versions
 - Read 2-3 source files near target area → naming, imports, error handling
