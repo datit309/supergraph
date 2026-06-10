@@ -75,6 +75,7 @@ Environment Context from plan:
 [full Environment Context block]
 
 Your job:
+0. If using Serena tools: call `mcp__serena__initial_instructions()` once before any other Serena call (skip if scan already ran this session).
 1. Run baseline tests
 2. Execute tasks IN ORDER (respect dependencies)
 3. Per task: RED → GREEN → REFACTOR → Lint → Format
@@ -107,7 +108,9 @@ Environment Context:
 [full Environment Context block]
 
 Your job:
+0. If using Serena tools: call `mcp__serena__initial_instructions()` once before any other Serena call (skip if scan already ran this session).
 1. RED → GREEN → REFACTOR → Lint → Format (do NOT commit during TDD)
+1b. After GREEN: `mcp__serena__get_diagnostics_for_file(file=<modified_file>)` for each modified file — catch type errors before committing. Skip if Serena unavailable.
 2. Commit ONCE after ALL tests pass (use Checkpoint files/message from plan)
 3. Do NOT edit files outside Task N
 4. Do NOT refactor unrelated code
@@ -131,6 +134,13 @@ After agents return:
 git diff --name-only  # check for same-file edits by different agents
 ```
 If overlap: run `mcp__code-review-graph__detect_changes_tool()` + `get_surprising_connections_tool()`
+
+**Serena semantic conflict detection (optional):** For key symbols changed by each agent, check for cross-agent conflicts that file overlap cannot detect:
+```
+mcp__serena__find_referencing_symbols(symbol=<symbol_changed_by_agent_A>)
+# verify no callers were independently modified by agent_B with incompatible changes
+```
+Skip if Serena unavailable.
 
 If conflicts detected → STOP, present options: (review manually, revert & retry sequential, keep X & redo Y)
 

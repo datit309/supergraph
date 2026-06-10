@@ -44,16 +44,18 @@ mcp__code-review-graph__get_knowledge_gaps_tool()
 Per file: `query_graph(query_type="tests", target=file)`.
 
 **3b. Serena code intelligence (optional):**
+If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first.
 For each changed symbol/function:
 ```
 mcp__serena__find_referencing_symbols(symbol=<changed_symbol>)
+mcp__serena__find_implementations(symbol=<changed_symbol>)
 ```
 For each changed file:
 ```
 mcp__serena__get_diagnostics_for_file(file=<changed_file>)
 ```
-Pass results to code-reviewer agent prompt under "Serena findings: [callers, diagnostics]".
-Skip if Serena unavailable.
+Pass results to code-reviewer agent prompt under "Serena findings: [callers, implementations, diagnostics]".
+Skip gracefully if Serena unavailable — log "Serena unavailable, skipping code intelligence".
 
 ### 4. Dispatch Code Reviewer (2-Stage Review)
 
@@ -145,6 +147,16 @@ Verdict rules:
 
 PASS + all tasks reviewed → mark `Status: completed`, add review log.
 BLOCKED → mark affected tasks `stuck`, append blocker list.
+
+**Serena memory (optional — for non-PASS verdicts):**
+On BLOCKED or NEEDS_CHANGES, persist findings for the next fix cycle:
+```
+mcp__serena__write_memory(
+  title="<plan-slug>-review-verdict",
+  content="Verdict: [BLOCKED|NEEDS_CHANGES]. Critical: [...]. Callers affected: [...]. Diagnostics: [...]"
+)
+```
+Skip if Serena unavailable or verdict is PASS.
 
 ### 11. Handoff
 

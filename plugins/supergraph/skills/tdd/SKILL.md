@@ -63,6 +63,8 @@ Write only enough code to pass the test. No abstractions, no cleanup, no extra f
 
 Delete any production code written before RED.
 
+**Serena surgery (optional):** Prefer `mcp__serena__replace_symbol_body(symbol=<fn>)` over raw file edits for targeted function-body implementation — exact, no risk of touching surrounding code. Skip if Serena unavailable.
+
 ### 4. GREEN Verify
 
 Run focused test → broader suite:
@@ -79,6 +81,13 @@ Failing test → fix code, not test. Other tests fail → fix now.
 ### 5. REFACTOR — Only After GREEN
 
 Rename, deduplicate, extract. No behavior changes. Re-run tests.
+
+**Before any rename (optional):** Enumerate all callers first to confirm scope:
+```
+mcp__serena__find_referencing_symbols(symbol=<symbol_to_rename>)
+```
+Then use `mcp__serena__rename_symbol(old=<name>, new=<name>)` for safe codebase-wide rename instead of grep/replace.
+Skip if Serena unavailable — fall back to manual grep + Edit.
 
 ### 6. Complete
 

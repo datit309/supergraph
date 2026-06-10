@@ -53,6 +53,7 @@ At iteration start: "🔧 Fix iteration N/3 — running tests..."
 |---|---|
 | **Reproduce** | Smallest failing command + expected vs actual. Classify: assertion / crash / timeout / env / data pollution / race. |
 | **Tests** | Run targeted tests (from graph) else `$TEST_CMD`. FAIL → trace to root cause, fix source. Don't modify tests unless demonstrably wrong. |
+| **Serena fix** | After source fix: `mcp__serena__get_diagnostics_for_file(file=<fixed_file>)` — confirm fix didn't introduce new type errors before re-running suite. For body fixes: prefer `mcp__serena__replace_symbol_body(symbol=<fn>)`. For renames: `mcp__serena__rename_symbol(old, new)`. Skip if Serena unavailable. |
 | **Format+Lint** | `$FORMAT_CMD` then `$LINT_CMD`. If format changed files → re-run lint. |
 | **Graph** | `detect_changes_tool()`, `get_surprising_connections_tool()`, `get_knowledge_gaps_tool()`, `refactor_tool(action="dead_code")`. CRITICAL → fix. WARNING → fix or record. |
 | **Decide** | All clean → break. Tests/lint fail → continue loop. |
@@ -82,3 +83,4 @@ Next: /supergraph:verify → /supergraph:review
 - Prefer source fixes over test edits
 - CRITICAL graph findings: fix or escalate
 - Warnings: fix or report
+- Prefer `mcp__serena__replace_symbol_body` for body fixes and `mcp__serena__rename_symbol` for renames when Serena is available

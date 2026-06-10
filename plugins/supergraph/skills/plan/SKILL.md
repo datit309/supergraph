@@ -42,6 +42,10 @@ mcp__serena__find_referencing_symbols(symbol=<key_symbol>)
 mcp__serena__find_implementations(symbol=<interface_or_abstract>)
 ```
 Cross-reference with graph blast radius — add any missed callers to task `Blast radius` fields.
+**Optional — for large blast radius (> 10 files) or hub/bridge nodes:** persist caller list for future sessions:
+```
+mcp__serena__write_memory(title="<plan-slug>-blast-callers", content="[caller list from find_referencing_symbols]")
+```
 Skip gracefully if Serena unavailable — log "Serena unavailable, skipping symbol analysis".
 
 **4. Discuss approach with user (MANDATORY, use user's language):**

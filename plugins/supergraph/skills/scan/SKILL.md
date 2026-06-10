@@ -62,6 +62,7 @@ LINT_CMD=...
 FORMAT_CMD=...
 BUILD_CMD=...
 BRANCH=...
+SERENA_ACTIVE=true|false
 ```
 
 **4. Report completion:**
@@ -69,7 +70,7 @@ BRANCH=...
 ## Graph Context
 - Type: $PROJECT_TYPE | Test: $TEST_CMD | Lint: $LINT_CMD
 - Files: N | Communities: N | Hub nodes: [list]
-- Serena: active | symbols: N | skipped
+- Serena: active | symbols: loaded | skipped
 ```
 
 ## Rules

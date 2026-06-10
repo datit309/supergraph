@@ -49,6 +49,15 @@ Map claim to required proofs from evidence mapping.
 Read from plan `## Environment Context` or `.supergraph-env` (set by `/supergraph:scan`). Missing → STOP, run scan first.
 No command can prove claim → STOP: "Required check is unknown."
 
+### 3b. Serena diagnostic sweep (optional — highest value step)
+For each file touched by the current claim:
+```
+mcp__serena__get_diagnostics_for_file(file=<file>)
+```
+If type errors found → STOP verification, report as FAIL before running test suite.
+This is the last line of defense — catches LSP-level errors that lint and tests may not surface.
+Skip gracefully if Serena unavailable or `SERENA_ACTIVE=false` in `.supergraph-env`.
+
 ### 4. Run Fresh Verification (NOW — no reuse of old output)
 For agent output: `git diff --stat && git diff --name-only`.
 Then run relevant tests/lint/build locally.

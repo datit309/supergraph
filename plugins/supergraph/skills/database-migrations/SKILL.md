@@ -23,6 +23,7 @@ Before writing any migration, check graph context to understand blast radius:
 1. **`get_impact_radius_tool(files=[schema_files, model_files], depth=2)`** — Schema changes to hub tables (e.g. `users`, `orders`) touch repositories, queries, services across the entire codebase
 2. **`query_graph(query_type="dependents", target=<schema_file>)`** — Find all code that references the table/column being changed. This prevents "migration approved but application code forgot to update" bugs
 3. After migration written, **`get_affected_flows_tool(files=[migration_and_related_code])`** — Verify all data flows still work
+4. **`mcp__serena__find_referencing_symbols(symbol=<column_or_model_name>)`** *(optional — if Serena available)* — Symbol-level ORM impact: finds all TypeScript/Python/Go model fields and query builders that reference the changed column by name. Graph tools detect file-level edges; Serena detects symbol-level usages (e.g. a Prisma field rename that `query_graph` sees as "file touched" but Serena sees as "12 usages in service layer"). Skip if Serena unavailable.
 
 ## Core Principles
 

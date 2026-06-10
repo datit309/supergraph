@@ -35,12 +35,14 @@ mcp__code-review-graph__get_impact_radius_tool(files=[likely_targets], depth=2)
 If files involve hub/bridge nodes → flag risk.
 
 **2b. Serena dependency check (optional):**
+If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first.
 For each likely target symbol:
 ```
 mcp__serena__find_referencing_symbols(symbol=<likely_target>)
+mcp__serena__find_implementations(symbol=<likely_target>)
 ```
-Adds symbol-level callers that graph may not surface. Results enrich approach comparison in step 3.
-Skip if Serena unavailable.
+`find_referencing_symbols` — all callers/usages. `find_implementations` — all concrete impls of interfaces/abstract classes. Results enrich approach comparison in step 3.
+Skip gracefully if Serena unavailable — log "Serena unavailable, skipping dependency check".
 
 **3. Propose 2-3 approaches:**
 For each: pros, cons, risk level, effort. Prefer minimal viable.
