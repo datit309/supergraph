@@ -55,6 +55,7 @@ Re-verify Serena only (never skip — MCP availability changes per session):
 
 ```
 mcp__plugin_serena_serena__initial_instructions()
+mcp__plugin_serena_serena__activate_project()
 ```
 
 If Serena responds → update `SERENA_ACTIVE=true` in file. If not → update `SERENA_ACTIVE=false`.

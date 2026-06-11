@@ -79,6 +79,7 @@ Your job:
 1. Run baseline tests
 2. Execute tasks IN ORDER (respect dependencies)
 3. Per task: RED → GREEN → REFACTOR → Lint → Format
+3b. After GREEN: `mcp__serena__get_diagnostics_for_file(file=<modified_file>)` for each modified file — catch type errors before committing. Skip if Serena unavailable.
 4. Commit once per task AFTER all tests pass (use Checkpoint files/message from plan)
 5. Prefer Serena symbol surgery over raw text edits when available:
    - Use `mcp__serena__replace_symbol_body()` for function body replacements

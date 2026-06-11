@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 
 plan=$(ls docs/supergraph/plans/*.md 2>/dev/null | head -1 || true)
 
