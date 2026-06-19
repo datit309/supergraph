@@ -6,7 +6,7 @@
 
 Supergraph enforces a complete, evidence-based coding pipeline — scan → plan → TDD → fix → verify → review — grounded in real codebase analysis at every step. It combines AST dependency graphs, LSP-level code intelligence, and a structured skill chain so Claude never guesses about impact before making a change.
 
-[![Version](https://img.shields.io/badge/version-2.2.0-blue)](./plugins/supergraph/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.2.1-blue)](./plugins/supergraph/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Privacy](https://img.shields.io/badge/privacy-local--first-success)](./plugins/supergraph/PRIVACY.md)
 
@@ -221,6 +221,7 @@ All skills use the `/supergraph:` prefix to avoid conflicts with built-in comman
 |---|---|---|
 | `/supergraph:serena` | LSP setup, tool reference, symbol navigation | Complex refactors, cross-file analysis |
 | `/supergraph:database-migrations` | Schema changes, rollbacks, zero-downtime patterns | Any DB migration work |
+| `/supergraph:flutter-ui` | Build Flutter UI from Figma MCP or image — scans design tokens, never hard-codes | Flutter UI from Figma or screenshot |
 | `/supergraph:flutter-dart-code-review` | 15-section Flutter/Dart review checklist | Flutter/Dart code review |
 | `/supergraph:frontend-design` | Production-grade UI — no generic AI aesthetics | Web UI components and layouts |
 | `/supergraph:webapp-testing` | Playwright-based web application testing | E2E web testing |
@@ -412,6 +413,7 @@ plugins/supergraph/
 │   ├── caveman/                # Token-compression mode
 │   ├── serena/                 # Serena LSP integration
 │   ├── database-migrations/    # DB migration patterns
+│   ├── flutter-ui/             # Flutter UI from Figma/image
 │   ├── flutter-dart-code-review/ # Flutter/Dart review checklist
 │   ├── frontend-design/        # Production-grade UI
 │   └── webapp-testing/         # Playwright web testing
@@ -453,7 +455,9 @@ See [PRIVACY.md](./plugins/supergraph/PRIVACY.md) for the full policy.
 
 See [CHANGELOG.md](./plugins/supergraph/CHANGELOG.md) for full version history.
 
-**Current: v2.2.0** — Added 8 new skills (diagnose, handoff, triage, caveman, prd, architecture, prototype, zoom-out), CONTEXT.md shared vocabulary system, 4 smart automation hooks.
+**Current: v2.2.1** — Added `flutter-ui` skill: build Flutter UI from Figma MCP or image with token-safe code generation, `flutter_gen` asset management, and variant/state mapping.
+
+**v2.2.0** — Added 8 new skills (diagnose, handoff, triage, caveman, prd, architecture, prototype, zoom-out), CONTEXT.md shared vocabulary system, 4 smart automation hooks.
 
 ---
 

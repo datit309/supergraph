@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.2.1
+
+### New Skills (1)
+
+- **flutter-ui** — build pixel-faithful Flutter UI from Figma MCP or image input; scans src for design tokens (colors, text styles, spacing), existing widgets, state management pattern, and import convention before writing a single line; token mapping table required before code; never hard-codes values; uses `flutter_gen` for asset references with naming convention (`ic_`, `img_`, `bg_` prefix + state suffix); self-verifies with grep before handoff
+
+### Key behaviors
+
+- Figma URL parsing built-in: extracts `fileKey` and converts `node-id` `123-456` → `123:456` automatically
+- Unmapped token gate: STOP and ask user before Step 4 if any design value has no matching token
+- Figma variant support: maps Normal/Disabled/Active variants to boolean/enum params on a single widget
+- `flutter_gen` setup proposal: if package absent, proposes full `pubspec.yaml` + `build_runner` setup
+- ThemeData branch: detects whether project uses direct class references (`AppColors.primary`) or `Theme.of(context).colorScheme.*` and matches generated code accordingly
+- Asset declarations: verifies `flutter.assets:` in `pubspec.yaml` before any asset reference
+
 ## 2.2.0
 
 ### New Skills (8)

@@ -97,8 +97,9 @@ Pre-merge         → /supergraph:review       (graph + code review → verdict)
 |---|---|
 | `/supergraph:serena` | Complex refactors, cross-file symbol analysis |
 | `/supergraph:database-migrations` | Schema changes, rollbacks, zero-downtime deploys |
+| `/supergraph:flutter-ui` | Build Flutter UI from Figma MCP or image — token-safe, no hard-coding |
 | `/supergraph:flutter-dart-code-review` | Flutter/Dart code review checklist |
-| `/supergraph:frontend-design` | Production-grade UI components and layouts |
+| `/supergraph:frontend-design` | Production-grade web UI components and layouts |
 | `/supergraph:webapp-testing` | Playwright-based web application testing |
 
 ## Smart Automation — Hooks
