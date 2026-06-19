@@ -2,9 +2,12 @@
 
 > [English](./README.md)
 
-**Workflow AI hướng đồ thị cho kỹ thuật phần mềm production.**
+**Biến Claude Code từ một công cụ sinh code thành một hệ thống workflow kỹ thuật phần mềm.**
 
-Supergraph áp đặt một pipeline code hoàn chỉnh, có bằng chứng — scan → plan → TDD → fix → verify → review — được đặt nền tảng trên phân tích codebase thực tế ở mỗi bước. Kết hợp đồ thị phụ thuộc AST, code intelligence cấp LSP, và một chuỗi skill có cấu trúc để Claude không bao giờ đoán mò về ảnh hưởng trước khi thực hiện thay đổi.
+> SuperGraph không làm Claude Code thông minh hơn.
+> Nó làm Claude Code hành xử như một kỹ sư có kỷ luật.
+
+SuperGraph áp đặt planning, TDD, verification, review, và ra quyết định có nhận thức về kiến trúc thông qua các workflow bắt buộc, graph intelligence, và phân tích code bằng LSP.
 
 [![Version](https://img.shields.io/badge/version-2.2.1-blue)](./plugins/supergraph/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)

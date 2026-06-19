@@ -2,9 +2,12 @@
 
 > [Tiếng Việt](./README-VI.md)
 
-**Graph-driven AI workflows for production software engineering.**
+**Turn Claude Code from a code generator into an engineering workflow system.**
 
-Supergraph enforces a complete, evidence-based coding pipeline — scan → plan → TDD → fix → verify → review — grounded in real codebase analysis at every step. It combines AST dependency graphs, LSP-level code intelligence, and a structured skill chain so Claude never guesses about impact before making a change.
+> SuperGraph doesn't make Claude Code smarter.
+> It makes Claude Code behave like a disciplined engineer.
+
+SuperGraph enforces planning, TDD, verification, review, and architecture-aware decision making through mandatory workflows, graph intelligence, and LSP-powered code analysis.
 
 [![Version](https://img.shields.io/badge/version-2.2.1-blue)](./plugins/supergraph/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
