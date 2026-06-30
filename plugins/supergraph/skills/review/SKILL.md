@@ -34,6 +34,10 @@ git diff --stat "$BASE_SHA..$HEAD_SHA" && git diff --name-only "$BASE_SHA..$HEAD
 Use plan checkpoint commits as range if available. No changed files → check plan for incomplete tasks.
 
 ### 3. Graph Analysis
+Reindex changed files first so graph reflects current code (not stale pre-edit state):
+```
+mcp__code-review-graph__index_incremental(files=[changed])
+```
 ```
 mcp__code-review-graph__detect_changes_tool()
 mcp__code-review-graph__get_impact_radius_tool(files=[changed], depth=3)

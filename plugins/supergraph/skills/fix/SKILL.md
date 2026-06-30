@@ -32,10 +32,16 @@ Missing command → skip phase, report as `SKIP`.
 ```bash
 git diff --name-only && git diff --cached --name-only
 ```
+Reindex changed files before graph analysis (graph may be stale after edits):
+```
+mcp__code-review-graph__index_incremental(files=[changed])
+```
 Graph: `get_minimal_context_tool()`, `get_impact_radius_tool(files=[changed], depth=3)`, `query_graph(query_type="tests", target=each_file)`.
 No changed files and no in-progress/stuck tasks → STOP: nothing to fix.
 
 ### 3b. Serena pre-loop diagnostics (optional)
+
+If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first. Skip entire step if `SERENA_ACTIVE=false` in `.supergraph-env`.
 
 Before starting the fix loop, triage IDE-level errors with Serena:
 ```
@@ -55,7 +61,7 @@ At iteration start: "🔧 Fix iteration N/3 — running tests..."
 | **Tests** | Run targeted tests (from graph) else `$TEST_CMD`. FAIL → trace to root cause, fix source. Don't modify tests unless demonstrably wrong. |
 | **Serena fix** | After source fix: `mcp__serena__get_diagnostics_for_file(file=<fixed_file>)` — confirm fix didn't introduce new type errors before re-running suite. For body fixes: prefer `mcp__serena__replace_symbol_body(symbol=<fn>)`. For renames: `mcp__serena__rename_symbol(old, new)`. Skip if Serena unavailable. |
 | **Format+Lint** | `$FORMAT_CMD` then `$LINT_CMD`. If format changed files → re-run lint. |
-| **Graph** | `detect_changes_tool()`, `get_surprising_connections_tool()`, `get_knowledge_gaps_tool()`, `refactor_tool(action="dead_code")`. CRITICAL → fix. WARNING → fix or record. |
+| **Graph** | `index_incremental(files=[changed])` first, then `detect_changes_tool()`, `get_surprising_connections_tool()`, `get_knowledge_gaps_tool()`, `refactor_tool(action="dead_code")`. CRITICAL → fix. WARNING → fix or record. |
 | **Decide** | All clean → break. Tests/lint fail → continue loop. |
 
 ### 5. Update Plan Status (if plan exists)

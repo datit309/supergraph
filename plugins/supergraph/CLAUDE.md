@@ -46,12 +46,24 @@ Use the correct test/lint commands for the detected language.
 
 ---
 
-## Mandatory Workflow
+## Tiered Workflow — Pick the right tier FIRST
+
+| Tier | Condition | Path |
+|---|---|---|
+| **Micro** | < 10 lines, 1 file, no hub/bridge nodes | `/supergraph:tdd` directly → `/supergraph:verify` |
+| **Standard** | 1-3 files, clear requirement | `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
+| **Full** | Multi-file, ambiguous, hub/bridge nodes, or blast radius > 5 | Full pipeline below |
+
+**When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
+
+---
+
+## Full Pipeline (Tier 3)
 
 ### Step 0: Context
 
 Read `/supergraph:scan` and execute it.
-NEVER start work without graph context.
+NEVER start full-pipeline work without graph context.
 
 ### Step 1: Plan
 
@@ -105,7 +117,8 @@ All checks pass before merge.
 8. ALWAYS detect language and use correct commands
 9. ALWAYS read the relevant skill file before executing each phase
 10. ALWAYS save plan to file for long-running/team work
-11. USE Serena MCP tools when available — `get_diagnostics_for_file` for type errors, `find_referencing_symbols`/`find_implementations` for impact analysis, `replace_symbol_body`/`rename_symbol` for targeted edits (prefer over raw text edits)
+11. ALWAYS respond in the user's language — announcements, summaries, and all user-facing text must match the language the user wrote in (e.g. if user writes in Vietnamese, respond and announce in Vietnamese; if English, use English). The hardcoded announce strings in skill files are templates only — translate them before output.
+12. USE Serena MCP tools when available — `get_diagnostics_for_file` for type errors, `find_referencing_symbols`/`find_implementations` for impact analysis, `replace_symbol_body`/`rename_symbol` for targeted edits (prefer over raw text edits)
 
 ---
 

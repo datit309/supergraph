@@ -36,22 +36,16 @@ Parse `sequential` flag → force sequential mode.
 Read plan before dispatch:
 - Has `## Environment Context`?
 - Selected tasks have all required fields (Status, Risk, Dependencies, Files, Acceptance, TDD, Steps, Checkpoint)?
-- Commands real, not placeholders?
-- Steps clear enough to execute without guessing?
-- File paths exact, not `[file]`?
+- Commands real, not placeholders? File paths exact?
 - Plan-reviewer returned `Approved` (or user explicitly approved)?
 
 If missing or not Approved → STOP, dispatch `supergraph:plan-reviewer`, wait for Approval.
-Also check: plan has user approval step (step 11 in plan)? If not → ask user: "Plan was not reviewed by you. Proceed anyway? [yes / no]"
-
+Also check: plan has user approval step (step 11)? If not → ask user: "Plan was not reviewed by you. Proceed anyway? [yes / no]"
 Check dependencies: Task X depends on Task Y → is Y `Status: completed`? If not → STOP.
-
 **If any concern: STOP, ask. Never guess.**
 
 ### 4. Branch Protection
-If main/master → STOP, suggest: worktree for isolation, or new branch.
-Worktree: `git worktree add -b <feat-branch> ../<feat-dir> origin/main`
-New branch: `git checkout -b <feat-branch>`
+If main/master → STOP, suggest new branch or worktree.
 User approves → continue.
 
 ### 5. Determine Execution Mode
@@ -59,100 +53,41 @@ User approves → continue.
 | Condition | Mode |
 |---|---|
 | No file overlap + no dependencies | Parallel (one agent per task) |
-| Any dependency/overlap | Sequential (one agent, in order) |
-| Uncertain | Ask user: parallel (faster, risk conflicts) or sequential (safer)? |
+| Any dependency/overlap | Sequential |
+| Uncertain | Ask user |
 
 ### 6. Dispatch Executor(s)
 
-**Sequential mode:**
+Shared executor instructions (apply to both modes):
 ```
-Agent(
-  subagent_type="supergraph:executor",
-  description="Execute plan tasks [scope] from plan: [plan-name]",
-  prompt="Execute tasks from plan at [plan-path]. Mode: SEQUENTIAL.
-
-Environment Context from plan:
-[full Environment Context block]
-
-Your job:
-0. If using Serena tools: call `mcp__serena__initial_instructions()` once before any other Serena call (skip if scan already ran this session).
-1. Run baseline tests
-2. Execute tasks IN ORDER (respect dependencies)
-3. Per task: RED → GREEN → REFACTOR → Lint → Format
-3b. After GREEN: `mcp__serena__get_diagnostics_for_file(file=<modified_file>)` for each modified file — catch type errors before committing. Skip if Serena unavailable.
-4. Commit once per task AFTER all tests pass (use Checkpoint files/message from plan)
-5. Prefer Serena symbol surgery over raw text edits when available:
-   - Use `mcp__serena__replace_symbol_body()` for function body replacements
-   - Use `mcp__serena__rename_symbol()` for cross-file renames
-   - Use `mcp__serena__insert_after_symbol()` / `insert_before_symbol()` for targeted insertions
-   - Fall back to Edit/Write tools if Serena unavailable
-6. Max 3 retries per step → mark stuck if blocked
-7. Final verification: tests, lint, build
-8. Report: tasks done/stuck, files changed, risks
-
-Stop conditions (ask instead of guessing):
-- Plan instruction unclear / test command missing / dependency not met / placeholder found / any blocker"
-)
+- Call mcp__serena__initial_instructions() once before any Serena tool (skip if scan ran this session)
+- Per task: RED → GREEN → REFACTOR → Lint → Format
+- After GREEN: mcp__serena__get_diagnostics_for_file() per modified file (skip if Serena unavailable)
+- Prefer Serena surgery: replace_symbol_body(), rename_symbol(), insert_after/before_symbol() over raw edits
+- Commit ONCE after all tests pass using Checkpoint from plan
+- Max 3 retries per step → mark stuck
+- Stop and ask on: unclear instruction, missing file, placeholder, any blocker
 ```
 
-**Parallel mode** (one agent per task, self-contained prompts):
-```
-Agent(
-  subagent_type="supergraph:executor",
-  description="Execute Task N from plan: [plan-name]",
-  prompt="Execute ONLY Task N from plan at [plan-path]. Mode: PARALLEL (independent).
+**Sequential:** `Agent(subagent_type="supergraph:executor")` — run baseline tests first, execute tasks IN ORDER respecting dependencies, report tasks done/stuck + files changed + risks.
 
-Task context (self-contained):
-[full Task N section including Status, Risk, Dependencies, Files, Acceptance, TDD, Steps, Checkpoint]
-
-Environment Context:
-[full Environment Context block]
-
-Your job:
-0. If using Serena tools: call `mcp__serena__initial_instructions()` once before any other Serena call (skip if scan already ran this session).
-1. RED → GREEN → REFACTOR → Lint → Format (do NOT commit during TDD)
-1b. After GREEN: `mcp__serena__get_diagnostics_for_file(file=<modified_file>)` for each modified file — catch type errors before committing. Skip if Serena unavailable.
-2. Commit ONCE after ALL tests pass (use Checkpoint files/message from plan)
-3. Do NOT edit files outside Task N
-4. Do NOT refactor unrelated code
-5. Max 3 retries per step → mark stuck
-6. Prefer Serena symbol surgery over raw text edits when available:
-   - Use `mcp__serena__replace_symbol_body()` for function body replacements
-   - Use `mcp__serena__rename_symbol()` for cross-file renames
-   - Use `mcp__serena__insert_after_symbol()` / `insert_before_symbol()` for targeted insertions
-   - Fall back to Edit/Write tools if Serena unavailable
-7. Return: success/fail, files changed, commit hash, risks
-
-Stop conditions (ask instead of guessing):
-- File outside scope needed / task unclear / any blocker"
-)
-```
-Spawn all agents in one message (true parallel).
+**Parallel:** one `Agent(subagent_type="supergraph:executor")` per task — each gets self-contained Task N section + Environment Context. Do NOT edit files outside Task N scope. Do NOT refactor unrelated code. Spawn all in one message.
 
 ### 7. Post-Execution Integration Safety
-After agents return:
 ```bash
 git diff --name-only  # check for same-file edits by different agents
 ```
-If overlap: run `mcp__code-review-graph__detect_changes_tool()` + `get_surprising_connections_tool()`
+If overlap: `index_incremental(files=[overlapping])` → `detect_changes_tool()` + `get_surprising_connections_tool()`
 
-**Serena semantic conflict detection (optional):** For key symbols changed by each agent, check for cross-agent conflicts that file overlap cannot detect:
-```
-mcp__serena__find_referencing_symbols(symbol=<symbol_changed_by_agent_A>)
-# verify no callers were independently modified by agent_B with incompatible changes
-```
-Skip if Serena unavailable.
+Serena conflict check (optional): `find_referencing_symbols()` on symbols changed by multiple agents. Skip if Serena unavailable.
 
-If conflicts detected → STOP, present options: (review manually, revert & retry sequential, keep X & redo Y)
+If conflicts → STOP: review manually / revert & retry sequential / keep X & redo Y.
 
 ### 8. Final Verification
 Run `$TEST_CMD`, `$LINT_CMD`, `$BUILD_CMD`. Run `mcp__code-review-graph__build_or_update_graph_tool()`.
 
 ### 9. Handoff
-1. `/supergraph:fix [same plan/scope]` — auto-fix remaining
-2. `/supergraph:integration` — run integration tests if configured
-3. `/supergraph:verify [same plan/scope]` — evidence gate
-4. `/supergraph:review [same plan/scope]` — final review before merge
+`/supergraph:fix` → `/supergraph:integration` → `/supergraph:verify` → `/supergraph:review`
 
 ### 10. Report
 ```
@@ -160,10 +95,8 @@ Run `$TEST_CMD`, `$LINT_CMD`, `$BUILD_CMD`. Run `mcp__code-review-graph__build_o
 Plan: [path] | Scope: [tasks]
 Tasks: N/N done | Stuck: [none | list]
 Tests: PASS | Lint: PASS | Graph: updated
-Next: /supergraph:fix → /supergraph:verify → /supergraph:review
 ```
-
-Announce task completion to user in their language with a clear summary of what was done.
+Announce completion in user's language.
 
 ## Stop Conditions (Ask Instead of Guessing)
 - Plan not found or ambiguous | Missing Environment Context | Unclear instruction or placeholder
@@ -176,4 +109,4 @@ Announce task completion to user in their language with a clear summary of what 
 - Max 3 retries per step | Self-contained prompt per parallel agent
 - Always verify after parallel | Always review plan before dispatch
 - Never create plan — only execute
-- Prefer Serena symbol tools (`replace_symbol_body`, `rename_symbol`) over text edits when Serena is available
+- Prefer Serena symbol tools over text edits when available

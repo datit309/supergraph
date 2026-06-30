@@ -119,14 +119,19 @@ Serena is invoked as optional hooks inside other supergraph skills:
 
 | Skill | Hook | Tools used |
 |-------|------|------------|
-| `scan` | Step 2b | `activate_project`, `get_symbols_overview` |
-| `plan` | Step 3b | `find_referencing_symbols`, `find_implementations` |
-| `analyze` | Step 2b | `find_referencing_symbols` |
-| `tdd` | After RED, after GREEN | `get_diagnostics_for_file` |
-| `execute` | Code surgery | `replace_symbol_body`, `rename_symbol`, `insert_after_symbol` |
-| `fix` | Pre-loop | `get_diagnostics_for_file` per changed file |
-| `review` | Step 3b | `find_referencing_symbols`, `get_diagnostics_for_file` |
-| `flutter-dart-code-review` | MCP-Integrated Review (items 7-9) | `get_diagnostics_for_file`, `find_referencing_symbols`, `find_implementations` |
+| `scan` | Step 2b/3b | `activate_project`, `get_symbols_overview` |
+| `plan` | Step 3b | `find_referencing_symbols`, `find_implementations`, `write_memory` |
+| `analyze` | Step 2b | `find_referencing_symbols`, `find_implementations` |
+| `tdd` | After RED, after GREEN, refactor | `get_diagnostics_for_file`, `replace_symbol_body`, `rename_symbol` |
+| `execute` | Code surgery, post-execution | `replace_symbol_body`, `rename_symbol`, `insert_after_symbol`, `find_referencing_symbols` |
+| `fix` | Pre-loop + each iteration | `get_diagnostics_for_file`, `replace_symbol_body`, `rename_symbol` |
+| `verify` | Step 3b | `get_diagnostics_for_file` |
+| `review` | Step 3b | `find_referencing_symbols`, `find_implementations`, `get_diagnostics_for_file`, `write_memory` |
+| `integration` | Post-test | `find_referencing_symbols`, `get_diagnostics_for_file` |
+| `architecture` | Step 2 | `get_symbols_overview` |
+| `database-migrations` | Impact check | `find_referencing_symbols` |
+| `webapp-testing` | Component impact | `find_referencing_symbols` |
+| `flutter-dart-code-review` | MCP-Integrated Review | `get_diagnostics_for_file`, `find_referencing_symbols`, `find_implementations` |
 
 ## MCP Tool Name Variants
 

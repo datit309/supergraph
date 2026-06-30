@@ -50,6 +50,7 @@ If none found → skip: "No integration/e2e config found — skipping."
 Max 3 retries. On failure:
 
 **4b. Serena cross-module analysis (optional):**
+If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first. Skip if `SERENA_ACTIVE=false`.
 For each failed integration module:
 ```
 mcp__serena__find_referencing_symbols(symbol=<failing_export>)

@@ -30,12 +30,18 @@ Mandatory workflow:
 6. /supergraph:verify — no completion claims without fresh evidence
 7. /supergraph:review — independent code-reviewer + graph review before merge
 
+Tiered workflow — pick the right tier first:
+- Micro (< 10 lines, 1 file, no hub nodes): /supergraph:tdd → /supergraph:verify
+- Standard (1-3 files, clear req): /supergraph:plan → /supergraph:execute → /supergraph:fix → /supergraph:verify
+- Full (multi-file, ambiguous, hub/bridge): scan→plan→execute→fix→integration→verify→review
+
 Hard rules:
-- Use get_minimal_context_tool() first for graph context.
+- Use get_minimal_context_tool() first for graph context (Full tier only).
 - No production code without verified RED test first.
 - Ask instead of guessing when requirements or failures are unclear.
 - Do not proceed on main/master without explicit approval.
 - Never claim done/ready/fixed without fresh verification evidence.
+- ALWAYS reply in the same language the user wrote in. Skill announce strings are templates — translate before output.
 
 New skills available:
 - /supergraph:diagnose — structured 6-phase debugging (use when bug cause is unknown)

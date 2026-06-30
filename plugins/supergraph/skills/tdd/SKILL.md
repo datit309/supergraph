@@ -53,7 +53,7 @@ Record evidence:
 - RED: `[command]` → FAIL ([expected missing behavior])
 ```
 
-**Serena diagnostics (optional):** `mcp__serena__get_diagnostics_for_file(file=<test_file>)` — confirm no type errors mask the real missing behavior. Skip if Serena unavailable.
+**Serena diagnostics (optional):** If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first. Then: `mcp__serena__get_diagnostics_for_file(file=<test_file>)` — confirm no type errors mask the real missing behavior. Skip if Serena unavailable or `SERENA_ACTIVE=false`.
 
 Invalid RED → fix test setup, don't write production code yet.
 

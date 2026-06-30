@@ -15,8 +15,10 @@ fi
 plan=$(ls docs/supergraph/plans/*.md 2>/dev/null | head -1 || true)
 
 if [ -z "$plan" ]; then
-  echo '⚠️ No plan file. Run /supergraph:plan first, or /supergraph:tdd for small changes.'
-  exit 1
+  echo '⚠️ No plan file found.'
+  echo 'Fast path: < 10 lines / 1 file → use /supergraph:tdd directly (no plan needed).'
+  echo 'Otherwise: run /supergraph:plan first.'
+  exit 0
 fi
 
 pending=$(grep -c '^Status: pending' "$plan" 2>/dev/null || true)

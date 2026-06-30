@@ -11,22 +11,58 @@ print(d.get("prompt", "").lower())
 
 [ -z "$prompt" ] && exit 0
 
+LANG_CTX="🌐 Always reply in the same language the user wrote in."
+
+# ── Helper: emit additionalContext merging lang hint + optional extra msg ─────
+emit() {
+  local msg="${1:-}"
+  local ctx="${LANG_CTX}${msg:+ $msg}"
+  printf '%s' "$ctx" | python3 -c '
+import sys, json
+print(json.dumps({"additionalContext": sys.stdin.read()}))
+'
+}
+
 # ── Caveman activation ────────────────────────────────────────────────────────
+CAVEMAN_RULES="🦴 caveman mode ON. Rules: Strip articles/filler/subject pronouns. Keep exact: code, numbers, paths, errors, URLs. Structure: bullet lists over prose, one clause per bullet. Auto-suspend for: safety warnings, destructive ops, error explanations, questions needing full answer — then resume. Disable with: normal mode / full mode / verbose."
+
 if printf '%s' "$prompt" | grep -qE '\b(caveman|compress|short mode|token diet|brief mode|terse mode)\b'; then
-  printf '{"additionalContext": "🦴 caveman mode ON — strip articles/filler, keep code/numbers/paths exact, ~75%% token reduction. Bullet lists over prose. Auto-suspend for safety warnings. Disable with: normal mode / full mode / verbose."}\n'
+  sed -i.bak 's/SUPERGRAPH_CAVEMAN=.*/SUPERGRAPH_CAVEMAN=true/' .supergraph-env 2>/dev/null || printf '\nSUPERGRAPH_CAVEMAN=true\n' >> .supergraph-env 2>/dev/null || true
+  emit "$CAVEMAN_RULES"
   exit 0
 fi
 
 # ── Caveman deactivation ──────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(normal mode|full mode|verbose|disable caveman|caveman off|turn off caveman|disable compression)\b'; then
-  printf '{"additionalContext": "🦴 caveman mode OFF — returning to normal output."}\n'
+  sed -i.bak 's/SUPERGRAPH_CAVEMAN=.*/SUPERGRAPH_CAVEMAN=false/' .supergraph-env 2>/dev/null || true
+  emit "🦴 caveman mode OFF — returning to normal output."
+  exit 0
+fi
+
+# ── Caveman persist (mode already active from prior turn) ─────────────────────
+if grep -q 'SUPERGRAPH_CAVEMAN=true' .supergraph-env 2>/dev/null; then
+  emit "$CAVEMAN_RULES"
   exit 0
 fi
 
 # ── Triage hint ───────────────────────────────────────────────────────────────
-if printf '%s' "$prompt" | grep -qE '\b(triage|triaging|backlog|needs.triage|issue queue|classify.*issue|issue.*classif)\b'; then
-  printf '{"additionalContext": "💡 Issue triage detected — /supergraph:triage applies the state machine: needs-triage → needs-info → ready-for-agent → ready-for-human → wontfix."}\n'
+if printf '%s' "$prompt" | grep -qE '\b(triage|triaging|backlog|needs[- ]triage|issue queue|classify.*issue|issue.*classif)\b'; then
+  emit "💡 Issue triage detected — /supergraph:triage applies the state machine: needs-triage → needs-info → ready-for-agent → ready-for-human → wontfix."
   exit 0
 fi
 
+# ── Diagnose hint ─────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(bug|not working|why (is|does|did)|broken|failing|error|crash|exception|debug)\b'; then
+  emit "💡 Bug/error detected — /supergraph:diagnose runs structured 6-phase debugging. Use when cause is unknown."
+  exit 0
+fi
+
+# ── Frontend/UI hint ──────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(build.*(ui|page|component|dashboard|landing)|design.*(web|ui|page)|make.*look|style.*component|landing page|web ui|frontend)\b'; then
+  emit "💡 UI/frontend task detected — /supergraph:frontend-design produces production-grade interfaces with high design quality."
+  exit 0
+fi
+
+# ── Language-only context (no keyword matched) ────────────────────────────────
+emit ""
 exit 0
