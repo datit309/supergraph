@@ -2,36 +2,43 @@
 
 ## Quick Start (new member)
 
-```bash
-# 1. Install code-review-graph
-pip install code-review-graph
-
-# 2. Clone repo and setup
-git clone <repo-url>
-cd <repo>
-code-review-graph install
-code-review-graph build
-
-# 3. Verify
-code-review-graph status
+**Step 1 — In Claude Code chat:**
+```
+/plugin marketplace add https://github.com/datit309/supergraph.git
+/plugin install supergraph
 ```
 
-Claude Code will auto-load the plugin from `.claude-plugin/`.
+**Step 2 — In terminal:**
+```bash
+pip install code-review-graph
+uv tool install -p 3.13 serena-agent  # requires uv: brew install uv
+```
+
+**Step 3 — In Claude Code chat, open your project and run:**
+```
+/supergraph:scan
+```
+First run builds the graph automatically.
+
+> Your team repo should already have `.mcp.json` and `CLAUDE.md` committed — if not, see the [README Team Setup](../../../../README.md#team-setup) for how to add them.
+
+Claude Code auto-loads `.mcp.json` and `CLAUDE.md` from the repo root.
 
 ## What's in Git
 
 | Path | In Git? | Reason |
 |---|---|---|
-| `.claude-plugin/` | ✅ Yes | Plugin manifest + skills |
 | `.mcp.json` | ✅ Yes | MCP server config |
 | `.code-review-graph/` | ✅ Yes | Graph data (shared across team) |
 | `docs/supergraph/plans/` | ✅ Yes | Plans are contracts — team can see/track |
 | `CLAUDE.md` | ✅ Yes | Project instructions |
+| `.supergraph-env` | ⚠️ Optional | Personal flags (`CAVEMAN`, etc.) — gitignore if personal |
 | `.claude/settings.local.json` | ❌ No | Personal overrides |
 
 Add to `.gitignore`:
 ```
 .claude/settings.local.json
+.supergraph-env  # optional: remove this line if sharing env flags with team
 ```
 
 ## Team Conventions

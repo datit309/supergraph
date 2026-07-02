@@ -1,5 +1,37 @@
 # Changelog
 
+## 2.2.3
+
+### Docs
+
+- README/README-VI Team Setup rewritten: correct install flow (plugin → MCP deps → `/supergraph:scan`), removed manual file copying
+- Serena setup: `uv tool install -p 3.13 serena-agent` only — plugin `.mcp.json` handles Claude Code registration automatically
+- Quick Start: added `/supergraph:analyze` as Step 2
+- README-VI synced with README
+
+## 2.2.2
+
+### Updated Skills (1)
+
+- **analyze** — added 4-signal ambiguity scoring (scope, path, intent, session context) → Tier 0/1/2 routing before grilling; added 5-persona debate on recommended approach (Architect/Security/Performance/UX/Devil's Advocate) → GO/CAUTION/STOP verdict
+
+### Updated Skills — scan (1)
+
+- **scan** — graph build logic: calls `list_graph_stats_tool` first; `index_directory` on empty graph; `index_incremental` on existing same-branch; full `index_directory` rebuild on branch change; hard STOP if `index_directory` fails
+
+### Infrastructure
+
+- **`.mcp.json`** — plugin now declares `code-review-graph` and `serena` MCP server configs; users only need to install the binaries
+- **`bin/bump-version.sh`** — script to update version in both `plugin.json` and `marketplace.json` in one command
+- **`.github/`** — added issue templates (bug report, feature request, skill submission), release workflow on `v*` tag push
+- **`docs/GITHUB-LABELS.md`** — full label system (Type/Priority/Size/Triage/Workflow) with `gh` CLI commands
+
+### Docs
+
+- README Team Setup rewritten: install plugin → install MCP deps → `/supergraph:scan` (no manual file copying)
+- Serena setup section: `uv tool install -p 3.13 serena-agent` only; plugin `.mcp.json` handles Claude Code registration
+- Quick Start: added `/supergraph:analyze` as Step 2 with note on what it covers
+
 ## 2.2.1
 
 ### New Skills (1)

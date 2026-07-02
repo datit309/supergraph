@@ -9,7 +9,7 @@
 
 SuperGraph enforces planning, TDD, verification, review, and architecture-aware decision making through mandatory workflows, graph intelligence, and LSP-powered code analysis.
 
-[![Version](https://img.shields.io/badge/version-2.2.1-blue)](./plugins/supergraph/CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.2.3-blue)](./plugins/supergraph/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Privacy](https://img.shields.io/badge/privacy-local--first-success)](./plugins/supergraph/PRIVACY.md)
 
@@ -17,26 +17,27 @@ SuperGraph enforces planning, TDD, verification, review, and architecture-aware 
 
 ## Why Supergraph
 
-| Without Supergraph | With Supergraph |
-|---|---|
-| Claude guesses which files are affected | Graph shows exact blast radius before first keystroke |
-| TDD is optional | RED test is mandatory — no production code without a failing test |
-| "It works on my machine" | 6-phase diagnose loop with deterministic feedback |
-| Review is an afterthought | Independent reviewer agent + graph cross-check before every merge |
-| Context lost between sessions | Handoff skill compacts full session state in seconds |
-| Refactors break hidden callers | Serena LSP finds every reference before rename runs |
+| Without Supergraph                      | With Supergraph                                                   |
+| --------------------------------------- | ----------------------------------------------------------------- |
+| Claude guesses which files are affected | Graph shows exact blast radius before first keystroke             |
+| TDD is optional                         | RED test is mandatory — no production code without a failing test |
+| "It works on my machine"                | 6-phase diagnose loop with deterministic feedback                 |
+| Review is an afterthought               | Independent reviewer agent + graph cross-check before every merge |
+| Context lost between sessions           | Handoff skill compacts full session state in seconds              |
+| Refactors break hidden callers          | Serena LSP finds every reference before rename runs               |
 
 ---
 
 ## Prerequisites
 
-| Dependency | Required | Install |
-|---|---|---|
-| [Claude Code](https://claude.ai/code) CLI | ✅ Yes | See Claude Code docs |
-| Python 3.10+ | ✅ Yes | `brew install python` / `apt install python3` |
-| [code-review-graph](https://github.com/tirth8205/code-review-graph) | ✅ Yes | `pip install code-review-graph` |
-| [Serena MCP](https://github.com/oraios/serena) | Optional | See [Serena Setup](#serena-setup) |
-| Git | ✅ Yes | Already installed on most systems |
+| Dependency                                                          | Required | Install                                       |
+| ------------------------------------------------------------------- | -------- | --------------------------------------------- |
+| [Claude Code](https://claude.ai/code) CLI                           | ✅ Yes   | See Claude Code docs                          |
+| Python 3.10+                                                        | ✅ Yes   | `brew install python` / `apt install python3` |
+| [code-review-graph](https://github.com/tirth8205/code-review-graph) | ✅ Yes   | `pip install code-review-graph`               |
+| [uv](https://docs.astral.sh/uv/)                                    | Optional | `brew install uv`                             |
+| [Serena MCP](https://github.com/oraios/serena)                      | Optional | See [Serena Setup](#serena-setup)             |
+| Git                                                                 | ✅ Yes   | Already installed on most systems             |
 
 ---
 
@@ -66,48 +67,34 @@ git clone https://github.com/datit309/supergraph.git
 
 ---
 
-## Graph Setup
+## MCP Setup
 
-The codebase graph must be built once per project. It powers blast radius analysis, hub node detection, and community boundaries.
+### code-review-graph (required)
 
 ```bash
-# Install the graph tool
 pip install code-review-graph
-
-# Register the MCP server in your project
-code-review-graph install
-
-# Build the initial graph index
-code-review-graph build
 ```
 
-Verify the graph is healthy:
+`/supergraph:scan` builds the graph on first run and manages incremental updates. The `PostToolUse` hook keeps it fresh after every file write.
+
+### Serena Setup
+
+Serena adds LSP-level intelligence: find all callers, safe codebase-wide rename, type diagnostics. Optional but recommended.
 
 ```bash
-code-review-graph status
+# 1. Install uv (if not already installed)
+brew install uv   # macOS
+# or: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 2. Install Serena
+uv tool install -p 3.13 serena-agent
 ```
 
-The graph updates automatically after every file write (via `PostToolUse` hook). Rebuild manually after large merges:
+The plugin's `.mcp.json` already registers Serena with Claude Code — no extra setup needed.
 
-```bash
-code-review-graph build
-```
+Verify: run `/mcp` in Claude Code and confirm `serena` appears.
 
----
-
-## Serena Setup
-
-Serena adds LSP-level intelligence: find all callers, safe cross-codebase rename, type diagnostics. Optional but recommended for complex refactors.
-
-```bash
-# Install Serena MCP server
-pip install serena
-
-# Add to your project's .mcp.json
-serena install
-```
-
-Once installed, all supergraph skills automatically use Serena tools where available (`find_referencing_symbols`, `get_diagnostics_for_file`, `rename_symbol`, etc.).
+All supergraph skills use Serena automatically when available.
 
 ---
 
@@ -117,23 +104,29 @@ Once installed, all supergraph skills automatically use Serena tools where avail
 # 1. Start a session — always run scan first
 /supergraph:scan
 
-# 2. Plan before any non-trivial change
+# 2. Analyze — frames the problem, scores risk, proposes approach
+#    (includes ambiguity grilling + 5-persona debate → GO/CAUTION/STOP)
+/supergraph:analyze
+
+# 3. Plan before any non-trivial change
 /supergraph:plan
 
-# 3. Implement with TDD
+# 4. Implement with TDD
 /supergraph:tdd
 
-# 4. Auto-fix after coding
+# 5. Auto-fix after coding
 /supergraph:fix
 
-# 5. Verify before claiming done
+# 6. Verify before claiming done
 /supergraph:verify
 
-# 6. Review before merge
+# 7. Review before merge
 /supergraph:review
 ```
 
-**Small change (1-2 files, <10 lines)?** Skip plan → `/supergraph:tdd` → `/supergraph:fix` → `/supergraph:review`
+**Small change (1-2 files, <10 lines)?** `/supergraph:tdd` → `/supergraph:fix` → `/supergraph:review`
+
+**Ambiguous requirements or touching hub/bridge nodes?** Start with `/supergraph:analyze` — it handles grilling, risk scoring, and approach selection before you plan.
 
 ---
 
@@ -183,51 +176,51 @@ All skills use the `/supergraph:` prefix to avoid conflicts with built-in comman
 
 ### Core Workflow
 
-| Skill | Purpose | When to use |
-|---|---|---|
-| `/supergraph:scan` | Load graph, detect project language, save env | **First thing every session** |
-| `/supergraph:analyze` | Risk analysis + structured grill + approach selection | Ambiguous scope, hub/bridge nodes involved |
-| `/supergraph:plan` | Graph scan, blast radius, task breakdown with TDD mapping | Before writing any non-trivial code |
-| `/supergraph:execute` | Dispatch saved plan, orchestrate parallel/sequential tasks | Plan is saved and approved |
-| `/supergraph:tdd` | RED → GREEN → REFACTOR per task | Implementing any feature or fix |
-| `/supergraph:fix` | Auto-fix loop: test + lint + format + graph check | After all coding, before claiming done |
-| `/supergraph:integration` | Run integration and e2e tests | After unit tests pass |
-| `/supergraph:verify` | Fresh evidence gate — no claims without proof | Before done/ready/commit |
-| `/supergraph:review` | Independent code reviewer agent + graph cross-check | Before merge or PR |
+| Skill                     | Purpose                                                    | When to use                                |
+| ------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| `/supergraph:scan`        | Load graph, detect project language, save env              | **First thing every session**              |
+| `/supergraph:analyze`     | Risk analysis + structured grill + approach selection      | Ambiguous scope, hub/bridge nodes involved |
+| `/supergraph:plan`        | Graph scan, blast radius, task breakdown with TDD mapping  | Before writing any non-trivial code        |
+| `/supergraph:execute`     | Dispatch saved plan, orchestrate parallel/sequential tasks | Plan is saved and approved                 |
+| `/supergraph:tdd`         | RED → GREEN → REFACTOR per task                            | Implementing any feature or fix            |
+| `/supergraph:fix`         | Auto-fix loop: test + lint + format + graph check          | After all coding, before claiming done     |
+| `/supergraph:integration` | Run integration and e2e tests                              | After unit tests pass                      |
+| `/supergraph:verify`      | Fresh evidence gate — no claims without proof              | Before done/ready/commit                   |
+| `/supergraph:review`      | Independent code reviewer agent + graph cross-check        | Before merge or PR                         |
 
 ### Debugging & Investigation
 
-| Skill | Purpose | When to use |
-|---|---|---|
-| `/supergraph:diagnose` | 6-phase debug: reproduce → hypothesize → instrument → fix | Bug exists, cause unknown |
-| `/supergraph:zoom-out` | One-shot domain-vocabulary module map | Lost in unfamiliar code, need re-orientation |
-| `/supergraph:architecture` | HTML + Mermaid architecture review report | Pre-refactor, onboarding, architectural planning |
+| Skill                      | Purpose                                                   | When to use                                      |
+| -------------------------- | --------------------------------------------------------- | ------------------------------------------------ |
+| `/supergraph:diagnose`     | 6-phase debug: reproduce → hypothesize → instrument → fix | Bug exists, cause unknown                        |
+| `/supergraph:zoom-out`     | One-shot domain-vocabulary module map                     | Lost in unfamiliar code, need re-orientation     |
+| `/supergraph:architecture` | HTML + Mermaid architecture review report                 | Pre-refactor, onboarding, architectural planning |
 
 ### Planning & Requirements
 
-| Skill | Purpose | When to use |
-|---|---|---|
-| `/supergraph:prd` | Convert conversation → structured PRD + GitHub Issue | Requirements came from discussion |
-| `/supergraph:triage` | Issue state machine → ready-for-agent / needs-info / wontfix | Processing backlog |
-| `/supergraph:prototype` | Throwaway code to validate approach | Uncertain approach before planning |
+| Skill                   | Purpose                                                      | When to use                        |
+| ----------------------- | ------------------------------------------------------------ | ---------------------------------- |
+| `/supergraph:prd`       | Convert conversation → structured PRD + GitHub Issue         | Requirements came from discussion  |
+| `/supergraph:triage`    | Issue state machine → ready-for-agent / needs-info / wontfix | Processing backlog                 |
+| `/supergraph:prototype` | Throwaway code to validate approach                          | Uncertain approach before planning |
 
 ### Session & Productivity
 
-| Skill | Purpose | When to use |
-|---|---|---|
+| Skill                 | Purpose                                        | When to use                                  |
+| --------------------- | ---------------------------------------------- | -------------------------------------------- |
 | `/supergraph:handoff` | Compact session state to file for next session | Context window exhausted, switching sessions |
-| `/supergraph:caveman` | ~75% token compression mode | Long session, tight token budget |
+| `/supergraph:caveman` | ~75% token compression mode                    | Long session, tight token budget             |
 
 ### Domain-Specific
 
-| Skill | Purpose | When to use |
-|---|---|---|
-| `/supergraph:serena` | LSP setup, tool reference, symbol navigation | Complex refactors, cross-file analysis |
-| `/supergraph:database-migrations` | Schema changes, rollbacks, zero-downtime patterns | Any DB migration work |
-| `/supergraph:flutter-ui` | Build Flutter UI from Figma MCP or image — scans design tokens, never hard-codes | Flutter UI from Figma or screenshot |
-| `/supergraph:flutter-dart-code-review` | 15-section Flutter/Dart review checklist | Flutter/Dart code review |
-| `/supergraph:frontend-design` | Production-grade UI — no generic AI aesthetics | Web UI components and layouts |
-| `/supergraph:webapp-testing` | Playwright-based web application testing | E2E web testing |
+| Skill                                  | Purpose                                                                          | When to use                            |
+| -------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------- |
+| `/supergraph:serena`                   | LSP setup, tool reference, symbol navigation                                     | Complex refactors, cross-file analysis |
+| `/supergraph:database-migrations`      | Schema changes, rollbacks, zero-downtime patterns                                | Any DB migration work                  |
+| `/supergraph:flutter-ui`               | Build Flutter UI from Figma MCP or image — scans design tokens, never hard-codes | Flutter UI from Figma or screenshot    |
+| `/supergraph:flutter-dart-code-review` | 15-section Flutter/Dart review checklist                                         | Flutter/Dart code review               |
+| `/supergraph:frontend-design`          | Production-grade UI — no generic AI aesthetics                                   | Web UI components and layouts          |
+| `/supergraph:webapp-testing`           | Playwright-based web application testing                                         | E2E web testing                        |
 
 ---
 
@@ -235,17 +228,18 @@ All skills use the `/supergraph:` prefix to avoid conflicts with built-in comman
 
 Skills are invoked manually. Hooks inject smart context automatically based on observable signals.
 
-| Hook | Fires when | What it does |
-|---|---|---|
-| `SessionStart` | Every session | Loads CONTEXT.md vocabulary; reminds about recent handoff; activates caveman if flagged; suggests zoom-out when no plan exists |
-| `UserPromptSubmit` | Every message | Detects caveman trigger phrases → activates compression; detects triage keywords → suggests triage |
-| `PostToolUse Bash` | After Bash runs | Detects test failure patterns → injects `/supergraph:diagnose` suggestion |
-| `PreCompact` | Before context compaction | Fires urgent handoff reminder with active plan task counts |
-| `PreToolUse Write/Edit` | Before writing source files | Checks plan exists and is approved |
-| `PostToolUse Write/Edit` | After writing source files | Auto-updates code-review-graph index |
-| `Stop` | When Claude stops | Reports plan progress + uncommitted changes |
+| Hook                     | Fires when                  | What it does                                                                                                                   |
+| ------------------------ | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `SessionStart`           | Every session               | Loads CONTEXT.md vocabulary; reminds about recent handoff; activates caveman if flagged; suggests zoom-out when no plan exists |
+| `UserPromptSubmit`       | Every message               | Detects caveman trigger phrases → activates compression; detects triage keywords → suggests triage                             |
+| `PostToolUse Bash`       | After Bash runs             | Detects test failure patterns → injects `/supergraph:diagnose` suggestion                                                      |
+| `PreCompact`             | Before context compaction   | Fires urgent handoff reminder with active plan task counts                                                                     |
+| `PreToolUse Write/Edit`  | Before writing source files | Checks plan exists and is approved                                                                                             |
+| `PostToolUse Write/Edit` | After writing source files  | Auto-updates code-review-graph index                                                                                           |
+| `Stop`                   | When Claude stops           | Reports plan progress + uncommitted changes                                                                                    |
 
 **Activate caveman permanently** (persists across sessions):
+
 ```bash
 echo "SUPERGRAPH_CAVEMAN=true" >> .supergraph-env
 ```
@@ -314,45 +308,97 @@ Serena's `rename_symbol` + graph impact analysis shows every caller, test, and i
 
 Auto-detected from config files at session start:
 
-| Config file | Stack | Test | Lint | Format |
-|---|---|---|---|---|
-| `pubspec.yaml` | Flutter / Dart | flutter test | flutter analyze | dart format |
-| `package.json` | Node.js / TypeScript | jest, vitest, mocha | eslint | prettier |
-| `composer.json` | PHP | phpunit, pest | phpstan | php-cs-fixer |
-| `pyproject.toml` / `setup.py` | Python | pytest | ruff | ruff format |
-| `go.mod` | Go | go test | golangci-lint | gofmt |
-| `Cargo.toml` | Rust | cargo test | cargo clippy | cargo fmt |
+| Config file                   | Stack                | Test                | Lint            | Format       |
+| ----------------------------- | -------------------- | ------------------- | --------------- | ------------ |
+| `pubspec.yaml`                | Flutter / Dart       | flutter test        | flutter analyze | dart format  |
+| `package.json`                | Node.js / TypeScript | jest, vitest, mocha | eslint          | prettier     |
+| `composer.json`               | PHP                  | phpunit, pest       | phpstan         | php-cs-fixer |
+| `pyproject.toml` / `setup.py` | Python               | pytest              | ruff            | ruff format  |
+| `go.mod`                      | Go                   | go test             | golangci-lint   | gofmt        |
+| `Cargo.toml`                  | Rust                 | cargo test          | cargo clippy    | cargo fmt    |
 
 ---
 
 ## Team Setup
 
-Copy project scaffolding to your repo so the whole team shares the same workflow:
+### 1. Install the plugin
+
+```
+/plugin marketplace add https://github.com/datit309/supergraph.git
+/plugin install supergraph
+```
+
+### 2. Install MCP dependencies
 
 ```bash
-REPO=/path/to/your/repo
+pip install code-review-graph                  # required
+uv tool install -p 3.13 serena-agent           # optional — see Serena Setup above
+```
 
-cp -r plugins/supergraph/.claude-plugin $REPO/.claude-plugin
-cp -r plugins/supergraph/.github $REPO/.github
-cp plugins/supergraph/.githooks/pre-commit $REPO/.githooks/
-chmod +x $REPO/.githooks/pre-commit
+### 3. Start working
 
-cd $REPO
+Open any project in Claude Code and run:
+
+```
+/supergraph:scan
+```
+
+First run builds the graph automatically. That's it.
+
+---
+
+### Optional: Share workflow with your team
+
+Commit these files to your project repo so every team member gets the same setup automatically when they clone:
+
+**`.mcp.json`** — declares the MCP servers:
+
+```json
+{
+  "mcpServers": {
+    "code-review-graph": { "command": "code-review-graph", "args": ["serve"] },
+    "serena": {
+      "command": "serena",
+      "args": [
+        "start-mcp-server",
+        "--context=claude-code",
+        "--project-from-cwd"
+      ]
+    }
+  }
+}
+```
+
+**`CLAUDE.md`** — copy from the installed plugin's CLAUDE.md as a starting point, then customize for your project.
+
+**`.githooks/pre-commit`** — run tests/lint on every commit:
+
+```bash
+mkdir -p .githooks
+# copy content from: ~/.claude/plugins/cache/supergraph/supergraph/<version>/.githooks/pre-commit
+chmod +x .githooks/pre-commit
 git config core.hooksPath .githooks
-echo ".claude/settings.local.json" >> .gitignore
+```
+
+Add to `.gitignore`:
+
+```
+.claude/settings.local.json
+.supergraph-env
 ```
 
 ### What gets committed vs. what stays local
 
-| Path | Commit? | Why |
-|---|---|---|
-| `.claude-plugin/` | ✅ Yes | Plugin manifest + skills shared across team |
-| `.mcp.json` | ✅ Yes | MCP server config |
-| `.code-review-graph/` | ✅ Yes | Graph index shared across team |
-| `docs/supergraph/plans/` | ✅ Yes | Plans are contracts — visible to whole team |
-| `CLAUDE.md` | ✅ Yes | Project-level instructions |
-| `.supergraph-env` | ⚠️ Optional | Contains personal flags like CAVEMAN — add to `.gitignore` if personal |
-| `.claude/settings.local.json` | ❌ No | Personal tool permissions |
+| Path                          | Commit?     | Why                                                            |
+| ----------------------------- | ----------- | -------------------------------------------------------------- |
+| `.mcp.json`                   | ✅ Yes      | MCP server config — team needs same MCPs                       |
+| `CLAUDE.md`                   | ✅ Yes      | Project-level workflow instructions                            |
+| `.code-review-graph/`         | ✅ Yes      | Graph index shared across team                                 |
+| `docs/supergraph/plans/`      | ✅ Yes      | Plans are contracts — visible to whole team                    |
+| `.github/`                    | ✅ Yes      | PR templates, CI workflows, issue templates                    |
+| `.githooks/pre-commit`        | ✅ Yes      | Shared commit quality gate                                     |
+| `.supergraph-env`             | ⚠️ Optional | Contains personal flags like `CAVEMAN` — gitignore if personal |
+| `.claude/settings.local.json` | ❌ No       | Personal tool permissions                                      |
 
 See [docs/TEAM-SETUP.md](./plugins/supergraph/docs/TEAM-SETUP.md) for CI/CD pipelines, pre-commit hooks, PR templates, and full onboarding guide.
 
@@ -377,16 +423,16 @@ These rules are enforced by the skill chain and hooks — not optional:
 
 ## Escalation Table
 
-| Condition | Action |
-|---|---|
-| TDD fails 3 times on the same task | Mark `stuck`, skip, continue next task |
-| Fix loop fails 3 iterations | STOP — report issues — never commit broken |
-| Review returns `NEEDS_CHANGES` | Return to fix (max 2 review cycles) |
-| Review returns `BLOCKED` | Escalate to human immediately |
-| Blast radius > 20 files | STOP — discuss with user before proceeding |
-| Hub node modification | Require explicit user approval |
-| Surprise score > 0.7 | Require investigation and justification |
-| New circular dependency detected | Block — fix before merge |
+| Condition                          | Action                                     |
+| ---------------------------------- | ------------------------------------------ |
+| TDD fails 3 times on the same task | Mark `stuck`, skip, continue next task     |
+| Fix loop fails 3 iterations        | STOP — report issues — never commit broken |
+| Review returns `NEEDS_CHANGES`     | Return to fix (max 2 review cycles)        |
+| Review returns `BLOCKED`           | Escalate to human immediately              |
+| Blast radius > 20 files            | STOP — discuss with user before proceeding |
+| Hub node modification              | Require explicit user approval             |
+| Surprise score > 0.7               | Require investigation and justification    |
+| New circular dependency detected   | Block — fix before merge                   |
 
 ---
 
@@ -458,7 +504,7 @@ See [PRIVACY.md](./plugins/supergraph/PRIVACY.md) for the full policy.
 
 See [CHANGELOG.md](./plugins/supergraph/CHANGELOG.md) for full version history.
 
-**Current: v2.2.1** — Added `flutter-ui` skill: build Flutter UI from Figma MCP or image with token-safe code generation, `flutter_gen` asset management, and variant/state mapping.
+**Current: v2.2.3** — Added `flutter-ui` skill, `bump-version.sh` release script, `.mcp.json` plugin MCP config, improved GitHub issue templates and release workflow.
 
 **v2.2.0** — Added 8 new skills (diagnose, handoff, triage, caveman, prd, architecture, prototype, zoom-out), CONTEXT.md shared vocabulary system, 4 smart automation hooks.
 

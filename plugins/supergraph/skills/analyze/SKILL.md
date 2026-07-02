@@ -33,14 +33,24 @@ Use existing domain vocabulary in all analysis — never invent new terms for co
 - Known constraints
 - Open questions
 
-**1b. Grill the user (if requirements are ambiguous):**
-Ask ONE question at a time. After each answer, decide: enough info → continue, or another question needed.
+**1b. Score ambiguity (before grilling):**
 
-For each question, offer a recommended answer:
-> "What's the priority here — consistency or performance? (Recommended: consistency — easier to optimize later)"
+| Signal | +1 if... |
+|---|---|
+| Ambiguous scope | touches multiple modules without naming one |
+| No explicit path | no file/package/feature named |
+| Multiple intents | could be bug fix, feature, refactor, or question |
+| First interaction | no established context this session |
 
-Stop grilling when: goal is unambiguous AND constraints are clear AND approach won't reverse on new info.
-Max 3 questions before proceeding with best available information.
+| Score | Action |
+|---|---|
+| 0–1 | Skip grilling — proceed with best available info |
+| 2 | Show 1-line routing summary, wait for confirm |
+| 3–4 | Grill: ask focused questions with recommended options |
+
+**Auto-skip grilling entirely if:** user said "go"/"just do it", trivial fix (<15 lines, 1 file), explicit mode command, or active plan already exists.
+
+**Grilling rules:** ONE question at a time, offer recommended answer, max 3 questions. Stop when goal + constraints are clear enough that approach won't reverse on new info.
 
 **2. Check graph risk:**
 Reuse graph context from `/supergraph:scan`. Only call if targets are identified:
@@ -59,8 +69,22 @@ mcp__serena__find_implementations(symbol=<likely_target>)
 `find_referencing_symbols` — all callers/usages. `find_implementations` — all concrete impls of interfaces/abstract classes. Results enrich approach comparison in step 3.
 Skip gracefully if Serena unavailable — log "Serena unavailable, skipping dependency check".
 
-**3. Propose 2-3 approaches:**
-For each: pros, cons, risk level, effort. Prefer minimal viable.
+**3. Propose 2-3 approaches + persona debate:**
+For each approach: pros, cons, risk level, effort. Prefer minimal viable.
+
+Then run 5 quick persona checks on the **recommended** approach:
+
+| Persona | Question |
+|---|---|
+| Architect | Does this fit the architecture? New coupling? |
+| Security | What can be abused? Auth/data boundaries respected? |
+| Performance | Latency impact? N+1 queries? Memory leaks? |
+| UX | Error states handled? Intuitive? |
+| Devil's Advocate | Simpler alternative? Which assumption could be wrong? |
+
+Emit verdict: **GO** (no blockers) / **CAUTION** (manageable risks, note mitigations) / **STOP** (critical issue — redesign needed before planning).
+
+STOP triggers: auth bypass with no mitigation, fundamental design incompatibility, N+1 with no workaround, false core assumption.
 
 **4. Ask focused questions (one at a time):**
 Only if the answer changes direction.

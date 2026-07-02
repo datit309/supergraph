@@ -1,0 +1,50 @@
+name: Skill Submission
+description: Propose a new community skill
+title: "[Skill]: "
+labels: ["skill", "community"]
+body:
+  - type: checkboxes
+    id: dedup
+    attributes:
+      label: Verification
+      options:
+        - label: I confirmed this does not duplicate existing functionality
+          required: true
+  - type: input
+    id: name
+    attributes:
+      label: Skill Name
+      description: "Use supergraph: prefix (e.g. supergraph:my-skill)"
+      placeholder: "supergraph:my-skill"
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+      description: What does this skill do? When should it be triggered?
+    validations:
+      required: true
+  - type: input
+    id: keywords
+    attributes:
+      label: Trigger Keywords
+      description: "Comma-separated keywords for auto-discovery"
+      placeholder: "optimize, performance, bundle"
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: "MCP servers, external tools, or other skills required"
+  - type: dropdown
+    id: status
+    attributes:
+      label: Implementation Status
+      options:
+        - Idea only (looking for collaborators)
+        - Work in progress
+        - Ready for review (PR incoming)
+    validations:
+      required: true

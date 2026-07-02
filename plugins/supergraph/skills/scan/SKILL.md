@@ -61,14 +61,30 @@ mcp__plugin_serena_serena__activate_project()
 If Serena responds → update `SERENA_ACTIVE=true` in file. If not → update `SERENA_ACTIVE=false`.
 Jump to step 5 (report).
 
-**3. Full scan — load graph + Serena context:**
+**3. Full scan — build + load graph + Serena context:**
+
+```
+stats = mcp__code-review-graph__list_graph_stats_tool()
+```
+
+Check stats result:
+
+| Condition | Action |
+| --- | --- |
+| `list_graph_stats_tool()` throws / returns error | `mcp__code-review-graph__index_directory(path=".")` (full build) |
+| `stats.total_files == 0` | `mcp__code-review-graph__index_directory(path=".")` (full build) |
+| `stats.total_files > 0` AND branch unchanged | `mcp__code-review-graph__index_incremental(path=".")` (fast reindex) |
+| `stats.total_files > 0` AND **branch changed** | `mcp__code-review-graph__index_directory(path=".")` (full rebuild — old graph has stale nodes) |
+
+**If `index_directory()` fails:** STOP. Log error. Do NOT write `.supergraph-env`. Ask user to check MCP connection.
+
+Then load context:
 
 ```
 mcp__code-review-graph__get_minimal_context_tool()
-mcp__code-review-graph__list_graph_stats_tool()
 ```
 
-Only these 2 calls are needed for most tasks. Fetch communities, hubs, bridges only when the specific task needs them.
+Only these calls are needed for most tasks. Fetch communities, hubs, bridges only when the specific task needs them.
 
 **3b. Serena context (optional — if Serena MCP available):**
 
