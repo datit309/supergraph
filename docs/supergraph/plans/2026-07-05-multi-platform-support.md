@@ -236,7 +236,7 @@ Checkpoint:
 ---
 
 ## Task 6: Update README.md — multi-platform install docs
-Status: pending
+Status: completed
 Risk: low
 Dependencies: Task 1, Task 2, Task 3, Task 4, Task 5
 
