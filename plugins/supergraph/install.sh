@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  printf '%s\n' \
+    'Usage: install.sh [--platform claude|antigravity|codex] [--dry-run] [--help]' \
+    '' \
+    'Installs Supergraph plugin via symlink.' \
+    '' \
+    'Platforms:' \
+    '  claude       -> ~/.claude/plugins/supergraph' \
+    '  antigravity  -> ~/.gemini/antigravity-cli/plugins/supergraph' \
+    '  codex        -> ./.codex-plugin'
+}
+
+platform_arg=''
+dry_run=0
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --platform)
+      [ "$#" -ge 2 ] || { printf 'Missing value for --platform\n' >&2; exit 2; }
+      platform_arg="$2"
+      shift 2
+      ;;
+    --dry-run)
+      dry_run=1
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'Unknown argument: %s\n\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+platform_detect() {
+  if [ -n "$platform_arg" ]; then
+    case "$platform_arg" in
+      claude|antigravity|codex) printf '%s\n' "$platform_arg" ;;
+      *) printf 'Unsupported platform: %s\n' "$platform_arg" >&2; exit 2 ;;
+    esac
+  elif command -v claude >/dev/null 2>&1; then
+    printf 'claude\n'
+  elif command -v agy >/dev/null 2>&1 || command -v antigravity >/dev/null 2>&1; then
+    printf 'antigravity\n'
+  elif command -v codex >/dev/null 2>&1; then
+    printf 'codex\n'
+  else
+    printf 'No supported CLI detected. Re-run with --platform claude|antigravity|codex.\n' >&2
+    exit 1
+  fi
+}
+
+next_steps() {
+  case "$1" in
+    claude) printf 'Next: run /supergraph:scan\n' ;;
+    antigravity) printf 'Next: start Antigravity CLI in your project and ask it to use supergraph skills\n' ;;
+    codex) printf 'Next: run codex and confirm plugin skills loaded\n' ;;
+  esac
+}
+
+platform="$(platform_detect)"
+source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "$platform" in
+  claude) target="$HOME/.claude/plugins/supergraph" ;;
+  antigravity) target="$HOME/.gemini/antigravity-cli/plugins/supergraph" ;;
+  codex) target="$PWD/.codex-plugin" ;;
+esac
+
+printf 'Platform: %s\n' "$platform"
+printf 'Source: %s\n' "$source_dir"
+printf 'Target: %s\n' "$target"
+
+if [ "$dry_run" -eq 1 ]; then
+  printf 'Dry run: no changes made\n'
+  next_steps "$platform"
+  exit 0
+fi
+
+case "$platform" in
+  claude|antigravity)
+    mkdir -p "$(dirname "$target")"
+    ln -sfn "$source_dir" "$target"
+    ;;
+  codex)
+    ln -sfn "$source_dir/.codex-plugin" "$target"
+    ;;
+esac
+
+printf 'Installed Supergraph plugin.\n'
+next_steps "$platform"
