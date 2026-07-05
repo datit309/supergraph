@@ -65,6 +65,16 @@ next_steps() {
   esac
 }
 
+link_path() {
+  src="$1"
+  dst="$2"
+  if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+    printf 'Refusing to overwrite non-symlink: %s\n' "$dst" >&2
+    exit 1
+  fi
+  ln -sfn "$src" "$dst"
+}
+
 platform="$(platform_detect)"
 source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -87,10 +97,14 @@ fi
 case "$platform" in
   claude|antigravity)
     mkdir -p "$(dirname "$target")"
-    ln -sfn "$source_dir" "$target"
+    link_path "$source_dir" "$target"
     ;;
   codex)
-    ln -sfn "$source_dir/.codex-plugin" "$target"
+    mkdir -p "$target"
+    link_path "$source_dir/.codex-plugin/plugin.json" "$target/plugin.json"
+    link_path "$source_dir/skills" "$target/skills"
+    link_path "$source_dir/agents" "$target/agents"
+    link_path "$source_dir/hooks" "$target/hooks"
     ;;
 esac
 
