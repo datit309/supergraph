@@ -4,6 +4,19 @@ set -e
 PLUGIN_DIR="$(cd "$(dirname "$0")/plugins/supergraph" && pwd)"
 PLUGIN_JSON="$PLUGIN_DIR/.claude-plugin/plugin.json"
 MARKET_JSON="$PLUGIN_DIR/.claude-plugin/marketplace.json"
+ANTIGRAVITY_JSON="$PLUGIN_DIR/plugin.json"
+CODEX_JSON="$PLUGIN_DIR/.codex-plugin/plugin.json"
+
+bump_json_version() {
+  python3 - "$1" "$2" <<'EOF'
+import json, sys
+path, ver = sys.argv[1], sys.argv[2]
+d = json.load(open(path))
+d['version'] = ver
+json.dump(d, open(path, 'w'), indent=2, ensure_ascii=False)
+print(f"  {path}: {ver}")
+EOF
+}
 
 current=$(python3 -c "import json; print(json.load(open('$PLUGIN_JSON'))['version'])")
 
@@ -20,22 +33,9 @@ if ! [[ "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-python3 - "$PLUGIN_JSON" "$new_version" <<'EOF'
-import json, sys
-path, ver = sys.argv[1], sys.argv[2]
-d = json.load(open(path))
-d['version'] = ver
-json.dump(d, open(path, 'w'), indent=2, ensure_ascii=False)
-print(f"  {path}: {ver}")
-EOF
-
-python3 - "$MARKET_JSON" "$new_version" <<'EOF'
-import json, sys
-path, ver = sys.argv[1], sys.argv[2]
-d = json.load(open(path))
-d['version'] = ver
-json.dump(d, open(path, 'w'), indent=2, ensure_ascii=False)
-print(f"  {path}: {ver}")
-EOF
+bump_json_version "$PLUGIN_JSON" "$new_version"
+bump_json_version "$MARKET_JSON" "$new_version"
+bump_json_version "$ANTIGRAVITY_JSON" "$new_version"
+bump_json_version "$CODEX_JSON" "$new_version"
 
 echo "✅ $current → $new_version"
