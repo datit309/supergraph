@@ -102,7 +102,7 @@ Dùng `AGENTS.md` cho project instructions; không cần `CLAUDE.md`.
 ```bash
 # Thêm marketplace + cài plugin (khuyến nghị)
 codex plugin marketplace add datit309/supergraph
-codex plugin install supergraph
+codex plugin add supergraph@supergraph
 
 # Hoặc cài thủ công từ checkout local
 git clone https://github.com/datit309/supergraph.git

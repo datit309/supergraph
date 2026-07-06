@@ -102,7 +102,7 @@ Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
 ```bash
 # Add marketplace + install plugin (recommended)
 codex plugin marketplace add datit309/supergraph
-codex plugin install supergraph
+codex plugin add supergraph@supergraph
 
 # Or manual install from a local checkout
 git clone https://github.com/datit309/supergraph.git
