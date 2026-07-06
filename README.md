@@ -35,9 +35,9 @@ SuperGraph enforces planning, TDD, verification, review, and architecture-aware 
 | Claude Code     | Marketplace or local plugin    | `CLAUDE.md`    |
 | Antigravity CLI | Local installer                | `AGENTS.md`    |
 | Codex CLI       | Marketplace or local installer | `AGENTS.md`    |
-| OpenCode        | Local installer                | `AGENTS.md`    |
+| OpenCode        | Local installer                | `OPENCODE.md`  |
 
-Antigravity, Codex, and OpenCode use `AGENTS.md`; no `CLAUDE.md` is required for those platforms.
+Antigravity and Codex use `AGENTS.md`; OpenCode uses `OPENCODE.md`. No `CLAUDE.md` is required for those platforms.
 Antigravity hook environment variables and event names are best-effort until verified against a real install.
 
 ---
@@ -137,11 +137,11 @@ pip install code-review-graph
 /supergraph:scan
 ```
 
-The installer symlinks each skill folder into `.opencode/skills/<name>`, copies `AGENTS.md` to your project root, and prints the config snippet to add to your `opencode.json`:
+The installer symlinks each skill folder into `.opencode/skills/<name>`, copies `OPENCODE.md` to your project root, and prints the config snippet to add to your `opencode.json`:
 
 ```json
 {
-  "instructions": ["AGENTS.md"],
+  "instructions": ["OPENCODE.md"],
   "mcp": {
     "code-review-graph": { "type": "stdio", "command": "code-review-graph", "args": ["serve"] },
     "serena": { "type": "stdio", "command": "serena", "args": ["start-mcp-server", "--context=opencode", "--project-from-cwd"] }
@@ -149,9 +149,9 @@ The installer symlinks each skill folder into `.opencode/skills/<name>`, copies 
 }
 ```
 
-OpenCode uses `AGENTS.md` for project instructions. Skills and MCP work out of the box. Hooks (SessionStart, caveman, etc.) are not available on OpenCode — the platform uses a JS/TS plugin model instead of bash hooks.
+OpenCode uses `OPENCODE.md` for project instructions. Skills and MCP work out of the box. Hooks (SessionStart, caveman, etc.) are not available on OpenCode — the platform uses a JS/TS plugin model instead of bash hooks.
 
-**Invoking skills on OpenCode:** skills are loaded via the `skill` tool, not slash commands. Ask OpenCode: *"Use the scan skill"* or *"Load the plan skill"*. Skill names match the folder names (e.g. `scan`, `plan`, `tdd`).
+**Invoking skills on OpenCode:** use `/skills`, then choose `scan`, `plan`, `tdd`, etc. Do not use `/supergraph:*` in OpenCode.
 
 ---
 

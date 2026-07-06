@@ -118,7 +118,7 @@ case "$platform" in
       [ -d "$skill_dir" ] || continue
       link_path "$skill_dir" "$target/$(basename "$skill_dir")"
     done
-    cp "$source_dir/AGENTS.md" "$PWD/AGENTS.md" 2>/dev/null || true
+    cp "$source_dir/OPENCODE.md" "$PWD/OPENCODE.md" 2>/dev/null || true
     cat "$source_dir/.opencode-plugin/opencode.json"
     printf '\n\nAdd the above to your project opencode.json (or create it at project root), then restart OpenCode.\n'
     ;;

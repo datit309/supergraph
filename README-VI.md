@@ -35,9 +35,9 @@ SuperGraph áp đặt planning, TDD, verification, review, và ra quyết địn
 | Claude Code     | Marketplace hoặc plugin local    | `CLAUDE.md`    |
 | Antigravity CLI | Installer local                  | `AGENTS.md`    |
 | Codex CLI       | Marketplace hoặc installer local | `AGENTS.md`    |
-| OpenCode        | Installer local                  | `AGENTS.md`    |
+| OpenCode        | Installer local                  | `OPENCODE.md`  |
 
-Antigravity, Codex và OpenCode dùng `AGENTS.md`; không cần `CLAUDE.md` cho hai nền tảng này.
+Antigravity và Codex dùng `AGENTS.md`; OpenCode dùng `OPENCODE.md`. Không cần `CLAUDE.md` cho các nền tảng này.
 Biến môi trường hook và tên event của Antigravity hiện là best-effort cho tới khi được verify bằng cài đặt thật.
 
 ---
@@ -137,11 +137,11 @@ pip install code-review-graph
 /supergraph:scan
 ```
 
-Installer symlink từng skill vào `.opencode/skills/<name>`, copy `AGENTS.md` vào project root, và in snippet để thêm vào `opencode.json`:
+Installer symlink từng skill vào `.opencode/skills/<name>`, copy `OPENCODE.md` vào project root, và in snippet để thêm vào `opencode.json`:
 
 ```json
 {
-  "instructions": ["AGENTS.md"],
+  "instructions": ["OPENCODE.md"],
   "mcp": {
     "code-review-graph": { "type": "stdio", "command": "code-review-graph", "args": ["serve"] },
     "serena": { "type": "stdio", "command": "serena", "args": ["start-mcp-server", "--context=opencode", "--project-from-cwd"] }
@@ -149,9 +149,9 @@ Installer symlink từng skill vào `.opencode/skills/<name>`, copy `AGENTS.md` 
 }
 ```
 
-OpenCode dùng `AGENTS.md` cho project instructions. Skills và MCP chạy ngay. Hooks (SessionStart, caveman, v.v.) không có trên OpenCode — nền tảng này dùng mô hình plugin JS/TS.
+OpenCode dùng `OPENCODE.md` cho project instructions. Skills và MCP chạy ngay. Hooks (SessionStart, caveman, v.v.) không có trên OpenCode — nền tảng này dùng mô hình plugin JS/TS.
 
-**Cách gọi skill trên OpenCode:** skill được load qua `skill` tool, không phải slash command. Nói với OpenCode: *"Use the scan skill"* hoặc *"Load the plan skill"*. Tên skill trùng với tên folder (ví dụ: `scan`, `plan`, `tdd`).
+**Cách gọi skill trên OpenCode:** dùng `/skills`, rồi chọn `scan`, `plan`, `tdd`, v.v. Không dùng `/supergraph:*` trong OpenCode.
 
 ---
 

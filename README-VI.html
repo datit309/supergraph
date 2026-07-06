@@ -562,13 +562,13 @@
           <tr><td>Claude Code</td><td>Plugin marketplace</td><td><code>CLAUDE.md</code></td></tr>
           <tr><td>Antigravity CLI</td><td>Installer local</td><td><code>AGENTS.md</code></td></tr>
           <tr><td>Codex CLI</td><td>Marketplace hoặc installer local</td><td><code>AGENTS.md</code></td></tr>
-          <tr><td>OpenCode</td><td>Installer local</td><td><code>AGENTS.md</code></td></tr>
+          <tr><td>OpenCode</td><td>Installer local</td><td><code>OPENCODE.md</code></td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="callout warn" style="margin-bottom:28px;">
-      <strong>Lưu ý:</strong> Antigravity CLI, Codex CLI và OpenCode dùng <code>AGENTS.md</code>; không cần <code>CLAUDE.md</code>. Biến môi trường hook của Antigravity là best-effort cho tới khi được verify trên cài đặt thật.
+      <strong>Lưu ý:</strong> Antigravity CLI và Codex CLI dùng <code>AGENTS.md</code>; OpenCode dùng <code>OPENCODE.md</code>. Không cần <code>CLAUDE.md</code>. Biến môi trường hook của Antigravity là best-effort cho tới khi được verify trên cài đặt thật.
     </div>
 
     <h3 style="font-size:15px;margin-bottom:12px;">Cách 1 — Claude Code</h3>
@@ -611,16 +611,16 @@ plugins/supergraph/install.sh --platform opencode
 <span class="comment"># Lần chạy đầu</span>
 /supergraph:scan</code></pre>
 
-    <p>Installer symlink từng skill vào <code>.opencode/skills/&lt;name&gt;</code>, copy <code>AGENTS.md</code> vào project root, và in snippet để thêm vào <code>opencode.json</code>:</p>
+    <p>Installer symlink từng skill vào <code>.opencode/skills/&lt;name&gt;</code>, copy <code>OPENCODE.md</code> vào project root, và in snippet để thêm vào <code>opencode.json</code>:</p>
     <pre><code>{
-  <span class="str">"instructions"</span>: [<span class="str">"AGENTS.md"</span>],
+  <span class="str">"instructions"</span>: [<span class="str">"OPENCODE.md"</span>],
   <span class="str">"mcp"</span>: {
     <span class="str">"code-review-graph"</span>: { <span class="str">"type"</span>: <span class="str">"stdio"</span>, <span class="str">"command"</span>: <span class="str">"code-review-graph"</span>, <span class="str">"args"</span>: [<span class="str">"serve"</span>] },
     <span class="str">"serena"</span>: { <span class="str">"type"</span>: <span class="str">"stdio"</span>, <span class="str">"command"</span>: <span class="str">"serena"</span>, <span class="str">"args"</span>: [<span class="str">"start-mcp-server"</span>, <span class="str">"--context=opencode"</span>, <span class="str">"--project-from-cwd"</span>] }
   }
 }</code></pre>
-    <p>OpenCode dùng <code>AGENTS.md</code> cho project instructions. Skills và MCP chạy ngay. Hooks không có trên OpenCode (nền tảng này dùng mô hình plugin JS/TS).</p>
-    <p><strong>Cách gọi skill:</strong> skill được load qua <code>skill</code> tool, không phải slash command. Nói với OpenCode: <em>"Use the scan skill"</em> hoặc <em>"Load the plan skill"</em>. Tên skill trùng với tên folder (<code>scan</code>, <code>plan</code>, <code>tdd</code>, v.v.).</p>
+    <p>OpenCode dùng <code>OPENCODE.md</code> cho project instructions. Skills và MCP chạy ngay. Hooks không có trên OpenCode (nền tảng này dùng mô hình plugin JS/TS).</p>
+    <p><strong>Cách gọi skill:</strong> dùng <code>/skills</code>, rồi chọn <code>scan</code>, <code>plan</code>, <code>tdd</code>, v.v. Không dùng <code>/supergraph:*</code> trong OpenCode.</p>
 
     <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Code-Review-Graph (mọi nền tảng)</h3>
     <pre><code><span class="cmd">pip install</span> code-review-graph</code></pre>

@@ -1,5 +1,5 @@
 {
-  "instructions": ["./AGENTS.md"],
+  "instructions": ["OPENCODE.md"],
   "mcp": {
     "code-review-graph": {
       "type": "stdio",
