@@ -12,8 +12,10 @@
   "hooks": "./hooks/",
   "interface": {
     "displayName": "Supergraph — Graph-Driven AI Workflows",
-    "description": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review",
-    "category": "workflow"
+    "shortDescription": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review.",
+    "category": "workflow",
+    "capabilities": ["skills", "mcp", "hooks"],
+    "brandColor": "#6C63FF"
   },
   "mcpServers": {
     "code-review-graph": {
