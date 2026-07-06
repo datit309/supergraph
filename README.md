@@ -1,11 +1,11 @@
-# Supergraph for Claude Code
+# Supergraph for AI Coding Agents
 
 > [Tiếng Việt](./README-VI.md)
 
-**Turn Claude Code from a code generator into an engineering workflow system.**
+**Turn AI coding agents from code generators into engineering workflow systems.**
 
-> SuperGraph doesn't make Claude Code smarter.
-> It makes Claude Code behave like a disciplined engineer.
+> SuperGraph doesn't make your coding agent smarter.
+> It makes your coding agent behave like a disciplined engineer.
 
 SuperGraph enforces planning, TDD, verification, review, and architecture-aware decision making through mandatory workflows, graph intelligence, and LSP-powered code analysis.
 
@@ -28,11 +28,24 @@ SuperGraph enforces planning, TDD, verification, review, and architecture-aware 
 
 ---
 
+## Supported Platforms
+
+| Platform | Install path | Project memory |
+| -------- | ------------ | -------------- |
+| Claude Code | Marketplace or local plugin | `CLAUDE.md` |
+| Antigravity CLI | Local installer | `AGENTS.md` |
+| Codex CLI | Local installer | `AGENTS.md` |
+
+Antigravity and Codex use `AGENTS.md`; no `CLAUDE.md` is required for those platforms.
+Antigravity hook environment variables and event names are best-effort until verified against a real install.
+
+---
+
 ## Prerequisites
 
 | Dependency                                                          | Required | Install                                       |
 | ------------------------------------------------------------------- | -------- | --------------------------------------------- |
-| [Claude Code](https://claude.ai/code) CLI                           | ✅ Yes   | See Claude Code docs                          |
+| Claude Code, Antigravity CLI, or Codex CLI                          | ✅ Yes   | See your platform docs                        |
 | Python 3.10+                                                        | ✅ Yes   | `brew install python` / `apt install python3` |
 | [code-review-graph](https://github.com/tirth8205/code-review-graph) | ✅ Yes   | `pip install code-review-graph`               |
 | [uv](https://docs.astral.sh/uv/)                                    | Optional | `brew install uv`                             |
@@ -43,27 +56,63 @@ SuperGraph enforces planning, TDD, verification, review, and architecture-aware 
 
 ## Installation
 
-### Option 1 — Git Marketplace (Recommended)
+### Option 1 — Claude Code
 
 ```bash
-# Add plugin marketplace from Git repo
+# Install from Git marketplace (recommended)
 /plugin marketplace add https://github.com/datit309/supergraph.git
-
-# Install the plugin
 /plugin install supergraph
+
+# Or install from a local checkout
+git clone https://github.com/datit309/supergraph.git
+/plugin marketplace add ./supergraph
+/plugin install supergraph
+
+# MCP setup
+pip install code-review-graph
+
+# First run
+/supergraph:scan
 
 # Update later
 /plugin marketplace update supergraph
 ```
 
-### Option 2 — Local Directory
+### Option 2 — Antigravity CLI
 
 ```bash
 git clone https://github.com/datit309/supergraph.git
+cd supergraph
 
-/plugin marketplace add ./supergraph
-/plugin install supergraph
+# Install plugin files for Antigravity
+plugins/supergraph/install.sh --platform antigravity
+
+# MCP setup
+pip install code-review-graph
+
+# First run
+/supergraph:scan
 ```
+
+Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
+
+### Option 3 — Codex CLI
+
+```bash
+git clone https://github.com/datit309/supergraph.git
+cd supergraph
+
+# Install plugin files for Codex CLI
+plugins/supergraph/install.sh --platform codex
+
+# MCP setup
+pip install code-review-graph
+
+# First run
+/supergraph:scan
+```
+
+Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
 
 ---
 

@@ -1,0 +1,42 @@
+{
+  "_comment": "UNCONFIRMED: verify ANTIGRAVITY_PLUGIN_ROOT env var and event names on real Antigravity install.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "command": "\"${ANTIGRAVITY_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-start",
+        "async": false
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "command": "\"${ANTIGRAVITY_PLUGIN_ROOT}/hooks/run-hook.cmd\" user-prompt-submit",
+        "async": false
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "command": "\"${ANTIGRAVITY_PLUGIN_ROOT}/hooks/run-hook.cmd\" pre-tool-use"
+      },
+      {
+        "matcher": "Bash",
+        "command": "\"${ANTIGRAVITY_PLUGIN_ROOT}/hooks/run-hook.cmd\" bash-guard"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "command": "\"${ANTIGRAVITY_PLUGIN_ROOT}/hooks/run-hook.cmd\" post-tool-use"
+      },
+      {
+        "matcher": "Bash",
+        "command": "\"${ANTIGRAVITY_PLUGIN_ROOT}/hooks/run-hook.cmd\" post-tool-use-bash"
+      }
+    ],
+    "Stop": [
+      {
+        "command": "\"${ANTIGRAVITY_PLUGIN_ROOT}/hooks/run-hook.cmd\" stop"
+      }
+    ]
+  }
+}
