@@ -30,11 +30,11 @@ SuperGraph enforces planning, TDD, verification, review, and architecture-aware 
 
 ## Supported Platforms
 
-| Platform | Install path | Project memory |
-| -------- | ------------ | -------------- |
-| Claude Code | Marketplace or local plugin | `CLAUDE.md` |
-| Antigravity CLI | Local installer | `AGENTS.md` |
-| Codex CLI | Marketplace or local installer | `AGENTS.md` |
+| Platform        | Install path                   | Project memory |
+| --------------- | ------------------------------ | -------------- |
+| Claude Code     | Marketplace or local plugin    | `CLAUDE.md`    |
+| Antigravity CLI | Local installer                | `AGENTS.md`    |
+| Codex CLI       | Marketplace or local installer | `AGENTS.md`    |
 
 Antigravity and Codex use `AGENTS.md`; no `CLAUDE.md` is required for those platforms.
 Antigravity hook environment variables and event names are best-effort until verified against a real install.
@@ -99,8 +99,9 @@ Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
 ### Option 3 — Codex CLI
 
 ```bash
-# Install via Codex marketplace (recommended)
+# Add marketplace + install plugin (recommended)
 codex plugin marketplace add datit309/supergraph
+codex plugin install supergraph
 
 # Or manual install from a local checkout
 git clone https://github.com/datit309/supergraph.git
