@@ -1,11 +1,11 @@
-# Supergraph cho Claude Code
+# Supergraph cho AI Coding Agents
 
 > [English](./README.md)
 
-**Biến Claude Code từ một công cụ sinh code thành một hệ thống workflow kỹ thuật phần mềm.**
+**Biến AI coding agent từ công cụ sinh code thành hệ thống workflow kỹ thuật phần mềm.**
 
-> SuperGraph không làm Claude Code thông minh hơn.
-> Nó làm Claude Code hành xử như một kỹ sư có kỷ luật.
+> SuperGraph không làm coding agent của bạn thông minh hơn.
+> Nó làm coding agent hành xử như một kỹ sư có kỷ luật.
 
 SuperGraph áp đặt planning, TDD, verification, review, và ra quyết định có nhận thức về kiến trúc thông qua các workflow bắt buộc, graph intelligence, và phân tích code bằng LSP.
 
@@ -28,11 +28,24 @@ SuperGraph áp đặt planning, TDD, verification, review, và ra quyết địn
 
 ---
 
+## Nền tảng hỗ trợ
+
+| Nền tảng | Đường dẫn cài đặt | Bộ nhớ project |
+|---|---|---|
+| Claude Code | Marketplace hoặc plugin local | `CLAUDE.md` |
+| Antigravity CLI | Installer local | `AGENTS.md` |
+| Codex CLI | Installer local | `AGENTS.md` |
+
+Antigravity và Codex dùng `AGENTS.md`; không cần `CLAUDE.md` cho hai nền tảng này.
+Biến môi trường hook và tên event của Antigravity hiện là best-effort cho tới khi được verify bằng cài đặt thật.
+
+---
+
 ## Yêu cầu
 
 | Dependency | Bắt buộc | Cài đặt |
 |---|---|---|
-| [Claude Code](https://claude.ai/code) CLI | ✅ Có | Xem tài liệu Claude Code |
+| Claude Code, Antigravity CLI, hoặc Codex CLI | ✅ Có | Xem tài liệu nền tảng bạn dùng |
 | Python 3.10+ | ✅ Có | `brew install python` / `apt install python3` |
 | [code-review-graph](https://github.com/tirth8205/code-review-graph) | ✅ Có | `pip install code-review-graph` |
 | [uv](https://docs.astral.sh/uv/) | Tuỳ chọn | `brew install uv` |
@@ -43,27 +56,63 @@ SuperGraph áp đặt planning, TDD, verification, review, và ra quyết địn
 
 ## Cài đặt
 
-### Cách 1 — Git Marketplace (Khuyến nghị)
+### Cách 1 — Claude Code
 
 ```bash
-# Thêm plugin marketplace từ Git repo
+# Cài từ Git marketplace (khuyến nghị)
 /plugin marketplace add https://github.com/datit309/supergraph.git
-
-# Cài plugin
 /plugin install supergraph
+
+# Hoặc cài từ checkout local
+git clone https://github.com/datit309/supergraph.git
+/plugin marketplace add ./supergraph
+/plugin install supergraph
+
+# Cài MCP
+pip install code-review-graph
+
+# Lần chạy đầu
+/supergraph:scan
 
 # Cập nhật sau này
 /plugin marketplace update supergraph
 ```
 
-### Cách 2 — Thư mục Local
+### Cách 2 — Antigravity CLI
 
 ```bash
 git clone https://github.com/datit309/supergraph.git
+cd supergraph
 
-/plugin marketplace add ./supergraph
-/plugin install supergraph
+# Cài file plugin cho Antigravity
+plugins/supergraph/install.sh --platform antigravity
+
+# Cài MCP
+pip install code-review-graph
+
+# Lần chạy đầu
+/supergraph:scan
 ```
+
+Dùng `AGENTS.md` cho project instructions; không cần `CLAUDE.md`.
+
+### Cách 3 — Codex CLI
+
+```bash
+git clone https://github.com/datit309/supergraph.git
+cd supergraph
+
+# Cài file plugin cho Codex CLI
+plugins/supergraph/install.sh --platform codex
+
+# Cài MCP
+pip install code-review-graph
+
+# Lần chạy đầu
+/supergraph:scan
+```
+
+Dùng `AGENTS.md` cho project instructions; không cần `CLAUDE.md`.
 
 ---
 
