@@ -602,7 +602,7 @@ plugins/supergraph/install.sh --platform codex</code></pre>
     <pre><code>git clone https://github.com/datit309/supergraph.git
 cd supergraph
 
-<span class="comment"># Cài file plugin cho OpenCode</span>
+<span class="comment"># Symlink skills + in snippet opencode.json</span>
 plugins/supergraph/install.sh --platform opencode
 
 <span class="comment"># Cài MCP</span>
@@ -611,6 +611,14 @@ plugins/supergraph/install.sh --platform opencode
 <span class="comment"># Lần chạy đầu</span>
 /supergraph:scan</code></pre>
 
+    <p>Installer symlink skills vào <code>.opencode/skills/supergraph</code>, copy <code>AGENTS.md</code> vào project root, và in snippet để thêm vào <code>opencode.json</code>:</p>
+    <pre><code>{
+  <span class="str">"instructions"</span>: [<span class="str">"AGENTS.md"</span>],
+  <span class="str">"mcp"</span>: {
+    <span class="str">"code-review-graph"</span>: { <span class="str">"type"</span>: <span class="str">"stdio"</span>, <span class="str">"command"</span>: <span class="str">"code-review-graph"</span>, <span class="str">"args"</span>: [<span class="str">"serve"</span>] },
+    <span class="str">"serena"</span>: { <span class="str">"type"</span>: <span class="str">"stdio"</span>, <span class="str">"command"</span>: <span class="str">"serena"</span>, <span class="str">"args"</span>: [<span class="str">"start-mcp-server"</span>, <span class="str">"--context=opencode"</span>, <span class="str">"--project-from-cwd"</span>] }
+  }
+}</code></pre>
     <p>OpenCode dùng <code>AGENTS.md</code> cho project instructions. Skills và MCP chạy ngay. Hooks (SessionStart, caveman, v.v.) không có trên OpenCode — nền tảng này dùng mô hình plugin JS/TS thay vì bash hooks. Gọi skill thủ công bằng <code>/supergraph:&lt;name&gt;</code>.</p>
 
     <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Code-Review-Graph (mọi nền tảng)</h3>

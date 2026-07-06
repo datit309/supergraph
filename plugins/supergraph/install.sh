@@ -11,7 +11,7 @@ usage() {
     '  claude       -> ~/.claude/plugins/supergraph' \
     '  antigravity  -> ~/.gemini/antigravity-cli/plugins/supergraph' \
     '  codex        -> ./.codex-plugin' \
-    '  opencode     -> ./.opencode/plugins/supergraph'
+    '  opencode     -> ./.opencode/skills/supergraph (skills symlink + prints opencode.json snippet)'
 }
 
 platform_arg=''
@@ -65,7 +65,7 @@ next_steps() {
     claude) printf 'Next: run /supergraph:scan\n' ;;
     antigravity) printf 'Next: start Antigravity CLI in your project and ask it to use supergraph skills\n' ;;
     codex) printf 'Next: run codex and confirm plugin skills loaded\n' ;;
-    opencode) printf 'Next: start OpenCode in your project and run /supergraph:scan\n' ;;
+    opencode) printf 'Next: add the printed config snippet to your opencode.json, then run /supergraph:scan\n' ;;
   esac
 }
 
@@ -86,7 +86,7 @@ case "$platform" in
   claude) target="$HOME/.claude/plugins/supergraph" ;;
   antigravity) target="$HOME/.gemini/antigravity-cli/plugins/supergraph" ;;
   codex) target="$PWD/.codex-plugin" ;;
-  opencode) target="$PWD/.opencode/plugins/supergraph" ;;
+  opencode) target="$PWD/.opencode/skills/supergraph" ;;
 esac
 
 printf 'Platform: %s\n' "$platform"
@@ -113,11 +113,11 @@ case "$platform" in
     link_path "$source_dir/hooks" "$target/hooks"
     ;;
   opencode)
-    mkdir -p "$target"
-    link_path "$source_dir/.opencode-plugin/opencode.json" "$target/opencode.json"
-    link_path "$source_dir/skills" "$target/skills"
-    link_path "$source_dir/agents" "$target/agents"
-    link_path "$source_dir/AGENTS.md" "$target/AGENTS.md"
+    mkdir -p "$(dirname "$target")"
+    link_path "$source_dir/skills" "$target"
+    cp "$source_dir/AGENTS.md" "$PWD/AGENTS.md" 2>/dev/null || true
+    cat "$source_dir/.opencode-plugin/opencode.json"
+    printf '\n\nAdd the above to your project opencode.json (or create it at project root).\n'
     ;;
 esac
 

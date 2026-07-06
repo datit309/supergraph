@@ -127,7 +127,7 @@ Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
 git clone https://github.com/datit309/supergraph.git
 cd supergraph
 
-# Install plugin files for OpenCode
+# Symlink skills + print opencode.json config snippet
 plugins/supergraph/install.sh --platform opencode
 
 # MCP setup
@@ -135,6 +135,18 @@ pip install code-review-graph
 
 # First run
 /supergraph:scan
+```
+
+The installer symlinks skills into `.opencode/skills/supergraph`, copies `AGENTS.md` to your project root, and prints the config snippet to add to your `opencode.json`:
+
+```json
+{
+  "instructions": ["AGENTS.md"],
+  "mcp": {
+    "code-review-graph": { "type": "stdio", "command": "code-review-graph", "args": ["serve"] },
+    "serena": { "type": "stdio", "command": "serena", "args": ["start-mcp-server", "--context=opencode", "--project-from-cwd"] }
+  }
+}
 ```
 
 OpenCode uses `AGENTS.md` for project instructions. Skills and MCP work out of the box. Hooks (SessionStart, caveman, etc.) are not available on OpenCode — the platform uses a JS/TS plugin model instead of bash hooks. Trigger skills manually via `/supergraph:<name>`.
