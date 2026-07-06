@@ -9,7 +9,7 @@
   "license": "MIT",
   "skills": "./skills/",
   "agents": "./agents/",
-  "hooks": "./hooks/",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Supergraph — Graph-Driven AI Workflows",
     "shortDescription": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review.",
