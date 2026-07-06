@@ -102,6 +102,7 @@ case "$platform" in
   codex)
     mkdir -p "$target"
     link_path "$source_dir/.codex-plugin/plugin.json" "$target/plugin.json"
+    link_path "$source_dir/.codex-plugin/.mcp.json" "$target/.mcp.json"
     link_path "$source_dir/skills" "$target/skills"
     link_path "$source_dir/agents" "$target/agents"
     link_path "$source_dir/hooks" "$target/hooks"

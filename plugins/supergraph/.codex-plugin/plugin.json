@@ -17,16 +17,7 @@
     "capabilities": ["skills", "mcp", "hooks"],
     "brandColor": "#6C63FF"
   },
-  "mcpServers": {
-    "code-review-graph": {
-      "command": "code-review-graph",
-      "args": ["serve"]
-    },
-    "serena": {
-      "command": "serena",
-      "args": ["start-mcp-server", "--context=codex", "--project-from-cwd"]
-    }
-  },
+  "mcpServers": "./.mcp.json",
   "keywords": [
     "code-review-graph",
     "supergraph",

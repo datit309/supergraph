@@ -1,0 +1,12 @@
+{
+  "mcp_servers": {
+    "code-review-graph": {
+      "command": "code-review-graph",
+      "args": ["serve"]
+    },
+    "serena": {
+      "command": "serena",
+      "args": ["start-mcp-server", "--context=codex", "--project-from-cwd"]
+    }
+  }
+}
