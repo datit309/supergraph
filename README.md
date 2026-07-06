@@ -137,7 +137,7 @@ pip install code-review-graph
 /supergraph:scan
 ```
 
-The installer symlinks skills into `.opencode/skills/supergraph`, copies `AGENTS.md` to your project root, and prints the config snippet to add to your `opencode.json`:
+The installer symlinks each skill folder into `.opencode/skills/<name>`, copies `AGENTS.md` to your project root, and prints the config snippet to add to your `opencode.json`:
 
 ```json
 {
@@ -149,7 +149,9 @@ The installer symlinks skills into `.opencode/skills/supergraph`, copies `AGENTS
 }
 ```
 
-OpenCode uses `AGENTS.md` for project instructions. Skills and MCP work out of the box. Hooks (SessionStart, caveman, etc.) are not available on OpenCode — the platform uses a JS/TS plugin model instead of bash hooks. Trigger skills manually via `/supergraph:<name>`.
+OpenCode uses `AGENTS.md` for project instructions. Skills and MCP work out of the box. Hooks (SessionStart, caveman, etc.) are not available on OpenCode — the platform uses a JS/TS plugin model instead of bash hooks.
+
+**Invoking skills on OpenCode:** skills are loaded via the `skill` tool, not slash commands. Ask OpenCode: *"Use the scan skill"* or *"Load the plan skill"*. Skill names match the folder names (e.g. `scan`, `plan`, `tdd`).
 
 ---
 

@@ -11,7 +11,7 @@ usage() {
     '  claude       -> ~/.claude/plugins/supergraph' \
     '  antigravity  -> ~/.gemini/antigravity-cli/plugins/supergraph' \
     '  codex        -> ./.codex-plugin' \
-    '  opencode     -> ./.opencode/skills/supergraph (skills symlink + prints opencode.json snippet)'
+    '  opencode     -> ./.opencode/skills/<skill>/ (flat skill symlinks + prints opencode.json snippet)'
 }
 
 platform_arg=''
@@ -65,7 +65,7 @@ next_steps() {
     claude) printf 'Next: run /supergraph:scan\n' ;;
     antigravity) printf 'Next: start Antigravity CLI in your project and ask it to use supergraph skills\n' ;;
     codex) printf 'Next: run codex and confirm plugin skills loaded\n' ;;
-    opencode) printf 'Next: add the printed config snippet to your opencode.json, then run /supergraph:scan\n' ;;
+    opencode) printf 'Next: add the printed config snippet to your opencode.json, restart OpenCode, then ask it to use the scan skill\n' ;;
   esac
 }
 
@@ -86,7 +86,7 @@ case "$platform" in
   claude) target="$HOME/.claude/plugins/supergraph" ;;
   antigravity) target="$HOME/.gemini/antigravity-cli/plugins/supergraph" ;;
   codex) target="$PWD/.codex-plugin" ;;
-  opencode) target="$PWD/.opencode/skills/supergraph" ;;
+  opencode) target="$PWD/.opencode/skills" ;;
 esac
 
 printf 'Platform: %s\n' "$platform"
@@ -113,11 +113,14 @@ case "$platform" in
     link_path "$source_dir/hooks" "$target/hooks"
     ;;
   opencode)
-    mkdir -p "$(dirname "$target")"
-    link_path "$source_dir/skills" "$target"
+    mkdir -p "$target"
+    for skill_dir in "$source_dir"/skills/*; do
+      [ -d "$skill_dir" ] || continue
+      link_path "$skill_dir" "$target/$(basename "$skill_dir")"
+    done
     cp "$source_dir/AGENTS.md" "$PWD/AGENTS.md" 2>/dev/null || true
     cat "$source_dir/.opencode-plugin/opencode.json"
-    printf '\n\nAdd the above to your project opencode.json (or create it at project root).\n'
+    printf '\n\nAdd the above to your project opencode.json (or create it at project root), then restart OpenCode.\n'
     ;;
 esac
 

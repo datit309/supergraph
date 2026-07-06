@@ -611,7 +611,7 @@ plugins/supergraph/install.sh --platform opencode
 <span class="comment"># Lần chạy đầu</span>
 /supergraph:scan</code></pre>
 
-    <p>Installer symlink skills vào <code>.opencode/skills/supergraph</code>, copy <code>AGENTS.md</code> vào project root, và in snippet để thêm vào <code>opencode.json</code>:</p>
+    <p>Installer symlink từng skill vào <code>.opencode/skills/&lt;name&gt;</code>, copy <code>AGENTS.md</code> vào project root, và in snippet để thêm vào <code>opencode.json</code>:</p>
     <pre><code>{
   <span class="str">"instructions"</span>: [<span class="str">"AGENTS.md"</span>],
   <span class="str">"mcp"</span>: {
@@ -619,7 +619,8 @@ plugins/supergraph/install.sh --platform opencode
     <span class="str">"serena"</span>: { <span class="str">"type"</span>: <span class="str">"stdio"</span>, <span class="str">"command"</span>: <span class="str">"serena"</span>, <span class="str">"args"</span>: [<span class="str">"start-mcp-server"</span>, <span class="str">"--context=opencode"</span>, <span class="str">"--project-from-cwd"</span>] }
   }
 }</code></pre>
-    <p>OpenCode dùng <code>AGENTS.md</code> cho project instructions. Skills và MCP chạy ngay. Hooks (SessionStart, caveman, v.v.) không có trên OpenCode — nền tảng này dùng mô hình plugin JS/TS thay vì bash hooks. Gọi skill thủ công bằng <code>/supergraph:&lt;name&gt;</code>.</p>
+    <p>OpenCode dùng <code>AGENTS.md</code> cho project instructions. Skills và MCP chạy ngay. Hooks không có trên OpenCode (nền tảng này dùng mô hình plugin JS/TS).</p>
+    <p><strong>Cách gọi skill:</strong> skill được load qua <code>skill</code> tool, không phải slash command. Nói với OpenCode: <em>"Use the scan skill"</em> hoặc <em>"Load the plan skill"</em>. Tên skill trùng với tên folder (<code>scan</code>, <code>plan</code>, <code>tdd</code>, v.v.).</p>
 
     <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Code-Review-Graph (mọi nền tảng)</h3>
     <pre><code><span class="cmd">pip install</span> code-review-graph</code></pre>
