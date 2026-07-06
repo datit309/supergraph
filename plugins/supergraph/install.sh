@@ -3,14 +3,15 @@ set -euo pipefail
 
 usage() {
   printf '%s\n' \
-    'Usage: install.sh [--platform claude|antigravity|codex] [--dry-run] [--help]' \
+    'Usage: install.sh [--platform claude|antigravity|codex|opencode] [--dry-run] [--help]' \
     '' \
     'Installs Supergraph plugin via symlink.' \
     '' \
     'Platforms:' \
     '  claude       -> ~/.claude/plugins/supergraph' \
     '  antigravity  -> ~/.gemini/antigravity-cli/plugins/supergraph' \
-    '  codex        -> ./.codex-plugin'
+    '  codex        -> ./.codex-plugin' \
+    '  opencode     -> ./.opencode/plugins/supergraph'
 }
 
 platform_arg=''
@@ -42,7 +43,7 @@ done
 platform_detect() {
   if [ -n "$platform_arg" ]; then
     case "$platform_arg" in
-      claude|antigravity|codex) printf '%s\n' "$platform_arg" ;;
+      claude|antigravity|codex|opencode) printf '%s\n' "$platform_arg" ;;
       *) printf 'Unsupported platform: %s\n' "$platform_arg" >&2; exit 2 ;;
     esac
   elif command -v claude >/dev/null 2>&1; then
@@ -51,8 +52,10 @@ platform_detect() {
     printf 'antigravity\n'
   elif command -v codex >/dev/null 2>&1; then
     printf 'codex\n'
+  elif command -v opencode >/dev/null 2>&1; then
+    printf 'opencode\n'
   else
-    printf 'No supported CLI detected. Re-run with --platform claude|antigravity|codex.\n' >&2
+    printf 'No supported CLI detected. Re-run with --platform claude|antigravity|codex|opencode.\n' >&2
     exit 1
   fi
 }
@@ -62,6 +65,7 @@ next_steps() {
     claude) printf 'Next: run /supergraph:scan\n' ;;
     antigravity) printf 'Next: start Antigravity CLI in your project and ask it to use supergraph skills\n' ;;
     codex) printf 'Next: run codex and confirm plugin skills loaded\n' ;;
+    opencode) printf 'Next: start OpenCode in your project and run /supergraph:scan\n' ;;
   esac
 }
 
@@ -82,6 +86,7 @@ case "$platform" in
   claude) target="$HOME/.claude/plugins/supergraph" ;;
   antigravity) target="$HOME/.gemini/antigravity-cli/plugins/supergraph" ;;
   codex) target="$PWD/.codex-plugin" ;;
+  opencode) target="$PWD/.opencode/plugins/supergraph" ;;
 esac
 
 printf 'Platform: %s\n' "$platform"
@@ -106,6 +111,13 @@ case "$platform" in
     link_path "$source_dir/skills" "$target/skills"
     link_path "$source_dir/agents" "$target/agents"
     link_path "$source_dir/hooks" "$target/hooks"
+    ;;
+  opencode)
+    mkdir -p "$target"
+    link_path "$source_dir/.opencode-plugin/opencode.json" "$target/opencode.json"
+    link_path "$source_dir/skills" "$target/skills"
+    link_path "$source_dir/agents" "$target/agents"
+    link_path "$source_dir/AGENTS.md" "$target/AGENTS.md"
     ;;
 esac
 
