@@ -1,0 +1,17 @@
+{
+  "instructions": ["./AGENTS.md"],
+  "mcp": {
+    "code-review-graph": {
+      "type": "stdio",
+      "command": "code-review-graph",
+      "args": ["serve"],
+      "enabled": true
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "serena",
+      "args": ["start-mcp-server", "--context=opencode", "--project-from-cwd"],
+      "enabled": true
+    }
+  }
+}
