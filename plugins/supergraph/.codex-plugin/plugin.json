@@ -1,0 +1,48 @@
+{
+  "name": "supergraph",
+  "version": "2.2.3",
+  "description": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review, grounded in real codebase analysis.",
+  "author": {
+    "name": "datit309",
+    "email": "trantandat0919@gmail.com"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "hooks": "./hooks/",
+  "interface": {
+    "displayName": "Supergraph — Graph-Driven AI Workflows",
+    "description": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review",
+    "category": "workflow"
+  },
+  "mcpServers": {
+    "code-review-graph": {
+      "command": "code-review-graph",
+      "args": ["serve"]
+    },
+    "serena": {
+      "command": "serena",
+      "args": ["start-mcp-server", "--context=codex", "--project-from-cwd"]
+    }
+  },
+  "keywords": [
+    "code-review-graph",
+    "supergraph",
+    "serena",
+    "tdd",
+    "blast-radius",
+    "code-review",
+    "workflow",
+    "debugging",
+    "architecture",
+    "triage",
+    "prd",
+    "nodejs",
+    "flutter",
+    "php",
+    "python",
+    "go",
+    "rust"
+  ],
+  "homepage": "https://github.com/datit309/supergraph"
+}

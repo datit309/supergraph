@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hướng Dẫn Sử Dụng Supergraph — Plugin cho Claude Code</title>
+  <title>Hướng Dẫn Sử Dụng Supergraph — Plugin cho AI Coding Agents</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
@@ -491,12 +491,12 @@
 <div class="hero">
   <div class="hero-badge">
     <span class="dot"></span>
-    Plugin cho Claude Code &middot; v2.1.0
+    Plugin cho AI Coding Agents &middot; v2.2.3
   </div>
   <h1>Hướng dẫn sử dụng<br><em>Supergraph</em></h1>
   <p class="subtitle">
     Bộ plugin kết hợp quy trình AI bắt buộc, phân tích codebase dạng đồ thị và tích hợp LSP thông minh —
-    biến Claude Code thành một kỹ sư phần mềm có kỷ luật.
+    biến AI coding agent của bạn thành một kỹ sư phần mềm có kỷ luật.
   </p>
 </div>
 
@@ -526,7 +526,7 @@
     <div class="section-label">Giới thiệu</div>
     <h2 class="section-title">Supergraph là gì?</h2>
     <p class="section-desc">
-      Supergraph là một plugin dành cho Claude Code, kết hợp ba công cụ mạnh mẽ thành một hệ thống nhất:
+      Supergraph là một plugin dành cho các AI coding agent (Claude Code, Antigravity CLI, Codex CLI), kết hợp ba công cụ mạnh mẽ thành một hệ thống nhất:
     </p>
     <div class="card-grid">
       <div class="card">
@@ -552,29 +552,49 @@
     <div class="section-label">Bắt đầu</div>
     <h2 class="section-title">Cài đặt nhanh</h2>
     <p class="section-desc">
-      Chỉ cần vài lệnh để cài đặt Supergraph vào Claude Code và thiết lập graph cho dự án của bạn.
+      Hỗ trợ Claude Code, Antigravity CLI và Codex CLI. Chọn nền tảng bạn đang dùng.
     </p>
 
-    <h3 style="font-size:15px;margin-bottom:12px;">Bước 1 — Cài plugin</h3>
-    <pre><code><span class="comment"># Cài từ Git repository</span>
+    <div class="table-wrap" style="margin-bottom:28px;">
+      <table>
+        <thead><tr><th>Nền tảng</th><th>Cách cài</th><th>File cấu hình</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td>Plugin marketplace</td><td><code>CLAUDE.md</code></td></tr>
+          <tr><td>Antigravity CLI</td><td>Installer local</td><td><code>AGENTS.md</code></td></tr>
+          <tr><td>Codex CLI</td><td>Installer local</td><td><code>AGENTS.md</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn" style="margin-bottom:28px;">
+      <strong>Lưu ý:</strong> Antigravity CLI và Codex CLI dùng <code>AGENTS.md</code>; không cần <code>CLAUDE.md</code>. Biến môi trường hook của Antigravity là best-effort cho tới khi được verify trên cài đặt thật.
+    </div>
+
+    <h3 style="font-size:15px;margin-bottom:12px;">Cách 1 — Claude Code</h3>
+    <pre><code><span class="comment"># Cài từ Git marketplace (khuyến nghị)</span>
 <span class="cmd">/plugin marketplace add</span> <span class="str">https://github.com/datit309/supergraph.git</span>
 <span class="cmd">/plugin install</span> supergraph
 
-<span class="comment"># Hoặc clone về máy rồi cài local</span>
-git clone https://github.com/datit309/supergraph.git
-<span class="cmd">/plugin marketplace add</span> ./supergraph
-<span class="cmd">/plugin install</span> supergraph
-
-<span class="comment"># Cập nhật plugin</span>
+<span class="comment"># Cập nhật sau này</span>
 <span class="cmd">/plugin marketplace update</span> supergraph</code></pre>
 
-    <h3 style="font-size:15px;margin:28px 0 12px;">Bước 2 — Thiết lập Code-Review-Graph</h3>
-    <pre><code><span class="cmd">pip install</span> code-review-graph
-<span class="cmd">code-review-graph</span> install
-<span class="cmd">code-review-graph</span> build</code></pre>
+    <h3 style="font-size:15px;margin:28px 0 12px;">Cách 2 — Antigravity CLI</h3>
+    <pre><code>git clone https://github.com/datit309/supergraph.git
+cd supergraph
+<span class="comment"># Cài file plugin cho Antigravity</span>
+plugins/supergraph/install.sh --platform antigravity</code></pre>
+
+    <h3 style="font-size:15px;margin:28px 0 12px;">Cách 3 — Codex CLI</h3>
+    <pre><code>git clone https://github.com/datit309/supergraph.git
+cd supergraph
+<span class="comment"># Cài file plugin cho Codex CLI</span>
+plugins/supergraph/install.sh --platform codex</code></pre>
+
+    <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Code-Review-Graph (mọi nền tảng)</h3>
+    <pre><code><span class="cmd">pip install</span> code-review-graph</code></pre>
 
     <div class="callout">
-      <strong>Yêu cầu hệ thống:</strong> Claude Code CLI có hỗ trợ MCP, Python 3.10 trở lên, và Git.
+      <strong>Yêu cầu hệ thống:</strong> Claude Code, Antigravity CLI, hoặc Codex CLI; Python 3.10 trở lên; Git.
     </div>
   </section>
 
@@ -991,7 +1011,7 @@ git clone https://github.com/datit309/supergraph.git
     <a href="https://github.com/datit309/supergraph" target="_blank">GitHub: datit309/supergraph</a>
     &nbsp;·&nbsp; Giấy phép MIT
   </p>
-  <p>Tài liệu hướng dẫn được tạo tự động từ repository. Phiên bản plugin: v2.1.0</p>
+  <p>Tài liệu hướng dẫn được tạo tự động từ repository. Phiên bản plugin: v2.2.3</p>
 </footer>
 
 </body>
