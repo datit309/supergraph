@@ -34,7 +34,7 @@ SuperGraph áp đặt planning, TDD, verification, review, và ra quyết địn
 |---|---|---|
 | Claude Code | Marketplace hoặc plugin local | `CLAUDE.md` |
 | Antigravity CLI | Installer local | `AGENTS.md` |
-| Codex CLI | Installer local | `AGENTS.md` |
+| Codex CLI | Marketplace hoặc installer local | `AGENTS.md` |
 
 Antigravity và Codex dùng `AGENTS.md`; không cần `CLAUDE.md` cho hai nền tảng này.
 Biến môi trường hook và tên event của Antigravity hiện là best-effort cho tới khi được verify bằng cài đặt thật.
@@ -99,10 +99,12 @@ Dùng `AGENTS.md` cho project instructions; không cần `CLAUDE.md`.
 ### Cách 3 — Codex CLI
 
 ```bash
+# Cài qua Codex marketplace (khuyến nghị)
+codex plugin marketplace add datit309/supergraph
+
+# Hoặc cài thủ công từ checkout local
 git clone https://github.com/datit309/supergraph.git
 cd supergraph
-
-# Cài file plugin cho Codex CLI
 plugins/supergraph/install.sh --platform codex
 
 # Cài MCP
@@ -110,6 +112,9 @@ pip install code-review-graph
 
 # Lần chạy đầu
 /supergraph:scan
+
+# Cập nhật sau này
+codex plugin marketplace upgrade supergraph
 ```
 
 Dùng `AGENTS.md` cho project instructions; không cần `CLAUDE.md`.

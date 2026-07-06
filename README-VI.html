@@ -561,7 +561,7 @@
         <tbody>
           <tr><td>Claude Code</td><td>Plugin marketplace</td><td><code>CLAUDE.md</code></td></tr>
           <tr><td>Antigravity CLI</td><td>Installer local</td><td><code>AGENTS.md</code></td></tr>
-          <tr><td>Codex CLI</td><td>Installer local</td><td><code>AGENTS.md</code></td></tr>
+          <tr><td>Codex CLI</td><td>Marketplace hoặc installer local</td><td><code>AGENTS.md</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -585,10 +585,16 @@ cd supergraph
 plugins/supergraph/install.sh --platform antigravity</code></pre>
 
     <h3 style="font-size:15px;margin:28px 0 12px;">Cách 3 — Codex CLI</h3>
-    <pre><code>git clone https://github.com/datit309/supergraph.git
+    <pre><code><span class="comment"># Cài qua Codex marketplace (khuyến nghị)</span>
+codex plugin marketplace add datit309/supergraph
+
+<span class="comment"># Hoặc cài thủ công từ checkout local</span>
+git clone https://github.com/datit309/supergraph.git
 cd supergraph
-<span class="comment"># Cài file plugin cho Codex CLI</span>
-plugins/supergraph/install.sh --platform codex</code></pre>
+plugins/supergraph/install.sh --platform codex
+
+<span class="comment"># Cập nhật sau này</span>
+codex plugin marketplace upgrade supergraph</code></pre>
 
     <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Code-Review-Graph (mọi nền tảng)</h3>
     <pre><code><span class="cmd">pip install</span> code-review-graph</code></pre>

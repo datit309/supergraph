@@ -34,7 +34,7 @@ SuperGraph enforces planning, TDD, verification, review, and architecture-aware 
 | -------- | ------------ | -------------- |
 | Claude Code | Marketplace or local plugin | `CLAUDE.md` |
 | Antigravity CLI | Local installer | `AGENTS.md` |
-| Codex CLI | Local installer | `AGENTS.md` |
+| Codex CLI | Marketplace or local installer | `AGENTS.md` |
 
 Antigravity and Codex use `AGENTS.md`; no `CLAUDE.md` is required for those platforms.
 Antigravity hook environment variables and event names are best-effort until verified against a real install.
@@ -99,10 +99,12 @@ Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
 ### Option 3 — Codex CLI
 
 ```bash
+# Install via Codex marketplace (recommended)
+codex plugin marketplace add datit309/supergraph
+
+# Or manual install from a local checkout
 git clone https://github.com/datit309/supergraph.git
 cd supergraph
-
-# Install plugin files for Codex CLI
 plugins/supergraph/install.sh --platform codex
 
 # MCP setup
@@ -110,6 +112,9 @@ pip install code-review-graph
 
 # First run
 /supergraph:scan
+
+# Update later
+codex plugin marketplace upgrade supergraph
 ```
 
 Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
