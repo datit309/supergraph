@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    {
+      "name": "supergraph",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/datit309/supergraph",
+        "path": "plugins/supergraph"
+      },
+      "policy": { "installation": "AVAILABLE" },
+      "category": "Productivity"
+    }
+  ]
+}
