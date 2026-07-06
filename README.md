@@ -35,8 +35,9 @@ SuperGraph enforces planning, TDD, verification, review, and architecture-aware 
 | Claude Code     | Marketplace or local plugin    | `CLAUDE.md`    |
 | Antigravity CLI | Local installer                | `AGENTS.md`    |
 | Codex CLI       | Marketplace or local installer | `AGENTS.md`    |
+| OpenCode        | Local installer                | `AGENTS.md`    |
 
-Antigravity and Codex use `AGENTS.md`; no `CLAUDE.md` is required for those platforms.
+Antigravity, Codex, and OpenCode use `AGENTS.md`; no `CLAUDE.md` is required for those platforms.
 Antigravity hook environment variables and event names are best-effort until verified against a real install.
 
 ---
@@ -45,7 +46,7 @@ Antigravity hook environment variables and event names are best-effort until ver
 
 | Dependency                                                          | Required | Install                                       |
 | ------------------------------------------------------------------- | -------- | --------------------------------------------- |
-| Claude Code, Antigravity CLI, or Codex CLI                          | ✅ Yes   | See your platform docs                        |
+| Claude Code, Antigravity CLI, Codex CLI, or OpenCode                 | ✅ Yes   | See your platform docs                        |
 | Python 3.10+                                                        | ✅ Yes   | `brew install python` / `apt install python3` |
 | [code-review-graph](https://github.com/tirth8205/code-review-graph) | ✅ Yes   | `pip install code-review-graph`               |
 | [uv](https://docs.astral.sh/uv/)                                    | Optional | `brew install uv`                             |
@@ -119,6 +120,24 @@ codex plugin marketplace upgrade supergraph
 ```
 
 Uses `AGENTS.md` for project instructions; no `CLAUDE.md` required.
+
+### Option 4 — OpenCode
+
+```bash
+git clone https://github.com/datit309/supergraph.git
+cd supergraph
+
+# Install plugin files for OpenCode
+plugins/supergraph/install.sh --platform opencode
+
+# MCP setup
+pip install code-review-graph
+
+# First run
+/supergraph:scan
+```
+
+OpenCode uses `AGENTS.md` for project instructions. Skills and MCP work out of the box. Hooks (SessionStart, caveman, etc.) are not available on OpenCode — the platform uses a JS/TS plugin model instead of bash hooks. Trigger skills manually via `/supergraph:<name>`.
 
 ---
 

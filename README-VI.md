@@ -35,8 +35,9 @@ SuperGraph áp đặt planning, TDD, verification, review, và ra quyết địn
 | Claude Code | Marketplace hoặc plugin local | `CLAUDE.md` |
 | Antigravity CLI | Installer local | `AGENTS.md` |
 | Codex CLI | Marketplace hoặc installer local | `AGENTS.md` |
+| OpenCode | Installer local | `AGENTS.md` |
 
-Antigravity và Codex dùng `AGENTS.md`; không cần `CLAUDE.md` cho hai nền tảng này.
+Antigravity, Codex và OpenCode dùng `AGENTS.md`; không cần `CLAUDE.md` cho hai nền tảng này.
 Biến môi trường hook và tên event của Antigravity hiện là best-effort cho tới khi được verify bằng cài đặt thật.
 
 ---
@@ -45,7 +46,7 @@ Biến môi trường hook và tên event của Antigravity hiện là best-effo
 
 | Dependency | Bắt buộc | Cài đặt |
 |---|---|---|
-| Claude Code, Antigravity CLI, hoặc Codex CLI | ✅ Có | Xem tài liệu nền tảng bạn dùng |
+| Claude Code, Antigravity CLI, Codex CLI, hoặc OpenCode | ✅ Có | Xem tài liệu nền tảng bạn dùng |
 | Python 3.10+ | ✅ Có | `brew install python` / `apt install python3` |
 | [code-review-graph](https://github.com/tirth8205/code-review-graph) | ✅ Có | `pip install code-review-graph` |
 | [uv](https://docs.astral.sh/uv/) | Tuỳ chọn | `brew install uv` |
@@ -119,6 +120,24 @@ codex plugin marketplace upgrade supergraph
 ```
 
 Dùng `AGENTS.md` cho project instructions; không cần `CLAUDE.md`.
+
+### Cách 4 — OpenCode
+
+```bash
+git clone https://github.com/datit309/supergraph.git
+cd supergraph
+
+# Cài file plugin cho OpenCode
+plugins/supergraph/install.sh --platform opencode
+
+# Cài MCP
+pip install code-review-graph
+
+# Lần chạy đầu
+/supergraph:scan
+```
+
+OpenCode dùng `AGENTS.md` cho project instructions. Skills và MCP chạy ngay. Hooks (SessionStart, caveman, v.v.) không có trên OpenCode — nền tảng này dùng mô hình plugin JS/TS thay vì bash hooks. Gọi skill thủ công bằng `/supergraph:<name>`.
 
 ---
 
