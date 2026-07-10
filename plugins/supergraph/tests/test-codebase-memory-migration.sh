@@ -33,8 +33,15 @@ cbm() {
     cat "$TMP/cbm.err" >&2
     fail "Codebase Memory tool failed: $tool"
   fi
-  printf '%s' "$output" | json_assert
-  printf '%s' "$output"
+  # CBM 0.9.0 may emit the same JSON response twice when invoked through
+  # --args-file. Decode the first complete object and normalize the stream
+  # before downstream assertions parse it.
+  printf '%s' "$output" | python3 -c '
+import json,sys
+raw=sys.stdin.read()
+value,_=json.JSONDecoder().raw_decode(raw.lstrip())
+print(json.dumps(value,separators=(",",":")))
+'
 }
 
 recipes() {
