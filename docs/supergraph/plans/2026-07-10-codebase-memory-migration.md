@@ -616,7 +616,7 @@ Checkpoint:
 - Commit: `docs: document codebase memory setup`
 
 ## Task 16: Migrate Gemini and generic plugin metadata
-Status: pending
+Status: completed
 Risk: medium
 Dependencies: Task 2
 Files:

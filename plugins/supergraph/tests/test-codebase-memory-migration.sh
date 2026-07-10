@@ -216,6 +216,16 @@ ci() {
   ! grep -Eq 'code-review-graph|risk_level|risk_summary|\| true' "$f" || fail 'CI contains legacy/nonexistent/swallowed checks'
 }
 
+gemini_metadata() {
+  python3 - "$ROOT" <<'PY'
+import json,sys
+from pathlib import Path
+r=Path(sys.argv[1]); m=json.load(open(r/'plugins/supergraph/mcp_config.json'))['mcpServers']; assert m['codebase-memory-mcp']=={'command':'codebase-memory-mcp','args':[]}; assert 'serena' in m
+for p in (r/'plugins/supergraph/plugin.json',r/'plugins/supergraph/.claude-plugin/marketplace.json'):
+ d=json.load(open(p)); assert 'codebase-memory-mcp' in d['keywords']; assert d['graphProvider']=='Codebase Memory'
+PY
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -230,6 +240,7 @@ case "${SECTION:-all}" in
   diagnose-web) diagnose_web ;;
   hooks) hooks ;;
   ci) ci ;;
+  gemini-metadata) gemini_metadata ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;

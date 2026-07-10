@@ -1,6 +1,7 @@
 {
   "name": "supergraph",
   "version": "2.2.3",
+  "graphProvider": "Codebase Memory",
   "displayName": "Supergraph — Graph-Driven AI Workflows",
   "tagline": "Stop Claude from guessing. Give it a real map of your codebase.",
   "description": "Most AI coding tools work blind — they read a few files, guess what else might break, and hope for the best. Supergraph fixes that.\n\nBefore writing a single line, Supergraph builds an AST dependency graph of your entire codebase and uses it to answer questions that matter: Which files does this change actually affect? Is this a hub node connected to 20 other modules? Will this rename orphan a caller three layers deep?\n\nEvery step of the coding workflow — plan, implement, fix, review — is grounded in that graph. Claude stops guessing and starts reasoning from evidence.\n\n---\n\nHOW IT WORKS\n\nSupergraph is a chain of 22 skills that enforce a complete, evidence-based dev cycle:\n\n  scan → analyze → plan → tdd → execute → fix → integration → verify → review\n\nEach skill has a single job and hands off to the next. The chain cannot be shortcut: no production code without a failing test, no merge without a graph-aware review, no \"done\" claim without fresh proof.\n\nSmart hooks fire automatically in the background — detecting test failures and suggesting diagnose, warning before context compacts, blocking writes when no approved plan exists, auto-updating the graph after every file change.\n\n---\n\nWHAT MAKES IT DIFFERENT\n\n• Blast radius before every change — know exactly which files break before you touch anything\n• Hub node protection — Claude stops and asks before modifying highly-connected files\n• Serena LSP integration — find every caller, safe codebase-wide rename, type diagnostics from the language server\n• Structured debugging — 6-phase diagnose loop with deterministic hypothesis/instrument/fix cycle\n• Session handoff — compress full session state in seconds; resume in a new window with zero context loss\n• Token-compression mode — ~75% output reduction for long sessions (caveman mode)\n• CONTEXT.md vocabulary — shared domain glossary that grows across sessions, reducing inconsistency in plans and reviews\n\n---\n\nSUPPORTED STACKS\n\nAuto-detected from config files: Node.js/TypeScript, Flutter/Dart, PHP, Python, Go, Rust.\nSpecialized skills for Flutter/Dart code review, database migrations (PostgreSQL, Prisma, Drizzle, Django, golang-migrate), frontend UI design, and Playwright web testing.\n\n---\n\nSKILLS INCLUDED (22 total)\n\nCore workflow: scan, analyze, plan, execute, tdd, fix, integration, verify, review\nDebugging: diagnose, zoom-out, architecture\nRequirements: prd, triage, prototype\nProductivity: handoff, caveman\nDomain: serena, database-migrations, flutter-dart-code-review, frontend-design, webapp-testing",
@@ -18,7 +19,7 @@
     "developer-tools"
   ],
   "keywords": [
-    "code-review-graph",
+    "codebase-memory-mcp",
     "supergraph",
     "serena",
     "tdd",

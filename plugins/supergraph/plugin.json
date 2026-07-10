@@ -1,6 +1,7 @@
 {
   "name": "supergraph",
   "version": "2.2.3",
+  "graphProvider": "Codebase Memory",
   "description": "Supergraph enforces a complete, evidence-based coding pipeline — scan → plan → TDD → fix → verify → review — grounded in real codebase analysis at every step. It combines AST dependency graphs, LSP-level code intelligence, and a structured skill chain so Claude never guesses about impact before making a change.",
   "author": {
     "name": "datit309",
@@ -12,7 +13,7 @@
   "hooks": "./hooks.json",
   "mcp": "./mcp_config.json",
   "keywords": [
-    "code-review-graph",
+    "codebase-memory-mcp",
     "supergraph",
     "serena",
     "tdd",
