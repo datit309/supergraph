@@ -298,7 +298,7 @@ Checkpoint:
 - Commit: `feat: migrate graph planning workflows`
 
 ## Task 8: Migrate architecture orientation workflows
-Status: pending
+Status: completed
 Risk: medium
 Dependencies: Task 6
 Files:

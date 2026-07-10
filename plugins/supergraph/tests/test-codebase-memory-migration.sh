@@ -173,6 +173,12 @@ analyze_plan() {
   grep -Rq '>20\|> 20\|20 files' "${files[@]}" || fail 'missing >20 escalation'
 }
 
+architecture() {
+  local files=("$ROOT/plugins/supergraph/SKILL.md" "$ROOT/plugins/supergraph/skills/architecture/SKILL.md" "$ROOT/plugins/supergraph/skills/zoom-out/SKILL.md") f
+  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail "$f contains legacy provider"; done
+  for marker in get_architecture overview hotspots boundaries layers clusters hubs bridges test-gaps unavailable Serena; do grep -Rq "$marker" "${files[@]}" || fail "architecture missing $marker"; done
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -180,6 +186,7 @@ case "${SECTION:-all}" in
   codex-opencode) codex_opencode ;;
   scan) scan ;;
   analyze-plan) analyze_plan ;;
+  architecture) architecture ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;
