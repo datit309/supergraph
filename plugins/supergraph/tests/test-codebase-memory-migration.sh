@@ -185,6 +185,12 @@ execute_fix() {
   for marker in detect_changes trace_path cycles test-gaps complexity cross-boundary 'max 3'; do grep -Rq "$marker" "${files[@]}" || fail "execute-fix missing $marker"; done
 }
 
+verify_review() {
+  local files=("$ROOT/plugins/supergraph/skills/tdd/SKILL.md" "$ROOT/plugins/supergraph/skills/verify/SKILL.md" "$ROOT/plugins/supergraph/skills/review/SKILL.md") f
+  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" index_status; ! grep -Eq 'code-review-graph|mcp__code-review|index_incremental' "$f" || fail "$f contains legacy graph calls"; done
+  for marker in detect_changes trace_path cycles hubs bridges test-gaps degraded Critical; do grep -Rq "$marker" "${files[@]}" || fail "verify-review missing $marker"; done
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -194,6 +200,7 @@ case "${SECTION:-all}" in
   analyze-plan) analyze_plan ;;
   architecture) architecture ;;
   execute-fix) execute_fix ;;
+  verify-review) verify_review ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;

@@ -1,10 +1,15 @@
 ---
 name: tdd
 description: Strict test-driven development for behavior changes. Requires verified RED before production code, minimal GREEN, and refactor only after passing tests.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:tdd
+
+Use `CBM_PROJECT` graph evidence only after healthy `index_status`. A stale or
+degraded index requires `index_repository` before `detect_changes`, `trace_path`,
+or validated `cycles`, `hubs`, `bridges`, and `test-gaps` recipes. Missing required
+tests blocks GREEN.
 
 Strict TDD for features, bug fixes, refactors.
 
