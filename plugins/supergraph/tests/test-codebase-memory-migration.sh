@@ -163,12 +163,23 @@ scan() {
   ! grep -Eq 'code-review-graph|list_graph_stats_tool|get_minimal_context_tool' "$f" || fail 'scan contains legacy provider calls'
 }
 
+analyze_plan() {
+  local files=("$ROOT/plugins/supergraph/skills/analyze/SKILL.md" "$ROOT/plugins/supergraph/skills/plan/SKILL.md" "$ROOT/plugins/supergraph/agents/plan-writer.md") f
+  for f in "${files[@]}"; do
+    contains "$f" CBM_PROJECT; contains "$f" codebase-memory-mcp
+    ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail "$f contains legacy provider"
+  done
+  for marker in detect_changes search_graph trace_path get_architecture hubs bridges cross-boundary; do grep -Rq "$marker" "${files[@]}" || fail "analyze-plan missing $marker"; done
+  grep -Rq '>20\|> 20\|20 files' "${files[@]}" || fail 'missing >20 escalation'
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
   claude) claude ;;
   codex-opencode) codex_opencode ;;
   scan) scan ;;
+  analyze-plan) analyze_plan ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;
