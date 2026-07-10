@@ -179,6 +179,12 @@ architecture() {
   for marker in get_architecture overview hotspots boundaries layers clusters hubs bridges test-gaps unavailable Serena; do grep -Rq "$marker" "${files[@]}" || fail "architecture missing $marker"; done
 }
 
+execute_fix() {
+  local files=("$ROOT/plugins/supergraph/skills/execute/SKILL.md" "$ROOT/plugins/supergraph/skills/fix/SKILL.md" "$ROOT/plugins/supergraph/agents/executor.md") f
+  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" index_status; contains "$f" index_repository; ! grep -Eq 'code-review-graph|mcp__code-review|index_incremental' "$f" || fail "$f contains legacy graph calls"; done
+  for marker in detect_changes trace_path cycles test-gaps complexity cross-boundary 'max 3'; do grep -Rq "$marker" "${files[@]}" || fail "execute-fix missing $marker"; done
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -187,6 +193,7 @@ case "${SECTION:-all}" in
   scan) scan ;;
   analyze-plan) analyze_plan ;;
   architecture) architecture ;;
+  execute-fix) execute_fix ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;

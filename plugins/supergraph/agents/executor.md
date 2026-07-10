@@ -183,8 +183,11 @@ git status --porcelain
 ```
 
 ```
-mcp__code-review-graph__build_or_update_graph_tool()
-mcp__code-review-graph__detect_changes_tool()
+index_status(project=CBM_PROJECT)
+index_repository(repo_path=<absolute>, name=CBM_PROJECT, mode=CBM_INDEX_MODE) # if stale/degraded
+detect_changes(project=CBM_PROJECT)
+trace_path(project=CBM_PROJECT, mode="data_flow")
+# Run validated cycles, test-gaps, complexity, and cross-boundary recipes.
 ```
 
 ### 11. Report
