@@ -36,8 +36,13 @@ when no match exists.
 ### `cycles`
 
 ```cypher
-MATCH p=(a)-[:CALLS|IMPORTS*1..8]->(a) RETURN p LIMIT 100
+MATCH (a)-[:CALLS|IMPORTS]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 100000
 ```
+
+Build a client-side adjacency map and run DFS to depth 8. A path returning to its
+start is a cycle, including mixed `CALLS` → `IMPORTS` paths. Exactly 100,000 rows
+means incomplete evidence and must fail the gate. `MATCH p=` path binding and a
+relationship union combined with `*1..8` are unsupported and forbidden.
 
 ### `hubs`
 
@@ -48,20 +53,30 @@ MATCH (n)<-[r]-() WITH n, count(r) AS degree WHERE degree >= 10 RETURN n, degree
 ### `bridges`
 
 ```cypher
-MATCH (a)-[r]->(b) WHERE a.file_path <> b.file_path RETURN a, r, b LIMIT 100
+MATCH (a)-[r]->(b) RETURN a.file_path, b.file_path LIMIT 100000
 ```
+
+Filter client-side where both paths are nonempty and unequal. Exactly 100,000
+rows means incomplete bridge evidence and must fail the gate.
 
 ### `test-gaps`
 
 ```cypher
-MATCH (n) WHERE coalesce(n.is_test, false) = false AND NOT (n)<-[:TESTS]-() RETURN n LIMIT 100
+MATCH (n) RETURN n.qualified_name, n.is_test LIMIT 100000
+MATCH (t)-[:TESTS]->(n) RETURN n.qualified_name LIMIT 100000
 ```
+
+Fail if either export reaches 100,000 rows. Client-side, subtract qualified names
+covered by `TESTS` from nodes whose `is_test` value is not true.
 
 ### `complexity`
 
 ```cypher
-MATCH (n) WHERE coalesce(n.complexity, 0) > 10 OR coalesce(n.cognitive, 0) > 15 RETURN n ORDER BY n.complexity DESC LIMIT 100
+MATCH (n) RETURN n.qualified_name, n.complexity, n.cognitive LIMIT 100000
 ```
+
+Fail at 100,000 rows. Normalize missing values to zero, filter complexity greater
+than 10 or cognitive complexity greater than 15, then sort client-side.
 
 ### `dependencies`
 
@@ -72,8 +87,11 @@ MATCH (a)-[r:CALLS|IMPORTS|DEPENDS_ON]->(b) RETURN a, r, b LIMIT 200
 ### `cross-boundary`
 
 ```cypher
-MATCH (a)-[r]->(b) WHERE a.module <> b.module RETURN a, r, b LIMIT 100
+MATCH (a)-[r]->(b) RETURN a.module, b.module LIMIT 100000
 ```
+
+Fail at 100,000 rows. Filter client-side where both module names are nonempty
+and unequal.
 
 If a recipe is incompatible with the reported schema, stop the mandatory gate
 and report the schema mismatch. Do not fabricate equivalent findings.

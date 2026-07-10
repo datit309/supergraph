@@ -88,7 +88,7 @@ Checkpoint:
 - Commit: `test: add codebase memory graph contract`
 
 ## Task 3: Add executable Codebase Memory recipe tests
-Status: pending
+Status: completed
 Risk: high
 Dependencies: Task 2
 Files:
@@ -103,9 +103,17 @@ Blast radius:
 Acceptance:
 - Test verifies `codebase-memory-mcp --version` is at least `0.9.0`, indexes the deterministic Bash fixture as `supergraph-cbm-contract-fixture`, and obtains `get_graph_schema` through CLI.
 - Test executes every contract Cypher recipe through `codebase-memory-mcp cli query_graph`, parses JSON, and distinguishes valid empty `rows: []` from an error/nonzero exit.
+- Cycle recipe uses the CBM 0.9.0-compatible one-hop query `MATCH (a)-[:CALLS|IMPORTS]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 100000`; the validator builds an adjacency list and runs client-side DFS capped at depth 8, preserving mixed `CALLS`/`IMPORTS` cycle detection. Variable-range union and path-binding syntax are forbidden because the 0.9.0 parser rejects them.
+- One-hop results are paginated where supported; if the returned row count reaches the hard `100000` ceiling without a completeness signal, validator/CI fails as incomplete evidence instead of claiming zero cycles.
+- The fixture includes a mixed `CALLS → IMPORTS` cycle of depth ≤8 and asserts the client DFS finds it; a separate synthetic adjacency assertion remains so the algorithm is tested even if a language parser omits one edge type.
+- Bridge recipe uses `MATCH (a)-[r]->(b) RETURN a.file_path, b.file_path LIMIT 100000`; the validator filters rows client-side where both file paths are present and differ. Unsupported comparison operators in Cypher are forbidden, and a full 100k result without pagination fails as incomplete evidence.
+- Test-gap recipe uses `MATCH (n) RETURN n.qualified_name, n.is_test LIMIT 100000` plus `MATCH (t)-[:TESTS]->(n) RETURN n.qualified_name LIMIT 100000`; the validator treats false/missing `is_test` nodes without a covered qualified name as gaps. Unsupported `coalesce`/boolean operators are forbidden, and either 100k result without pagination fails as incomplete evidence.
+- Complexity recipe uses `MATCH (n) RETURN n.qualified_name, n.complexity, n.cognitive LIMIT 100000`; the validator normalizes missing values to zero, filters `complexity > 10 OR cognitive > 15`, and sorts client-side. Unsupported `coalesce`/boolean operators are forbidden, and a full 100k result without pagination fails as incomplete evidence.
+- Cross-boundary recipe uses `MATCH (a)-[r]->(b) RETURN a.module, b.module LIMIT 100000`; the validator filters rows client-side where both module values are present and differ. Unsupported comparison operators are forbidden, and a full 100k result without pagination fails as incomplete evidence.
 - Fixture produces at least one CALLS edge and one test relationship or test-marked node, while recipes whose fixture result is empty are still asserted as successful structured responses.
 - Test initializes a deterministic git repository in a temporary fixture copy, commits a base, changes one tracked source file, then runs the exact CI calls `index_repository` with `{"repo_path":"<absolute-fixture>","name":"supergraph-cbm-contract-fixture","mode":"fast"}`, `index_status` with `{"project":"supergraph-cbm-contract-fixture"}`, and `detect_changes` with `{"project":"supergraph-cbm-contract-fixture","since":"HEAD~1"}`.
-- Executable assertions parse the index `status`, index-status project/node/edge fields, and detect-changes changed-symbol/risk fields used by the CI summary; missing fields, tool errors, and valid empty arrays are distinguished explicitly.
+- Executable assertions parse the index `status`, index-status project/node/edge fields, and the real `detect_changes` fields `changed_files`, `changed_count`, `impacted_symbols`, and `depth`; missing fields, tool errors, and valid empty arrays are distinguished explicitly.
+- Codebase Memory supplies impact evidence, not a risk classification. Supergraph derives risk from impacted-symbol count, validated hub/bridge recipes, and cycle findings.
 TDD:
 - Behavior: invalid or schema-incompatible canonical recipes fail migration validation.
 - Test file: plugins/supergraph/tests/test-codebase-memory-migration.sh
@@ -537,7 +545,10 @@ Blast radius:
 Acceptance:
 - CI installs exactly `codebase-memory-mcp==0.9.0`, indexes checkout as `supergraph-ci` in `fast` mode, and fails unless index JSON status equals `indexed`.
 - CI runs `codebase-memory-mcp cli detect_changes` with JSON arguments `{"project":"supergraph-ci","since":"origin/${{ github.base_ref }}"}` and runs the contract cycle query through `query_graph`.
-- GitHub summary contains provider version, project name, index status, changed-file count, detect-changes risk counts, and cycle count; nonzero cycle count fails the job.
+- CI calculates cycle count client-side with the same adjacency-list DFS (depth 8) over one-hop rows; it does not use unsupported variable-range union or Cypher path binding.
+- CI fails when one-hop traversal reaches `100000` rows without complete pagination, preventing silent truncation.
+- GitHub summary contains provider version, project name, index status, `changed_count`, impacted-symbol count, trace `depth`, and cycle count; nonzero cycle count fails the job.
+- Workflow must not read nonexistent `risk`, `risk_level`, `risk_summary`, or `summary` fields from `detect_changes`; Supergraph derives risk from impact/hub/bridge/cycle evidence.
 - Existing project test command remains strict; lint is no longer swallowed with `|| true`.
 TDD:
 - Behavior: PR graph review is reproducible and blocks degraded indexes/new cycles.

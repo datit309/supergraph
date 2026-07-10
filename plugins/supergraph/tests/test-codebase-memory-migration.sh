@@ -16,6 +16,119 @@ contract() {
   done
 }
 
+json_assert() {
+  python3 -c 'import json,sys; data=json.load(sys.stdin); assert data is not None' \
+    || fail "invalid JSON response"
+}
+
+cbm() {
+  local tool=$1 args=$2 output args_file
+  args_file="$TMP/${tool}.args.json"
+  printf '%s' "$args" >"$args_file"
+  if ! output=$(codebase-memory-mcp cli "$tool" --args-file "$args_file" 2>"$TMP/cbm.err"); then
+    cat "$TMP/cbm.err" >&2
+    fail "Codebase Memory tool failed: $tool"
+  fi
+  printf '%s' "$output" | json_assert
+  printf '%s' "$output"
+}
+
+recipes() {
+  test "$(codebase-memory-mcp --version 2>/dev/null)" = 'codebase-memory-mcp 0.9.0' \
+    || fail 'codebase-memory-mcp 0.9.0 required'
+  TMP=$(mktemp -d); trap 'rm -rf "$TMP"' RETURN
+  cp -R "$ROOT/plugins/supergraph/tests/fixtures/codebase-memory" "$TMP/repo"
+  git -C "$TMP/repo" init -q
+  git -C "$TMP/repo" config user.email fixture@example.invalid
+  git -C "$TMP/repo" config user.name Fixture
+  git -C "$TMP/repo" add app.sh app_test.sh
+  git -C "$TMP/repo" commit -qm base
+  printf '\n# tracked change\n' >>"$TMP/repo/app.sh"
+  git -C "$TMP/repo" add app.sh
+  git -C "$TMP/repo" commit -qm change
+
+  local project=supergraph-cbm-contract-fixture repo index status schema changes query
+  repo=$(cd "$TMP/repo" && pwd)
+  index=$(cbm index_repository "{\"repo_path\":\"$repo\",\"name\":\"$project\",\"mode\":\"fast\"}")
+  printf '%s' "$index" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d.get("status") == "indexed", d'
+  status=$(cbm index_status "{\"project\":\"$project\"}")
+  printf '%s' "$status" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d.get("project"); assert any(k in d for k in ("nodes","node_count","total_nodes")); assert any(k in d for k in ("edges","edge_count","total_edges"))'
+  schema=$(cbm get_graph_schema "{\"project\":\"$project\"}")
+  printf '%s' "$schema" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert isinstance(d,dict) and d'
+  changes=$(cbm detect_changes "{\"project\":\"$project\",\"since\":\"HEAD~1\"}")
+  printf '%s' "$changes" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert isinstance(d.get("changed_files"),list); assert isinstance(d.get("changed_count"),int); assert isinstance(d.get("impacted_symbols"),list); assert isinstance(d.get("depth"),int)'
+
+  while IFS='|' read -r name query; do
+    [[ -n $name ]] || continue
+    printf 'recipe: %s\n' "$name" >&2
+    query=$(cbm query_graph "$(python3 -c 'import json,sys; print(json.dumps({"project":sys.argv[1],"query":sys.argv[2]}))' "$project" "$query")")
+    if [[ $name == cycles ]]; then
+      printf '%s' "$query" | python3 -c '
+import json,sys
+d=json.load(sys.stdin); rows=d.get("rows")
+assert isinstance(rows,list), d
+assert len(rows) < 100000, "cycle evidence truncated"
+adj={}
+for start,end in rows: adj.setdefault(start,[]).append(end)
+def cycle(start,node,depth):
+    return depth < 8 and any(n == start or cycle(start,n,depth+1) for n in adj.get(node,()))
+cycles=[n for n in adj if cycle(n,n,0)]
+# Synthetic mixed CALLS -> IMPORTS graph locks the client DFS semantics.
+adj={"a":["b"],"b":["a"]}
+assert cycle("a","a",0)
+' || fail 'cycle DFS validation failed'
+    elif [[ $name == bridges ]]; then
+      printf '%s' "$query" | python3 -c '
+import json,sys
+d=json.load(sys.stdin); rows=d.get("rows")
+assert isinstance(rows,list), d
+assert len(rows) < 100000, "bridge evidence truncated"
+bridges=[(a,b) for a,b in rows if a and b and a != b]
+' || fail 'bridge validation failed'
+    elif [[ $name == test-gaps ]]; then
+      local coverage
+      coverage=$(cbm query_graph "$(python3 -c 'import json,sys; print(json.dumps({"project":sys.argv[1],"query":sys.argv[2]}))' "$project" 'MATCH (t)-[:TESTS]->(n) RETURN n.qualified_name LIMIT 100000')")
+      printf '%s' "$query" >"$TMP/nodes.json"
+      printf '%s' "$coverage" >"$TMP/coverage.json"
+      python3 - "$TMP/nodes.json" "$TMP/coverage.json" <<'PY'
+import json,sys
+nodes=json.load(open(sys.argv[1]))["rows"]
+covered=json.load(open(sys.argv[2]))["rows"]
+assert len(nodes) < 100000 and len(covered) < 100000, "test-gap evidence truncated"
+covered_names={row[0] for row in covered}
+gaps=[name for name,is_test in nodes if name and is_test is not True and name not in covered_names]
+PY
+    elif [[ $name == complexity ]]; then
+      printf '%s' "$query" | python3 -c '
+import json,sys
+rows=json.load(sys.stdin)["rows"]
+assert len(rows) < 100000, "complexity evidence truncated"
+def number(value):
+    try: return float(value or 0)
+    except (TypeError, ValueError): return 0
+findings=sorted(((name, number(complexity), number(cognitive)) for name,complexity,cognitive in rows if number(complexity) > 10 or number(cognitive) > 15), key=lambda row: row[1], reverse=True)
+' || fail 'complexity validation failed'
+    elif [[ $name == cross-boundary ]]; then
+      printf '%s' "$query" | python3 -c '
+import json,sys
+rows=json.load(sys.stdin)["rows"]
+assert len(rows) < 100000, "cross-boundary evidence truncated"
+findings=[(a,b) for a,b in rows if a and b and a != b]
+' || fail 'cross-boundary validation failed'
+    else
+      printf '%s' "$query" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert isinstance(d.get("rows"),list), d'
+    fi
+  done <<'RECIPES'
+cycles|MATCH (a)-[:CALLS|IMPORTS]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 100000
+hubs|MATCH (n)<-[r]-() WITH n, count(r) AS degree WHERE degree >= 10 RETURN n, degree ORDER BY degree DESC LIMIT 100
+bridges|MATCH (a)-[r]->(b) RETURN a.file_path, b.file_path LIMIT 100000
+test-gaps|MATCH (n) RETURN n.qualified_name, n.is_test LIMIT 100000
+complexity|MATCH (n) RETURN n.qualified_name, n.complexity, n.cognitive LIMIT 100000
+dependencies|MATCH (a)-[r:CALLS|IMPORTS|DEPENDS_ON]->(b) RETURN a, r, b LIMIT 200
+cross-boundary|MATCH (a)-[r]->(b) RETURN a.module, b.module LIMIT 100000
+RECIPES
+}
+
 legacy() {
   local out
   out=$(rg -n 'code-review-graph|code_review_graph|mcp__code-review-graph|mcp__code_review_graph|\.code-review-graph' "$ROOT" --hidden --glob '!.git/**' --glob '!docs/supergraph/plans/**' --glob '!plugins/supergraph/CHANGELOG.md' || true)
@@ -24,6 +137,7 @@ legacy() {
 
 case "${SECTION:-all}" in
   contract) contract ;;
+  recipes) recipes ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;
