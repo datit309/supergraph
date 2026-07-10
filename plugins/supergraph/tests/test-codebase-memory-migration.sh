@@ -157,11 +157,18 @@ o=json.load(open(r/'plugins/supergraph/.opencode-plugin/opencode.json'))['mcp'];
 PY
 }
 
+scan() {
+  local f="$ROOT/plugins/supergraph/skills/scan/SKILL.md"
+  for marker in codebase-memory-mcp CBM_PROJECT CBM_INDEX_MODE CBM_INDEXED_AT list_projects index_status index_repository get_graph_schema get_architecture repo_path absolute degraded stale SERENA_ACTIVE; do contains "$f" "$marker"; done
+  ! grep -Eq 'code-review-graph|list_graph_stats_tool|get_minimal_context_tool' "$f" || fail 'scan contains legacy provider calls'
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
   claude) claude ;;
   codex-opencode) codex_opencode ;;
+  scan) scan ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;
