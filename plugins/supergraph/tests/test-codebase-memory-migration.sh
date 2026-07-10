@@ -203,6 +203,13 @@ diagnose_web() {
   grep -Rq 'test-gaps' "${files[@]}"
 }
 
+hooks() {
+  bash -n "$ROOT/plugins/supergraph/hooks/post-tool-use" "$ROOT/plugins/supergraph/.githooks/pre-commit"
+  contains "$ROOT/plugins/supergraph/hooks/post-tool-use" auto_watch=true
+  ! grep -Eq 'code-review-graph|codebase-memory-mcp[[:space:]]+cli' "$ROOT/plugins/supergraph/hooks/post-tool-use" || fail 'post-tool invokes graph executable'
+  contains "$ROOT/plugins/supergraph/.githooks/pre-commit" test-codebase-memory-migration.sh
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -215,6 +222,7 @@ case "${SECTION:-all}" in
   verify-review) verify_review ;;
   database-integration) database_integration ;;
   diagnose-web) diagnose_web ;;
+  hooks) hooks ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;
