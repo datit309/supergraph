@@ -656,7 +656,7 @@ Checkpoint:
 - Commit: `feat: configure codebase memory metadata`
 
 ## Task 17: Migrate Flutter graph review skill
-Status: pending
+Status: completed
 Risk: medium
 Dependencies: Task 7, Task 10
 Files:

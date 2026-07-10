@@ -226,6 +226,12 @@ for p in (r/'plugins/supergraph/plugin.json',r/'plugins/supergraph/.claude-plugi
 PY
 }
 
+flutter() {
+  local f="$ROOT/plugins/supergraph/skills/flutter-dart-code-review/SKILL.md"
+  for marker in codebase-memory-mcp CBM_PROJECT hotspots cycles complexity cross-boundary test-gaps; do contains "$f" "$marker"; done
+  ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail 'Flutter skill contains legacy calls'
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -241,6 +247,7 @@ case "${SECTION:-all}" in
   hooks) hooks ;;
   ci) ci ;;
   gemini-metadata) gemini_metadata ;;
+  flutter) flutter ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;

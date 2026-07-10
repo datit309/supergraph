@@ -1,7 +1,7 @@
 ---
 name: flutter-dart-code-review
 description: Library-agnostic Flutter/Dart code review checklist covering widget best practices, state management patterns (BLoC, Riverpod, Provider, GetX, MobX, Signals), Dart idioms, performance, accessibility, security, and clean architecture.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:flutter-dart-code-review
@@ -14,13 +14,10 @@ Announce: "🐦 /supergraph:flutter-dart-code-review — reviewing Flutter/Dart 
 
 ### 1. Graph analysis (surface hotspots before manual review)
 
-```
-mcp__code-review-graph__find_large_functions_tool()       # build() > 80-100 lines
-mcp__code-review-graph__get_hub_nodes_tool()              # widgets with 10+ dependents
-mcp__code-review-graph__query_graph_tool(query_type="cycles")  # circular DI deps
-mcp__code-review-graph__get_surprising_connections_tool() # unexpected layer coupling
-mcp__code-review-graph__get_knowledge_gaps_tool()         # untested files
-```
+Use `CBM_PROJECT`: call `get_architecture` with `hotspots`, then validated
+`hubs`, `cycles`, `complexity`, `cross-boundary`, and `test-gaps` recipes. Apply
+the existing Flutter thresholds: `build()` over 80–100 lines, complexity limits,
+10+ dependents, circular DI, unexpected layer coupling, and untested files.
 
 **Serena (optional — if available):**
 ```
