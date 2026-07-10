@@ -135,9 +135,33 @@ legacy() {
   [[ -z $out ]] || fail "active legacy references:\n$out"
 }
 
+claude() {
+  python3 - "$ROOT" <<'PY'
+import json,sys
+from pathlib import Path
+r=Path(sys.argv[1]); m=json.load(open(r/'plugins/supergraph/.mcp.json'))
+servers=m['mcpServers']; assert servers['codebase-memory-mcp']=={'command':'codebase-memory-mcp','args':[]}; assert 'serena' in servers; assert 'code-review-graph' not in servers
+s=json.load(open(r/'plugins/supergraph/settings.json'))['permissions']['allow']; assert 'mcp__codebase-memory-mcp__*' in s; assert not any('code-review-graph' in x for x in s)
+p=json.load(open(r/'plugins/supergraph/.claude-plugin/plugin.json')); assert 'codebase-memory-mcp' in p['keywords']; assert 'code-review-graph' not in p['keywords']
+PY
+}
+
+codex_opencode() {
+  python3 - "$ROOT" <<'PY'
+import json,sys
+from pathlib import Path
+r=Path(sys.argv[1]); c=json.load(open(r/'plugins/supergraph/.codex-plugin/.mcp.json'))['mcp_servers']
+assert c['codebase-memory-mcp']=={'command':'codebase-memory-mcp','args':[]}; assert 'serena' in c
+p=json.load(open(r/'plugins/supergraph/.codex-plugin/plugin.json')); assert 'codebase-memory-mcp' in p['keywords']
+o=json.load(open(r/'plugins/supergraph/.opencode-plugin/opencode.json'))['mcp']; cbm=o['codebase-memory-mcp']; assert cbm['command']=='codebase-memory-mcp' and cbm['args']==[] and cbm['enabled']; assert 'serena' in o
+PY
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
+  claude) claude ;;
+  codex-opencode) codex_opencode ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;

@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "code-review-graph": {
-      "command": "code-review-graph",
-      "args": ["serve"]
+    "codebase-memory-mcp": {
+      "command": "codebase-memory-mcp",
+      "args": []
     },
     "serena": {
       "command": "serena",

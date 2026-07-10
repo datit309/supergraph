@@ -139,7 +139,7 @@ Checkpoint:
 - Commit: `test: validate codebase memory query recipes`
 
 ## Task 4: Migrate Claude MCP configuration and permissions
-Status: pending
+Status: completed
 Risk: medium
 Dependencies: Task 2
 Files:
