@@ -238,6 +238,11 @@ docs_en() {
   for marker in '0.9.0' '~/.cache/codebase-memory-mcp' '.codebase-memory/graph.db.zst' index_repository; do grep -Rq "$marker" "${files[@]}" || fail "English docs missing $marker"; done
 }
 
+docs_vi() {
+  local files=("$ROOT/README-VI.md" "$ROOT/README-VI.html") f
+  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; contains "$f" 0.9.0; contains "$f" '~/.cache/codebase-memory-mcp'; contains "$f" '.codebase-memory/graph.db.zst'; ! grep -Eq 'code-review-graph|\.code-review-graph' "$f" || fail "$f contains legacy docs"; done
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -255,6 +260,7 @@ case "${SECTION:-all}" in
   gemini-metadata) gemini_metadata ;;
   flutter) flutter ;;
   docs-en) docs_en ;;
+  docs-vi) docs_vi ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;
