@@ -1,4 +1,4 @@
-name: Graph Review
+name: Codebase Memory Review
 on:
   pull_request:
     branches: [main]
@@ -10,57 +10,64 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Install code-review-graph
-        run: pip install code-review-graph
-
-      - name: Build graph
-        run: code-review-graph build
-
-      - name: Detect changes
-        id: changes
+      - name: Install Codebase Memory
+        run: pip install codebase-memory-mcp==0.9.0
+      - name: Index repository
         run: |
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          echo "files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          echo "count=$(echo "$CHANGED" | wc -l)" >> $GITHUB_OUTPUT
-
-      - name: Graph analysis
+          codebase-memory-mcp --version | tee cbm-version.txt
+          REPO=$(pwd)
+          codebase-memory-mcp cli index_repository "{\"repo_path\":\"$REPO\",\"name\":\"supergraph-ci\",\"mode\":\"fast\"}" > index.json
+          python3 -c 'import json; d=json.load(open("index.json")); assert d.get("status")=="indexed", d'
+      - name: Detect changes and cycles
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          echo "## Graph Review" >> $GITHUB_STEP_SUMMARY
-          echo "- Changed files: ${{ steps.changes.outputs.count }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Changed Files" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.changes.outputs.files }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          code-review-graph status >> $GITHUB_STEP_SUMMARY
-
+          codebase-memory-mcp cli detect_changes "{\"project\":\"supergraph-ci\",\"since\":\"origin/$BASE_REF\"}" > changes.json
+          codebase-memory-mcp cli query_graph '{"project":"supergraph-ci","query":"MATCH (a)-[:CALLS|IMPORTS]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 100000"}' > cycle-edges.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('changes.json'))
+          assert isinstance(d['changed_files'],list)
+          assert isinstance(d['changed_count'],int)
+          assert isinstance(d['impacted_symbols'],list)
+          assert isinstance(d['depth'],int)
+          rows=json.load(open('cycle-edges.json'))['rows']
+          assert len(rows)<100000, 'cycle evidence truncated'
+          adj={}
+          for a,b in rows: adj.setdefault(a,[]).append(b)
+          def cyclic(start,node,depth):
+              return depth<8 and any(n==start or cyclic(start,n,depth+1) for n in adj.get(node,()))
+          cycles=[n for n in adj if cyclic(n,n,0)]
+          json.dump({'cycle_count':len(cycles)},open('cycles.json','w'))
+          PY
+      - name: Graph summary and gates
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          version=open('cbm-version.txt').read().strip()
+          idx=json.load(open('index.json')); changes=json.load(open('changes.json')); cycles=json.load(open('cycles.json'))
+          print('## Codebase Memory Review')
+          print(f'- Provider version: {version}')
+          print('- Project: supergraph-ci')
+          print(f'- Index status: {idx["status"]}')
+          print(f'- Changed-file count: {changes["changed_count"]}')
+          print(f'- Impacted symbols: {len(changes["impacted_symbols"])}')
+          print(f'- Impact depth: {changes["depth"]}')
+          print(f'- Cycle count: {cycles["cycle_count"]}')
+          PY
+          test "$(python3 -c 'import json; print(json.load(open("cycles.json"))["cycle_count"])')" = 0 || exit 1
       - name: Run tests
         run: |
-          if [ -f "package.json" ]; then
-            npm ci && npm test
-          elif [ -f "pyproject.toml" ]; then
-            pip install -e ".[dev]" && pytest
-          elif [ -f "go.mod" ]; then
-            go test ./...
-          elif [ -f "Cargo.toml" ]; then
-            cargo test
-          fi
-
+          if [ -f package.json ]; then npm ci && npm test; fi
+          if [ -f pyproject.toml ]; then pip install -e '.[dev]' && pytest; fi
+          if [ -f go.mod ]; then go test ./...; fi
+          if [ -f Cargo.toml ]; then cargo test; fi
       - name: Run linter
         run: |
-          if [ -f "package.json" ]; then
-            npm run lint || true
-          elif [ -f "pyproject.toml" ]; then
-            ruff check . || flake8 . || true
-          elif [ -f "go.mod" ]; then
-            golangci-lint run || true
-          elif [ -f "Cargo.toml" ]; then
-            cargo clippy || true
-          fi
+          if [ -f package.json ]; then npm run lint; fi
+          if [ -f pyproject.toml ]; then ruff check .; fi
+          if [ -f go.mod ]; then golangci-lint run; fi
+          if [ -f Cargo.toml ]; then cargo clippy -- -D warnings; fi

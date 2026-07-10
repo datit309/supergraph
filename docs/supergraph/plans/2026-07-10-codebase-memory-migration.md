@@ -532,7 +532,7 @@ Checkpoint:
 - Commit: `fix: replace legacy graph refresh hooks`
 
 ## Task 14: Replace pull-request graph review CI
-Status: pending
+Status: completed
 Risk: high
 Dependencies: Task 3, Task 10
 Files:
