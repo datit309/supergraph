@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)
 SECTION=${2:-${1#--section=}}
 if [[ ${1:-} == --section ]]; then SECTION=${2:-}; fi
+LEGACY_EXEC='code-review''-graph'
+LEGACY_UNDERSCORE='code_review''_graph'
+LEGACY_CACHE='.code-review''-graph'
+LEGACY_PATTERN="$LEGACY_EXEC|$LEGACY_UNDERSCORE|mcp__$LEGACY_EXEC|mcp__$LEGACY_UNDERSCORE|\\$LEGACY_CACHE"
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 contains() { grep -Fq -- "$2" "$1" || fail "$1 missing marker: $2"; }
@@ -131,7 +135,7 @@ RECIPES
 
 legacy() {
   local out
-  out=$(rg -n 'code-review-graph|code_review_graph|mcp__code-review-graph|mcp__code_review_graph|\.code-review-graph' "$ROOT" --hidden --glob '!.git/**' --glob '!docs/supergraph/plans/**' --glob '!plugins/supergraph/CHANGELOG.md' || true)
+  out=$(rg -n "$LEGACY_PATTERN" "$ROOT" --hidden --glob '!.git/**' --glob '!docs/supergraph/plans/**' --glob '!plugins/supergraph/CHANGELOG.md' || true)
   [[ -z $out ]] || fail "active legacy references:\n$out"
 }
 
@@ -140,9 +144,9 @@ claude() {
 import json,sys
 from pathlib import Path
 r=Path(sys.argv[1]); m=json.load(open(r/'plugins/supergraph/.mcp.json'))
-servers=m['mcpServers']; assert servers['codebase-memory-mcp']=={'command':'codebase-memory-mcp','args':[]}; assert 'serena' in servers; assert 'code-review-graph' not in servers
-s=json.load(open(r/'plugins/supergraph/settings.json'))['permissions']['allow']; assert 'mcp__codebase-memory-mcp__*' in s; assert not any('code-review-graph' in x for x in s)
-p=json.load(open(r/'plugins/supergraph/.claude-plugin/plugin.json')); assert 'codebase-memory-mcp' in p['keywords']; assert 'code-review-graph' not in p['keywords']
+servers=m['mcpServers']; assert servers['codebase-memory-mcp']=={'command':'codebase-memory-mcp','args':[]}; assert 'serena' in servers
+s=json.load(open(r/'plugins/supergraph/settings.json'))['permissions']['allow']; assert 'mcp__codebase-memory-mcp__*' in s
+p=json.load(open(r/'plugins/supergraph/.claude-plugin/plugin.json')); assert 'codebase-memory-mcp' in p['keywords']
 PY
 }
 
@@ -160,14 +164,14 @@ PY
 scan() {
   local f="$ROOT/plugins/supergraph/skills/scan/SKILL.md"
   for marker in codebase-memory-mcp CBM_PROJECT CBM_INDEX_MODE CBM_INDEXED_AT list_projects index_status index_repository get_graph_schema get_architecture repo_path absolute degraded stale SERENA_ACTIVE; do contains "$f" "$marker"; done
-  ! grep -Eq 'code-review-graph|list_graph_stats_tool|get_minimal_context_tool' "$f" || fail 'scan contains legacy provider calls'
+  ! grep -Eq "$LEGACY_EXEC|list_graph_stats_tool|get_minimal_context_tool" "$f" || fail 'scan contains legacy provider calls'
 }
 
 analyze_plan() {
   local files=("$ROOT/plugins/supergraph/skills/analyze/SKILL.md" "$ROOT/plugins/supergraph/skills/plan/SKILL.md" "$ROOT/plugins/supergraph/agents/plan-writer.md") f
   for f in "${files[@]}"; do
     contains "$f" CBM_PROJECT; contains "$f" codebase-memory-mcp
-    ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail "$f contains legacy provider"
+    ! grep -Eq "$LEGACY_EXEC|mcp__code-review" "$f" || fail "$f contains legacy provider"
   done
   for marker in detect_changes search_graph trace_path get_architecture hubs bridges cross-boundary; do grep -Rq "$marker" "${files[@]}" || fail "analyze-plan missing $marker"; done
   grep -Rq '>20\|> 20\|20 files' "${files[@]}" || fail 'missing >20 escalation'
@@ -175,45 +179,45 @@ analyze_plan() {
 
 architecture() {
   local files=("$ROOT/plugins/supergraph/SKILL.md" "$ROOT/plugins/supergraph/skills/architecture/SKILL.md" "$ROOT/plugins/supergraph/skills/zoom-out/SKILL.md") f
-  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail "$f contains legacy provider"; done
+  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; ! grep -Eq "$LEGACY_EXEC|mcp__code-review" "$f" || fail "$f contains legacy provider"; done
   for marker in get_architecture overview hotspots boundaries layers clusters hubs bridges test-gaps unavailable Serena; do grep -Rq "$marker" "${files[@]}" || fail "architecture missing $marker"; done
 }
 
 execute_fix() {
   local files=("$ROOT/plugins/supergraph/skills/execute/SKILL.md" "$ROOT/plugins/supergraph/skills/fix/SKILL.md" "$ROOT/plugins/supergraph/agents/executor.md") f
-  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" index_status; contains "$f" index_repository; ! grep -Eq 'code-review-graph|mcp__code-review|index_incremental' "$f" || fail "$f contains legacy graph calls"; done
+  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" index_status; contains "$f" index_repository; ! grep -Eq "$LEGACY_EXEC|mcp__code-review|index_incremental" "$f" || fail "$f contains legacy graph calls"; done
   for marker in detect_changes trace_path cycles test-gaps complexity cross-boundary 'max 3'; do grep -Rq "$marker" "${files[@]}" || fail "execute-fix missing $marker"; done
 }
 
 verify_review() {
   local files=("$ROOT/plugins/supergraph/skills/tdd/SKILL.md" "$ROOT/plugins/supergraph/skills/verify/SKILL.md" "$ROOT/plugins/supergraph/skills/review/SKILL.md") f
-  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" index_status; ! grep -Eq 'code-review-graph|mcp__code-review|index_incremental' "$f" || fail "$f contains legacy graph calls"; done
+  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" index_status; ! grep -Eq "$LEGACY_EXEC|mcp__code-review|index_incremental" "$f" || fail "$f contains legacy graph calls"; done
   for marker in detect_changes trace_path cycles hubs bridges test-gaps degraded Critical; do grep -Rq "$marker" "${files[@]}" || fail "verify-review missing $marker"; done
 }
 
 database_integration() {
   local files=("$ROOT/plugins/supergraph/skills/database-migrations/SKILL.md" "$ROOT/plugins/supergraph/skills/integration/SKILL.md") f
-  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" trace_path; ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail "$f contains legacy calls"; done
+  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" trace_path; ! grep -Eq "$LEGACY_EXEC|mcp__code-review" "$f" || fail "$f contains legacy calls"; done
   grep -Rq 'dependencies\|test-gaps' "${files[@]}"; grep -Rq '> 20 files' "${files[@]}"
 }
 
 diagnose_web() {
   local files=("$ROOT/plugins/supergraph/skills/diagnose/SKILL.md" "$ROOT/plugins/supergraph/skills/webapp-testing/SKILL.md") f
-  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" search_graph; contains "$f" trace_path; contains "$f" unavailable; ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail "$f contains legacy calls"; done
+  for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" search_graph; contains "$f" trace_path; contains "$f" unavailable; ! grep -Eq "$LEGACY_EXEC|mcp__code-review" "$f" || fail "$f contains legacy calls"; done
   grep -Rq 'test-gaps' "${files[@]}"
 }
 
 hooks() {
   bash -n "$ROOT/plugins/supergraph/hooks/post-tool-use" "$ROOT/plugins/supergraph/.githooks/pre-commit"
   contains "$ROOT/plugins/supergraph/hooks/post-tool-use" auto_watch=true
-  ! grep -Eq 'code-review-graph|codebase-memory-mcp[[:space:]]+cli' "$ROOT/plugins/supergraph/hooks/post-tool-use" || fail 'post-tool invokes graph executable'
+  ! grep -Eq "$LEGACY_EXEC|codebase-memory-mcp[[:space:]]+cli" "$ROOT/plugins/supergraph/hooks/post-tool-use" || fail 'post-tool invokes graph executable'
   contains "$ROOT/plugins/supergraph/.githooks/pre-commit" test-codebase-memory-migration.sh
 }
 
 ci() {
   local f="$ROOT/plugins/supergraph/.github/workflows/graph-review.yml"
   for marker in 'codebase-memory-mcp==0.9.0' supergraph-ci index_repository detect_changes query_graph changed_count impacted_symbols depth 'Cycle count' 'exit 1'; do contains "$f" "$marker"; done
-  ! grep -Eq 'code-review-graph|risk_level|risk_summary|\| true' "$f" || fail 'CI contains legacy/nonexistent/swallowed checks'
+  ! grep -Eq "$LEGACY_EXEC|risk_level|risk_summary|\| true" "$f" || fail 'CI contains legacy/nonexistent/swallowed checks'
 }
 
 gemini_metadata() {
@@ -229,18 +233,23 @@ PY
 flutter() {
   local f="$ROOT/plugins/supergraph/skills/flutter-dart-code-review/SKILL.md"
   for marker in codebase-memory-mcp CBM_PROJECT hotspots cycles complexity cross-boundary test-gaps; do contains "$f" "$marker"; done
-  ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail 'Flutter skill contains legacy calls'
+  ! grep -Eq "$LEGACY_EXEC|mcp__code-review" "$f" || fail 'Flutter skill contains legacy calls'
 }
 
 docs_en() {
   local files=("$ROOT/README.md" "$ROOT/PRIVACY.md" "$ROOT/plugins/supergraph/docs/TEAM-SETUP.md" "$ROOT/plugins/supergraph/.github/pull_request_template.md" "$ROOT/.gitignore") f
-  for f in "${files[@]}"; do grep -Eqi 'codebase.memory' "$f" || fail "$f missing Codebase Memory"; ! grep -Eq 'code-review-graph|\.code-review-graph' "$f" || fail "$f contains legacy docs"; done
+  for f in "${files[@]}"; do grep -Eqi 'codebase.memory' "$f" || fail "$f missing Codebase Memory"; ! grep -Eq "$LEGACY_EXEC|\\$LEGACY_CACHE" "$f" || fail "$f contains legacy docs"; done
   for marker in '0.9.0' '~/.cache/codebase-memory-mcp' '.codebase-memory/graph.db.zst' index_repository; do grep -Rq "$marker" "${files[@]}" || fail "English docs missing $marker"; done
 }
 
 docs_vi() {
   local files=("$ROOT/README-VI.md" "$ROOT/README-VI.html") f
-  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; contains "$f" 0.9.0; contains "$f" '~/.cache/codebase-memory-mcp'; contains "$f" '.codebase-memory/graph.db.zst'; ! grep -Eq 'code-review-graph|\.code-review-graph' "$f" || fail "$f contains legacy docs"; done
+  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; contains "$f" 0.9.0; contains "$f" '~/.cache/codebase-memory-mcp'; contains "$f" '.codebase-memory/graph.db.zst'; ! grep -Eq "$LEGACY_EXEC|\\$LEGACY_CACHE" "$f" || fail "$f contains legacy docs"; done
+}
+
+changelog() {
+  contains "$ROOT/plugins/supergraph/CHANGELOG.md" 'Migrated all active graph configuration'
+  contains "$ROOT/plugins/supergraph/CHANGELOG.md" 'Codebase Memory MCP 0.9.0'
 }
 
 case "${SECTION:-all}" in
@@ -261,8 +270,13 @@ case "${SECTION:-all}" in
   flutter) flutter ;;
   docs-en) docs_en ;;
   docs-vi) docs_vi ;;
+  changelog) changelog ;;
   legacy) legacy ;;
-  all) contract; legacy ;;
+  all)
+    contract; recipes; claude; codex_opencode; scan; analyze_plan; architecture
+    execute_fix; verify_review; database_integration; diagnose_web; hooks; ci
+    gemini_metadata; flutter; docs_en; docs_vi; changelog; legacy
+    ;;
   *) fail "unknown section: $SECTION" ;;
 esac
 printf 'PASS: %s\n' "${SECTION:-all}"

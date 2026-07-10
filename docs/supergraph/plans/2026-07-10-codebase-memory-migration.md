@@ -732,7 +732,7 @@ Checkpoint:
 - Commit: `docs: update vietnamese codebase memory guide`
 
 ## Task 19: Record migration and enforce final active scope
-Status: pending
+Status: completed
 Risk: medium
 Dependencies: Task 4, Task 5, Task 6, Task 8, Task 11, Task 12, Task 13, Task 14, Task 15, Task 16, Task 17, Task 18
 Files:

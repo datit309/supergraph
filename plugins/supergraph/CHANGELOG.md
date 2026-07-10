@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Migrated all active graph configuration, workflows, hooks, CI, and documentation to Codebase Memory MCP 0.9.0 with project-scoped indexing and executable query-contract tests.
+
 ## 2.2.3
 
 ### Docs
