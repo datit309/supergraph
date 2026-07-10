@@ -1,6 +1,7 @@
 ---
 name: diagnose
 description: Structured 6-phase debugging. Build feedback loop first, reproduce deterministically, hypothesize with ranked falsifiable theories, instrument one variable at a time, fix with regression test, cleanup. Use when a bug exists, tests fail unexpectedly, or behavior is wrong and cause is unknown.
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:diagnose
@@ -58,7 +59,9 @@ Rules:
 - No implementation yet — only theories
 - Use graph context if available:
   ```
-  mcp__code-review-graph__query_graph_tool(query_type="callers", target=<suspect_file>)
+  search_graph(project=CBM_PROJECT, name_pattern=<suspect>)
+  trace_path(project=CBM_PROJECT, direction="inbound")
+  trace_path(project=CBM_PROJECT, direction="outbound")
   ```
 
 ### Phase 4 — Instrument (one variable at a time)
@@ -84,6 +87,8 @@ Once root cause is confirmed:
 5. Run lint: `$LINT_CMD`
 
 Minimal fix means: fix the cause, not the symptom. If the fix touches a hub node → get user approval first.
+If search/trace returns empty, label graph evidence unavailable and fall back to
+Serena/filesystem evidence. Use the validated `test-gaps` recipe for missing tests.
 
 ### Phase 6 — Cleanup + Post-mortem
 
