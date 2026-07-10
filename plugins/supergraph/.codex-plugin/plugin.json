@@ -19,7 +19,7 @@
   },
   "mcpServers": "./.mcp.json",
   "keywords": [
-    "code-review-graph",
+    "codebase-memory-mcp",
     "supergraph",
     "serena",
     "tdd",

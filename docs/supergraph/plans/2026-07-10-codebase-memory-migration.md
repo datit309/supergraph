@@ -179,7 +179,7 @@ Checkpoint:
 - Commit: `feat: configure codebase memory for claude`
 
 ## Task 5: Migrate Codex and OpenCode MCP configuration
-Status: pending
+Status: completed
 Risk: medium
 Dependencies: Task 2
 Files:
