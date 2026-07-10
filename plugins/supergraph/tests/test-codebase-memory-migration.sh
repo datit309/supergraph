@@ -232,6 +232,12 @@ flutter() {
   ! grep -Eq 'code-review-graph|mcp__code-review' "$f" || fail 'Flutter skill contains legacy calls'
 }
 
+docs_en() {
+  local files=("$ROOT/README.md" "$ROOT/PRIVACY.md" "$ROOT/plugins/supergraph/docs/TEAM-SETUP.md" "$ROOT/plugins/supergraph/.github/pull_request_template.md" "$ROOT/.gitignore") f
+  for f in "${files[@]}"; do grep -Eqi 'codebase.memory' "$f" || fail "$f missing Codebase Memory"; ! grep -Eq 'code-review-graph|\.code-review-graph' "$f" || fail "$f contains legacy docs"; done
+  for marker in '0.9.0' '~/.cache/codebase-memory-mcp' '.codebase-memory/graph.db.zst' index_repository; do grep -Rq "$marker" "${files[@]}" || fail "English docs missing $marker"; done
+}
+
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
@@ -248,6 +254,7 @@ case "${SECTION:-all}" in
   ci) ci ;;
   gemini-metadata) gemini_metadata ;;
   flutter) flutter ;;
+  docs-en) docs_en ;;
   legacy) legacy ;;
   all) contract; legacy ;;
   *) fail "unknown section: $SECTION" ;;

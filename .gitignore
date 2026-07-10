@@ -52,5 +52,6 @@ Thumbs.db
 redis_data/
 
 # .planning/*
-# Added by code-review-graph
-.code-review-graph/
+# Optional Codebase Memory team artifact; local indexes live in ~/.cache.
+.codebase-memory/
+!.codebase-memory/graph.db.zst

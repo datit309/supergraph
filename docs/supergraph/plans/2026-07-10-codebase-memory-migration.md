@@ -574,7 +574,7 @@ Checkpoint:
 - Commit: `ci: migrate graph review to codebase memory`
 
 ## Task 15: Update English setup and privacy documentation
-Status: pending
+Status: completed
 Risk: medium
 Dependencies: Task 6, Task 13, Task 14, Task 16
 Files:
