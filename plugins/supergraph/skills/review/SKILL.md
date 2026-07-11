@@ -1,7 +1,7 @@
 ---
 name: review
 description: Plan-aware graph-enhanced code review before merge. CRITICAL issues block merge. Use after fix/verify.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:review
@@ -36,14 +36,13 @@ Use plan checkpoint commits as range if available. No changed files → check pl
 ### 3. Graph Analysis
 Reindex changed files first so graph reflects current code (not stale pre-edit state):
 ```
-mcp__code-review-graph__index_incremental(files=[changed])
+index_status(project=CBM_PROJECT); stale/degraded → index_repository(repo_path=<absolute>, name=CBM_PROJECT, mode=CBM_INDEX_MODE)
 ```
 ```
-mcp__code-review-graph__detect_changes_tool()
-mcp__code-review-graph__get_impact_radius_tool(files=[changed], depth=3)
-mcp__code-review-graph__get_surprising_connections_tool()
-mcp__code-review-graph__get_affected_flows_tool(files=[changed])
-mcp__code-review-graph__get_knowledge_gaps_tool()
+detect_changes(project=CBM_PROJECT)
+trace_path(project=CBM_PROJECT, mode="inbound/outbound/data_flow")
+# After get_graph_schema, run validated cycles, hubs, bridges, test-gaps,
+# complexity, and cross-boundary recipes.
 ```
 Per file: `query_graph(query_type="tests", target=file)`.
 

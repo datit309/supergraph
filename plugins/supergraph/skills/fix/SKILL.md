@@ -1,7 +1,7 @@
 ---
 name: fix
 description: Plan-aware auto-fix loop after coding. Runs tests, lint, format, and graph checks. Updates plan task status. Use after execute/tdd.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:fix
@@ -34,9 +34,10 @@ git diff --name-only && git diff --cached --name-only
 ```
 Reindex changed files before graph analysis (graph may be stale after edits):
 ```
-mcp__code-review-graph__index_incremental(files=[changed])
+index_status(project=CBM_PROJECT); if stale/degraded, index_repository(repo_path=<absolute>, name=CBM_PROJECT, mode=CBM_INDEX_MODE)
 ```
-Graph: `get_minimal_context_tool()`, `get_impact_radius_tool(files=[changed], depth=3)`, `query_graph(query_type="tests", target=each_file)`.
+Graph: project-scoped `detect_changes`, `trace_path` call/data-flow, and validated
+`cycles`, `test-gaps`, `complexity`, and `cross-boundary` recipes.
 No changed files and no in-progress/stuck tasks → STOP: nothing to fix.
 
 ### 3b. Serena pre-loop diagnostics (optional)
@@ -61,7 +62,7 @@ At iteration start: "🔧 Fix iteration N/3 — running tests..."
 | **Tests** | Run targeted tests (from graph) else `$TEST_CMD`. FAIL → trace to root cause, fix source. Don't modify tests unless demonstrably wrong. |
 | **Serena fix** | After source fix: `mcp__serena__get_diagnostics_for_file(file=<fixed_file>)` — confirm fix didn't introduce new type errors before re-running suite. For body fixes: prefer `mcp__serena__replace_symbol_body(symbol=<fn>)`. For renames: `mcp__serena__rename_symbol(old, new)`. Skip if Serena unavailable. |
 | **Format+Lint** | `$FORMAT_CMD` then `$LINT_CMD`. If format changed files → re-run lint. |
-| **Graph** | `index_incremental(files=[changed])` first, then `detect_changes_tool()`, `get_surprising_connections_tool()`, `get_knowledge_gaps_tool()`, `refactor_tool(action="dead_code")`. CRITICAL → fix. WARNING → fix or record. |
+| **Graph** | Check `index_status`; stale/degraded triggers `index_repository`. Then `detect_changes`, `trace_path`, and contract recipes `cycles`, `test-gaps`, `complexity`, `cross-boundary`. CRITICAL → fix. WARNING → fix or record. |
 | **Decide** | All clean → break. Tests/lint fail → continue loop. |
 
 ### 5. Update Plan Status (if plan exists)

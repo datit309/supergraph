@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-input="${TOOL_INPUT:-}"
-file=""
-
-if [ -n "$input" ]; then
-  file=$(printf '%s' "$input" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("file_path",""))' 2>/dev/null || true)
-fi
-
-if printf '%s' "$file" | grep -qE '\.(py|js|ts|jsx|tsx|go|rs|java|php|dart|vue|svelte)$'; then
-  if command -v code-review-graph >/dev/null 2>&1; then
-    code-review-graph update >/dev/null 2>&1 && echo '🔄 Graph updated.' || true
-  fi
-fi
+# codebase-memory-mcp owns asynchronous refresh via auto_watch=true.
+# Never synchronously reindex in a post-tool hook or claim graph freshness here.
+exit 0

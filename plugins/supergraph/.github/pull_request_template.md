@@ -4,7 +4,7 @@
 
 ## Graph Impact
 
-<!-- Auto-fill from graph-review CI or run: code-review-graph detect-changes -->
+<!-- Attach Codebase Memory evidence from CI or project-scoped detect_changes. -->
 - Blast radius: _N files_
 - Hub nodes affected: _list / none_
 - New cycles: _none / list_

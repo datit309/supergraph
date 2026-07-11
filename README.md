@@ -48,7 +48,7 @@ Antigravity hook environment variables and event names are best-effort until ver
 | ------------------------------------------------------------------- | -------- | --------------------------------------------- |
 | Claude Code, Antigravity CLI, Codex CLI, or OpenCode                 | ✅ Yes   | See your platform docs                        |
 | Python 3.10+                                                        | ✅ Yes   | `brew install python` / `apt install python3` |
-| [code-review-graph](https://github.com/tirth8205/code-review-graph) | ✅ Yes   | `pip install code-review-graph`               |
+| [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) | ✅ Yes | `pip install codebase-memory-mcp==0.9.0` |
 | [uv](https://docs.astral.sh/uv/)                                    | Optional | `brew install uv`                             |
 | [Serena MCP](https://github.com/oraios/serena)                      | Optional | See [Serena Setup](#serena-setup)             |
 | Git                                                                 | ✅ Yes   | Already installed on most systems             |
@@ -70,7 +70,7 @@ git clone https://github.com/datit309/supergraph.git
 /plugin install supergraph
 
 # MCP setup
-pip install code-review-graph
+pip install codebase-memory-mcp==0.9.0
 
 # First run
 /supergraph:scan
@@ -89,7 +89,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform antigravity
 
 # MCP setup
-pip install code-review-graph
+pip install codebase-memory-mcp==0.9.0
 
 # First run
 /supergraph:scan
@@ -110,7 +110,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform codex
 
 # MCP setup
-pip install code-review-graph
+pip install codebase-memory-mcp==0.9.0
 
 # First run
 /supergraph:scan
@@ -131,7 +131,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform opencode
 
 # MCP setup
-pip install code-review-graph
+pip install codebase-memory-mcp==0.9.0
 
 # First run
 /supergraph:scan
@@ -143,7 +143,7 @@ The installer symlinks each skill folder into `.opencode/skills/<name>`, copies 
 {
   "instructions": ["OPENCODE.md"],
   "mcp": {
-    "code-review-graph": { "type": "stdio", "command": "code-review-graph", "args": ["serve"] },
+    "codebase-memory-mcp": { "type": "stdio", "command": "codebase-memory-mcp", "args": [] },
     "serena": { "type": "stdio", "command": "serena", "args": ["start-mcp-server", "--context=opencode", "--project-from-cwd"] }
   }
 }
@@ -157,10 +157,12 @@ OpenCode uses `OPENCODE.md` for project instructions. Skills and MCP work out of
 
 ## MCP Setup
 
-### code-review-graph (required)
+### Codebase Memory MCP >= 0.9.0 (required)
 
 ```bash
-pip install code-review-graph
+pip install codebase-memory-mcp==0.9.0
+codebase-memory-mcp --version
+codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
 ```
 
 `/supergraph:scan` builds the graph on first run and manages incremental updates. The `PostToolUse` hook keeps it fresh after every file write.
@@ -323,7 +325,7 @@ Skills are invoked manually. Hooks inject smart context automatically based on o
 | `PostToolUse Bash`       | After Bash runs             | Detects test failure patterns → injects `/supergraph:diagnose` suggestion                                                      |
 | `PreCompact`             | Before context compaction   | Fires urgent handoff reminder with active plan task counts                                                                     |
 | `PreToolUse Write/Edit`  | Before writing source files | Checks plan exists and is approved                                                                                             |
-| `PostToolUse Write/Edit` | After writing source files  | Auto-updates code-review-graph index                                                                                           |
+| `PostToolUse Write/Edit` | After writing source files  | Codebase Memory `auto_watch=true` refreshes asynchronously                                                                     |
 | `Stop`                   | When Claude stops           | Reports plan progress + uncommitted changes                                                                                    |
 
 **Activate caveman permanently** (persists across sessions):
@@ -419,7 +421,7 @@ Auto-detected from config files at session start:
 ### 2. Install MCP dependencies
 
 ```bash
-pip install code-review-graph                  # required
+pip install codebase-memory-mcp==0.9.0         # required
 uv tool install -p 3.13 serena-agent           # optional — see Serena Setup above
 ```
 
@@ -444,7 +446,7 @@ Commit these files to your project repo so every team member gets the same setup
 ```json
 {
   "mcpServers": {
-    "code-review-graph": { "command": "code-review-graph", "args": ["serve"] },
+    "codebase-memory-mcp": { "command": "codebase-memory-mcp", "args": [] },
     "serena": {
       "command": "serena",
       "args": [
@@ -481,7 +483,7 @@ Add to `.gitignore`:
 | ----------------------------- | ----------- | -------------------------------------------------------------- |
 | `.mcp.json`                   | ✅ Yes      | MCP server config — team needs same MCPs                       |
 | `CLAUDE.md`                   | ✅ Yes      | Project-level workflow instructions                            |
-| `.code-review-graph/`         | ✅ Yes      | Graph index shared across team                                 |
+| `.codebase-memory/graph.db.zst` | Optional | Compressed team bootstrap artifact; local index is in `~/.cache/codebase-memory-mcp` |
 | `docs/supergraph/plans/`      | ✅ Yes      | Plans are contracts — visible to whole team                    |
 | `.github/`                    | ✅ Yes      | PR templates, CI workflows, issue templates                    |
 | `.githooks/pre-commit`        | ✅ Yes      | Shared commit quality gate                                     |
@@ -582,7 +584,7 @@ plugins/supergraph/
 
 Supergraph is **local-first** — no remote servers, no telemetry, no code uploaded anywhere.
 
-All graph analysis runs on your machine. Plan files stay in your repo. The only external services involved are Claude Code (Anthropic) for model inference and optionally Serena / code-review-graph, both of which run locally.
+All graph analysis runs locally. Codebase Memory stores its index in `~/.cache/codebase-memory-mcp`; teams may optionally share `.codebase-memory/graph.db.zst`. Serena also runs locally.
 
 See [PRIVACY.md](./plugins/supergraph/PRIVACY.md) for the full policy.
 

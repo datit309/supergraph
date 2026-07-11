@@ -10,7 +10,9 @@
 
 **Step 2 — In terminal:**
 ```bash
-pip install code-review-graph
+pip install codebase-memory-mcp==0.9.0
+codebase-memory-mcp --version
+codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
 uv tool install -p 3.13 serena-agent  # requires uv: brew install uv
 ```
 
@@ -29,7 +31,7 @@ Claude Code auto-loads `.mcp.json` and `CLAUDE.md` from the repo root.
 | Path | In Git? | Reason |
 |---|---|---|
 | `.mcp.json` | ✅ Yes | MCP server config |
-| `.code-review-graph/` | ✅ Yes | Graph data (shared across team) |
+| `.codebase-memory/graph.db.zst` | Optional | Compressed bootstrap artifact; local indexes live in `~/.cache/codebase-memory-mcp` |
 | `docs/supergraph/plans/` | ✅ Yes | Plans are contracts — team can see/track |
 | `CLAUDE.md` | ✅ Yes | Project instructions |
 | `.supergraph-env` | ⚠️ Optional | Personal flags (`CAVEMAN`, etc.) — gitignore if personal |
@@ -98,11 +100,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install code-review-graph
-        run: pip install code-review-graph
+      - name: Install Codebase Memory
+        run: pip install codebase-memory-mcp==0.9.0
 
       - name: Build graph
-        run: code-review-graph build
+        run: codebase-memory-mcp cli index_repository '{"repo_path":".","name":"supergraph-ci","mode":"fast"}'
 
       - name: Detect changes
         run: |
@@ -112,13 +114,13 @@ jobs:
 
       - name: Run graph analysis
         run: |
-          code-review-graph detect-changes
-          code-review-graph status
+          codebase-memory-mcp cli detect_changes '{"project":"supergraph-ci","since":"origin/${{ github.base_ref }}"}'
+          codebase-memory-mcp cli index_status '{"project":"supergraph-ci"}'
 
       - name: Check for cycles
         run: |
           # Fail if new circular dependencies introduced
-          code-review-graph serve --tools list_communities_tool &
+          codebase-memory-mcp cli get_architecture '{"project":"supergraph-ci","aspects":["clusters"]}'
           sleep 2
           # Manual check or use MCP
           kill %1
@@ -196,9 +198,9 @@ Create `.claude/settings.local.json` (gitignored):
 
 ### Graph conflicts
 
-If `.code-review-graph/` has merge conflicts:
+If optional `.codebase-memory/graph.db.zst` has merge conflicts:
 ```bash
-code-review-graph build  # rebuild from scratch
+codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
 ```
 
 ### Plan conflicts
@@ -213,4 +215,4 @@ If two people edit the same plan file:
 The plugin auto-updates graph on file changes (PostToolUse hook). For team:
 - Each member has local graph
 - CI rebuilds graph on PR
-- Commit graph data periodically: `code-review-graph build && git add .code-review-graph/`
+- Local graph data remains in `~/.cache/codebase-memory-mcp`; share `.codebase-memory/graph.db.zst` only when the team chooses persistence.

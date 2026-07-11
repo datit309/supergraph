@@ -1,10 +1,16 @@
 ---
 name: verify
 description: Fresh verification gate before claiming done, fixed, passing, ready, or before commit/PR. Evidence before claims, always.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:verify
+
+Before claiming completion, require healthy `index_status(project=CBM_PROJECT)`.
+Stale/degraded state triggers `index_repository`; then run `detect_changes`,
+`trace_path`, and validated `cycles`, `hubs`, `bridges`, and `test-gaps` recipes.
+Block on degraded evidence, a new cycle, unapproved hub impact, or required tests
+missing.
 
 Fresh verification gate before completion claims.
 

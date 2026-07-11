@@ -16,7 +16,7 @@ Supergraph is a **local-first plugin**. It does not operate any remote servers, 
 
 | Data | Where it lives | Who can access it |
 |------|---------------|-------------------|
-| Codebase AST graph | Local disk (`code-review-graph` index) | You only |
+| Codebase knowledge graph | `~/.cache/codebase-memory-mcp` | You only |
 | Plan files | `docs/supergraph/plans/` in your repo | Your team (git) |
 | Session handoff files | Local project directory | You only |
 | Serena LSP index | Local memory managed by Serena MCP | You only |
@@ -40,12 +40,13 @@ None of the above is uploaded, synced, or shared by this plugin.
 
 Supergraph integrates with two optional MCP tools. Their own privacy policies apply.
 
-### 3.1 code-review-graph
+### 3.1 Codebase Memory MCP
 
 - **What it does:** Builds and queries a local AST dependency graph of your codebase.
 - **Data scope:** Reads your source files locally to construct the graph. The graph is stored on disk in your project directory.
 - **Network:** No network requests. Runs entirely on your machine.
-- **Source:** [github.com/tirth8205/code-review-graph](https://github.com/tirth8205/code-review-graph)
+- **Storage:** Local cache at `~/.cache/codebase-memory-mcp`; optional team artifact `.codebase-memory/graph.db.zst` is shared only if you commit it.
+- **Source:** [github.com/DeusData/codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp)
 
 ### 3.2 Serena (LSP-powered intelligence)
 

@@ -1,132 +1,85 @@
 ---
 name: scan
 description: Scan project once per session. Run first — all other skills depend on this.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:scan
 
-Load minimal project context once. Other skills reuse the results.
+Load verified, project-scoped graph context once. Follow the shared
+`references/codebase-memory-contract.md`.
 
 Announce: "📡 /supergraph:scan — loading project context..."
 
-## Steps
+## 1. Detect project and branch
 
-**1. Detect project type + branch:**
+Use `git branch --show-current`, resolve the repository to an **absolute** path,
+and run `bin/detect-project.sh` when present. Otherwise detect commands from:
 
-```bash
-CURRENT_BRANCH=$(git branch --show-current)
-```
+| File | Type | Test | Lint | Format | Build |
+|---|---|---|---|---|---|
+| `package.json` | node | `npm test --` | `npx eslint .` | `npx prettier --write .` | `npm run build` |
+| `Cargo.toml` | rust | `cargo test` | `cargo clippy` | `cargo fmt` | `cargo build` |
+| `pyproject.toml` | python | `pytest` | `ruff check .` | `ruff format .` | `python -m build` |
+| `go.mod` | go | `go test ./...` | `golangci-lint run` | `gofmt -w .` | `go build ./...` |
+| `pubspec.yaml` | flutter | `flutter test` | `flutter analyze` | `dart format .` | `flutter build` |
 
-Run project detection script if available:
+Ask when none match; never guess commands. Derive one stable `CBM_PROJECT` from
+the repository root name and retain it across branches. Default
+`CBM_INDEX_MODE=moderate`.
 
-```bash
-eval "$(bash bin/detect-project.sh)"
-```
+## 2. Verify provider and freshness
 
-If script missing, check config files:
+1. Call `list_projects` and find `CBM_PROJECT`.
+2. If found, call `index_status(project=CBM_PROJECT)`.
+3. Treat missing project, changed branch, stale state, tool error, failed state,
+   or `status: "degraded"` as requiring a new index.
+4. Call `index_repository(repo_path=<absolute repo path>, name=CBM_PROJECT,
+   mode=CBM_INDEX_MODE)` when required. Require `status: "indexed"`.
+5. Re-run `index_status`; never claim reuse without a healthy response.
+6. Call `get_graph_schema(project=CBM_PROJECT)` before structural queries.
+7. Load `get_architecture(project=CBM_PROJECT,
+   aspects=["overview","layers","boundaries","clusters","hotspots"])`.
 
-| Config file                | Type    | Test                | Lint                   | Format                   | Build                 |
-| -------------------------- | ------- | ------------------- | ---------------------- | ------------------------ | --------------------- |
-| `package.json`             | node    | `npm test --`       | `npx eslint .`         | `npx prettier --write .` | `npm run build`       |
-| `Cargo.toml`               | rust    | `cargo test`        | `cargo clippy`         | `cargo fmt`              | `cargo build`         |
-| `pyproject.toml`           | python  | `pytest`            | `ruff check .`         | `ruff format .`          | `python -m build`     |
-| `go.mod`                   | go      | `go test ./...`     | `golangci-lint run`    | `gofmt -w .`             | `go build ./...`      |
-| `Gemfile`                  | ruby    | `bundle exec rspec` | `rubocop`              | `rubocop -A`             | `bundle exec rake`    |
-| `pom.xml`, `build.gradle*` | java    | `mvn test`          | `mvn checkstyle:check` | `mvn spotless:apply`     | `mvn compile`         |
-| `Package.swift`            | swift   | `swift test`        | `swiftlint lint`       | `swiftformat .`          | `swift build`         |
-| `pubspec.yaml`             | flutter | `flutter test`      | `flutter analyze`      | `dart format .`          | `flutter build`       |
-| `CMakeLists.txt`           | cpp     | `ctest`             | `cppcheck .`           | `clang-format -i`        | `cmake --build build` |
-| `mix.exs`                  | elixir  | `mix test`          | `mix credo`            | `mix format`             | `mix compile`         |
+On any mandatory provider/index/schema error: STOP, show the exact error and the
+recovery command (`codebase-memory-mcp cli index_repository --repo-path
+<absolute> --name <project> --mode moderate`). Do not write freshness state.
 
-If none match → ASK user for commands.
+## 3. Reverify Serena
 
-**2. Check existing `.supergraph-env` (BEFORE any expensive calls):**
+Always call Serena initial instructions and activate project when available, then
+load a top-level symbols overview. Set `SERENA_ACTIVE=true` only after success;
+otherwise set it false and report Serena unavailable.
 
-| Condition                                                    | Action                                                                 |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| `.supergraph-env` missing                                    | Proceed to step 3 (full scan)                                          |
-| `.supergraph-env` exists, `BRANCH` matches `$CURRENT_BRANCH` | Go to step 2b (reuse path)                                             |
-| `.supergraph-env` exists, `BRANCH` differs                   | Proceed to step 3, log "Branch changed: $OLD_BRANCH → $CURRENT_BRANCH" |
+## 4. Write `.supergraph-env`
 
-**2b. Reuse path (branch matches) — skip graph calls:**
-Log: "♻️ Reusing scan context from $SCAN_TIMESTAMP (branch: $BRANCH)"
-Re-verify Serena only (never skip — MCP availability changes per session):
+Only after healthy `index_status`, schema, and architecture responses:
 
-```
-mcp__plugin_serena_serena__initial_instructions()
-mcp__plugin_serena_serena__activate_project()
-```
-
-If Serena responds → update `SERENA_ACTIVE=true` in file. If not → update `SERENA_ACTIVE=false`.
-Jump to step 5 (report).
-
-**3. Full scan — build + load graph + Serena context:**
-
-```
-stats = mcp__code-review-graph__list_graph_stats_tool()
-```
-
-Check stats result:
-
-| Condition | Action |
-| --- | --- |
-| `list_graph_stats_tool()` throws / returns error | `mcp__code-review-graph__index_directory(path=".")` (full build) |
-| `stats.total_files == 0` | `mcp__code-review-graph__index_directory(path=".")` (full build) |
-| `stats.total_files > 0` AND branch unchanged | `mcp__code-review-graph__index_incremental(path=".")` (fast reindex) |
-| `stats.total_files > 0` AND **branch changed** | `mcp__code-review-graph__index_directory(path=".")` (full rebuild — old graph has stale nodes) |
-
-**If `index_directory()` fails:** STOP. Log error. Do NOT write `.supergraph-env`. Ask user to check MCP connection.
-
-Then load context:
-
-```
-mcp__code-review-graph__get_minimal_context_tool()
-```
-
-Only these calls are needed for most tasks. Fetch communities, hubs, bridges only when the specific task needs them.
-
-**3b. Serena context (optional — if Serena MCP available):**
-
-```
-mcp__plugin_serena_serena__initial_instructions() # CRITICAL: load Serena Instructions Manual first
-mcp__plugin_serena_serena__activate_project()     # activate_project requires plugin namespace
-mcp__serena__get_symbols_overview()               # fast top-level symbols map
-```
-
-Note: `activate_project` is only in `mcp__plugin_serena_serena__`; all other Serena tools work with either `mcp__serena__` or `mcp__plugin_serena_serena__`.
-Skip gracefully if Serena unavailable — log "Serena unavailable, skipping symbol overview".
-
-**4. Write `.supergraph-env`:**
-
-```
+```dotenv
 PROJECT_TYPE=...
 TEST_CMD=...
 LINT_CMD=...
 FORMAT_CMD=...
 BUILD_CMD=...
 BRANCH=...
+GRAPH_PROVIDER=codebase-memory-mcp
+CBM_PROJECT=...
+CBM_INDEX_MODE=moderate
+CBM_INDEXED_AT=YYYY-MM-DDTHH:MM:SS
 SERENA_ACTIVE=true|false
 SCAN_TIMESTAMP=YYYY-MM-DDTHH:MM:SS
 ```
 
-`SERENA_ACTIVE`: set based on step 3b result. `SCAN_TIMESTAMP`: current datetime.
+Branch-matched reuse still requires `index_status` and Serena revalidation.
 
-**5. Report completion:**
+## 5. Report
 
-```
-## Graph Context
-- Type: $PROJECT_TYPE | Test: $TEST_CMD | Lint: $LINT_CMD
-- Files: N | Communities: N | Hub nodes: [list]
-- Serena: active | symbols: loaded | skipped
-- Scan: fresh | reused from $SCAN_TIMESTAMP
-```
+Report project/type/commands, provider/project/index status, architecture counts
+available from the response, Serena status, and whether scan was fresh or reused.
 
 ## Rules
 
-- Full scan only when `.supergraph-env` is missing or branch changed
-- Reuse existing context when branch matches — skip graph + Serena calls
-- `SERENA_ACTIVE` is NEVER blindly reused — always re-verified each session
-- `SCAN_TIMESTAMP` lets downstream skills know how fresh the context is
-- Never guess commands — ask if detection fails
-- For 1-file trivial changes, skip graph tools after detecting project type
+- Never record false freshness after errors or degraded state.
+- All graph calls include `project=CBM_PROJECT` where supported.
+- Respect pagination and failure semantics in the shared contract.
+- For a trivial one-file change, graph discovery may stop after verified status.

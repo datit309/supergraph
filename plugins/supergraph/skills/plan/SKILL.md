@@ -1,7 +1,7 @@
 ---
 name: plan
 description: Create graph-informed implementation plans before writing code. Use before any non-trivial task. Skip for small changes (1-2 files, <10 lines).
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:plan
@@ -28,17 +28,17 @@ Use domain vocabulary from CONTEXT.md in all plan task descriptions — never us
 
 **2. Ensure graph:**
 Reuse graph context from `/supergraph:scan`. If scan not done → run `/supergraph:scan` first.
-If graph stale (files changed since last index) → `build_or_update_graph_tool()`.
+Require `CBM_PROJECT` and healthy `index_status`. If stale/degraded, call
+`index_repository` with the absolute repository path before analysis.
 
 **3. Graph analysis:**
-```
-mcp__code-review-graph__get_impact_radius_tool(files=[targets], depth=3)
-mcp__code-review-graph__get_hub_nodes_tool()
-mcp__code-review-graph__get_bridge_nodes_tool()
-mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
-mcp__code-review-graph__get_affected_flows_tool(files=[targets])
-```
-Fetch additional context (communities, surprising connections) only if task crosses boundaries.
+Call `detect_changes(project=CBM_PROJECT)`, `search_graph` for target symbols,
+`trace_path` inbound/outbound/data-flow, and `get_architecture` for overview,
+clusters, boundaries, and hotspots. After `get_graph_schema`, run named contract
+recipes `hubs`, `bridges`, `test-gaps`, and `cross-boundary`. Derive risk from
+impact plus recipe evidence; never invent missing results. Preserve escalation:
+more than 20 files stops for discussion; hub/bridge changes require approval;
+cross-boundary findings require justification.
 
 **3b. Serena symbol analysis (optional — deepens blast radius):**
 If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first.
