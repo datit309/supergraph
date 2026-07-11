@@ -1,7 +1,7 @@
 ---
 name: database-migrations
 description: Database migration best practices for schema changes, data migrations, rollbacks, and zero-downtime deployments across PostgreSQL, MySQL, and common ORMs (Prisma, Drizzle, Kysely, Django, TypeORM, golang-migrate).
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:database-migrations
@@ -21,10 +21,8 @@ Announce: "🗄️ /supergraph:database-migrations — checking blast radius and
 ## Steps
 
 ### 1. Check blast radius (MANDATORY before writing any migration)
-```
-mcp__code-review-graph__get_impact_radius_tool(files=[schema_files, model_files], depth=2)
-mcp__code-review-graph__query_graph_tool(query_type="dependents", target=<schema_file>)
-```
+Use `CBM_PROJECT`: `search_graph` schema/model symbols, `trace_path` inbound and
+data-flow, then validated `dependencies`, `hubs`, and `test-gaps` recipes.
 Schema changes to hub tables (e.g. `users`, `orders`) ripple through repositories, queries, services. If blast radius > 20 files → STOP and discuss with user.
 
 **Serena symbol-level impact (optional):**
@@ -41,9 +39,9 @@ Follow Migration Safety Checklist before writing SQL/ORM migration code.
 
 ### 4. Verify flows
 After migration written:
-```
-mcp__code-review-graph__get_affected_flows_tool(files=[migration_and_related_code])
-```
+Use `trace_path(project=CBM_PROJECT, mode="data_flow")` and the `dependencies`
+recipe. Empty results are `unavailable` evidence requiring Serena/filesystem
+fallback, not invented flows.
 All data flows still intact? Application code updated to match schema?
 
 ### 5. Report

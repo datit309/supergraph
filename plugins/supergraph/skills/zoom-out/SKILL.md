@@ -17,10 +17,10 @@ head -60 CONTEXT.md 2>/dev/null
 ```
 
 **2. Get architecture overview:**
-```
-mcp__code-review-graph__get_architecture_overview_tool()
-mcp__code-review-graph__list_communities_tool()
-```
+Use codebase-memory-mcp with `CBM_PROJECT`: call `get_architecture` for
+`overview`, `layers`, `boundaries`, `clusters`, and `hotspots`; then use named
+contract recipes `hubs`, `bridges`, and `test-gaps`. If unavailable, label it
+`unavailable` and fall back to Serena/filesystem evidence.
 
 **3. Output module map** using domain vocabulary from CONTEXT.md:
 

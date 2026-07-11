@@ -1,14 +1,14 @@
 {
   "name": "supergraph",
-  "version": "2.2.3",
-  "description": "Supergraph enforces a complete, evidence-based coding pipeline — scan → plan → TDD → fix → verify → review — grounded in real codebase analysis at every step. It combines AST dependency graphs, LSP-level code intelligence, and a structured skill chain so Claude never guesses about impact before making a change.",
+  "version": "2.2.4",
+  "description": "Evidence-gated AI coding workflow: scan → analyze → plan → TDD → execute → fix → verify → review, powered by Codebase Memory MCP >= 0.9.0 with optional Serena LSP intelligence. Includes blast-radius planning, test/cycle gates, independent review, and Windows Git Bash hook auto-resolution.",
   "author": {
     "name": "datit309",
     "email": "trantandat0919@gmail.com"
   },
   "license": "MIT",
   "keywords": [
-    "code-review-graph",
+    "codebase-memory-mcp",
     "supergraph",
     "serena",
     "tdd",

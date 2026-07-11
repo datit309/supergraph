@@ -1,7 +1,7 @@
 ---
 name: execute
 description: Dispatch and execute implementation plans with TDD and checkpoints. Use when plan is ready. Parallel by default for independent tasks.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:execute
@@ -77,14 +77,19 @@ Shared executor instructions (apply to both modes):
 ```bash
 git diff --name-only  # check for same-file edits by different agents
 ```
-If overlap: `index_incremental(files=[overlapping])` → `detect_changes_tool()` + `get_surprising_connections_tool()`
+If overlap: require `CBM_PROJECT`; call `index_status`, and when stale/degraded
+call `index_repository` with the absolute repo path. Then run project-scoped
+`detect_changes`, `trace_path`, and `cross-boundary` recipe evidence.
 
 Serena conflict check (optional): `find_referencing_symbols()` on symbols changed by multiple agents. Skip if Serena unavailable.
 
 If conflicts → STOP: review manually / revert & retry sequential / keep X & redo Y.
 
 ### 8. Final Verification
-Run `$TEST_CMD`, `$LINT_CMD`, `$BUILD_CMD`. Run `mcp__code-review-graph__build_or_update_graph_tool()`.
+Run `$TEST_CMD`, `$LINT_CMD`, `$BUILD_CMD`. Require healthy
+`index_status(project=CBM_PROJECT)`; stale/degraded state triggers
+`index_repository`. Run `detect_changes`, `trace_path`, and validated `cycles`,
+`test-gaps`, `complexity`, and `cross-boundary` recipes.
 
 ### 9. Handoff
 `/supergraph:fix` → `/supergraph:integration` → `/supergraph:verify` → `/supergraph:review`

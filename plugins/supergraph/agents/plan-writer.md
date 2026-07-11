@@ -31,24 +31,19 @@ Read config, 2-3 source files, 1-2 test files. Note conventions.
 
 ### 2. Ensure Graph
 
-```
-mcp__code-review-graph__list_graph_stats_tool()
-```
-
-If fails → STOP: "Graph not available. Run `pip install code-review-graph && code-review-graph install && code-review-graph build` or ask user."
+Require `GRAPH_PROVIDER=codebase-memory-mcp`, `CBM_PROJECT`, and healthy
+`index_status(project=CBM_PROJECT)`. If unavailable, STOP with:
+`python3 -m pip install --user codebase-memory-mcp==0.9.0`, then
+`codebase-memory-mcp cli index_repository --repo-path <absolute> --name
+<CBM_PROJECT> --mode moderate`.
 
 ### 3. Graph Analysis
 
-```
-mcp__code-review-graph__get_impact_radius_tool(files=["targets"], depth=3)
-mcp__code-review-graph__get_hub_nodes_tool()
-mcp__code-review-graph__get_bridge_nodes_tool()
-mcp__code-review-graph__list_communities_tool()
-mcp__code-review-graph__get_surprising_connections_tool()
-mcp__code-review-graph__get_review_context_tool(files=["targets"])
-mcp__code-review-graph__query_graph_tool(query_type="tests", target="file")
-mcp__code-review-graph__get_affected_flows_tool(files=["targets"])
-```
+Use project-scoped `detect_changes`, `search_graph`, `trace_path`, and
+`get_architecture`. Read `get_graph_schema`, then execute shared contract recipes
+`hubs`, `bridges`, `test-gaps`, and `cross-boundary`. Derive surprise/risk from
+cross-boundary evidence. Do not invent missing callers or flows. More than 20
+affected files stops for user discussion; hub/bridge impact requires approval.
 
 ### 3.5. Spec Alignment Check
 

@@ -1,7 +1,7 @@
 ---
 name: analyze
 description: Risk analysis and approach selection before planning. Use when requirements are ambiguous, approaches vary, or work touches hub/bridge nodes. Skip for typo fixes.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:analyze
@@ -54,10 +54,12 @@ Use existing domain vocabulary in all analysis — never invent new terms for co
 
 **2. Check graph risk:**
 Reuse graph context from `/supergraph:scan`. Only call if targets are identified:
-```
-mcp__code-review-graph__get_impact_radius_tool(files=[likely_targets], depth=2)
-```
-If files involve hub/bridge nodes → flag risk.
+Use `CBM_PROJECT` from `.supergraph-env`. Call `detect_changes(project=CBM_PROJECT)`,
+`search_graph` for likely symbols, `trace_path` inbound/outbound, and
+`get_architecture` for boundaries/hotspots. Run the validated `hubs`, `bridges`,
+and `cross-boundary` contract recipes. Empty results are evidence, not permission
+to invent relationships. If files involve a hub/bridge node or cross a boundary,
+flag risk; more than 20 affected files requires user discussion.
 
 **2b. Serena dependency check (optional):**
 If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first.

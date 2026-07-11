@@ -1,7 +1,7 @@
 ---
 name: webapp-testing
 description: Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:webapp-testing
@@ -26,14 +26,9 @@ Announce: "🌐 /supergraph:webapp-testing — testing web application..."
 ### 1. Understand what changed (graph context)
 
 Before writing tests, use graph context to prioritize coverage:
-```
-mcp__code-review-graph__get_affected_flows_tool(files=[changed_frontend_pages])
-mcp__code-review-graph__get_impact_radius_tool(files=[changed_fe], depth=2)
-mcp__code-review-graph__get_knowledge_gaps_tool()
-```
-- `get_affected_flows_tool` — find all user flows that need testing when a page/component changes
-- `get_impact_radius_tool` — which other pages, components, or API routes are affected
-- `get_knowledge_gaps_tool` — find untested frontend files; prioritize high-impact ones
+Use `CBM_PROJECT`: call `detect_changes`, `search_graph` for changed routes/pages,
+then `trace_path` for inbound/outbound call and data-flow paths. Run validated
+`test-gaps`. Empty results are unavailable; use Serena/filesystem evidence.
 
 **Serena (optional):** For changed component symbols:
 ```
@@ -85,9 +80,7 @@ Use discovered selectors from step 3. Write targeted Playwright assertions.
 ### 5. Verify flows covered
 
 After tests pass, re-run:
-```
-mcp__code-review-graph__get_affected_flows_tool(files=[changed_files])
-```
+Re-run `search_graph` then `trace_path(project=CBM_PROJECT, mode="data_flow")`.
 All impacted flows tested? Any gaps → add tests.
 
 ### 6. Report
@@ -143,4 +136,4 @@ If `examples/` directory exists in project:
 - Identify selectors from rendered state (recon-first), not from guessing
 - Use descriptive selectors: `text=`, `role=`, CSS, or IDs — never positional selectors like `nth-child`
 - Always close browser when done in Python scripts
-- Re-check `get_affected_flows_tool` after tests pass to confirm full coverage
+- Re-check `trace_path` after tests pass to confirm full coverage

@@ -16,16 +16,12 @@ Announce: "🏛️ /supergraph:architecture — mapping codebase structure..."
 cat CONTEXT.md 2>/dev/null || echo "No CONTEXT.md"
 ```
 
-**1b. Graph overview (optional — skip gracefully if MCP unavailable):**
-```
-mcp__code-review-graph__get_architecture_overview_tool()
-mcp__code-review-graph__get_hub_nodes_tool()
-mcp__code-review-graph__get_bridge_nodes_tool()
-mcp__code-review-graph__list_communities_tool()
-mcp__code-review-graph__get_surprising_connections_tool()
-mcp__code-review-graph__get_knowledge_gaps_tool()
-```
-If graph MCP unavailable → log "Graph MCP unavailable, using filesystem exploration only" and proceed with 1c/1d. Generate Mermaid diagrams from directory/import structure instead of graph data.
+**1b. Codebase Memory overview (optional):**
+Use `CBM_PROJECT` with `get_architecture` aspects `overview`, `layers`,
+`boundaries`, `clusters`, and `hotspots`. After `get_graph_schema`, run shared
+contract recipes `hubs`, `bridges`, `cross-boundary`, and `test-gaps`.
+If codebase-memory-mcp is unavailable, label graph evidence `unavailable`, use
+Serena/filesystem evidence, and generate Mermaid diagrams from imports.
 
 **1c. Serena structure (optional):**
 ```

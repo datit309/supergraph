@@ -1,10 +1,16 @@
 ---
 name: supergraph
 description: Meta-orchestrator — dispatches to the right skill for the task. Use before any non-trivial work.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # supergraph
+
+Graph evidence uses `codebase-memory-mcp` scoped by `CBM_PROJECT`. Orientation
+loads `get_architecture` aspects `overview`, `layers`, `boundaries`, `clusters`,
+and `hotspots`, plus validated `hubs`, `bridges`, and `test-gaps` recipes. If
+optional graph evidence is unavailable, label it unavailable and use Serena or
+filesystem evidence.
 
 Dispatch to the right skill. 1% rule: if it *might* apply, invoke it.
 

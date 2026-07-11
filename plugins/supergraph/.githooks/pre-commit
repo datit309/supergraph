@@ -36,9 +36,10 @@ elif [ -f "composer.json" ]; then
     vendor/bin/phpunit || vendor/bin/pest || { echo "❌ Tests failed"; exit 1; }
 fi
 
-# Update graph if code-review-graph available
-if command -v code-review-graph &>/dev/null; then
-    code-review-graph update 2>/dev/null && echo "🔄 Graph updated."
-fi
+# Enforce provider migration and active-scope invariants.
+bash plugins/supergraph/tests/test-codebase-memory-migration.sh || {
+    echo "❌ Codebase Memory migration validation failed"
+    exit 1
+}
 
 echo "✅ Pre-commit checks passed"

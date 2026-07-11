@@ -1,7 +1,7 @@
 ---
 name: integration
 description: Run integration and e2e tests after unit tests pass. Use after /supergraph:fix when unit tests are green.
-mcp: code-review-graph
+mcp: codebase-memory-mcp
 ---
 
 # /supergraph:integration
@@ -64,10 +64,9 @@ Trace failure to source module, fix, re-run.
 Max 2 retries (e2e is inherently flaky). Flaky tests: annotate with `@flaky` / `test.slow()` / `@pytest.mark.flaky` per framework — do not block merge on known-flaky tests.
 
 ### 6. Graph Validation
-```
-mcp__code-review-graph__get_affected_flows_tool(files=[all_changed])
-mcp__code-review-graph__get_surprising_connections_tool()
-```
+Use `CBM_PROJECT` with `search_graph`, `trace_path` for affected call/data-flow
+paths, and validated `dependencies`, `cross-boundary`, and `test-gaps` recipes.
+Empty results are unavailable evidence; fall back to Serena/filesystem checks.
 Cross-module flows all covered? Surprising connections investigated?
 
 ### 7. Update Plan Status
