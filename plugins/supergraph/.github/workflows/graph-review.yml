@@ -21,6 +21,12 @@ jobs:
           REPO=$(pwd)
           codebase-memory-mcp cli index_repository "{\"repo_path\":\"$REPO\",\"name\":\"supergraph-ci\",\"mode\":\"fast\"}" > index.json
           python3 -c 'import json; d=json.load(open("index.json")); assert d.get("status")=="indexed", d'
+          codebase-memory-mcp cli index_status '{"project":"supergraph-ci"}' > index-status.json
+          python3 -c 'import json; d=json.load(open("index-status.json")); assert d.get("project") or d.get("name"), d'
+      - name: Load schema before graph queries
+        run: |
+          codebase-memory-mcp cli get_graph_schema '{"project":"supergraph-ci"}' > graph-schema.json
+          python3 -c 'import json; d=json.load(open("graph-schema.json")); assert d.get("node_labels") and d.get("edge_types"), d'
       - name: Detect changes and cycles
         env:
           BASE_REF: ${{ github.base_ref }}
@@ -34,7 +40,9 @@ jobs:
           assert isinstance(d['changed_count'],int)
           assert isinstance(d['impacted_symbols'],list)
           assert isinstance(d['depth'],int)
-          rows=json.load(open('cycle-edges.json'))['rows']
+          cycle_data=json.load(open('cycle-edges.json'))
+          assert not cycle_data.get('next_cursor'), 'cycle pagination is incomplete; rerun query with next_cursor'
+          rows=cycle_data['rows']
           assert len(rows)<100000, 'cycle evidence truncated'
           adj={}
           for a,b in rows: adj.setdefault(a,[]).append(b)

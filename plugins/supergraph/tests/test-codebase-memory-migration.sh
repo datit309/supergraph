@@ -223,7 +223,7 @@ hooks() {
 
 ci() {
   local f="$ROOT/plugins/supergraph/.github/workflows/graph-review.yml"
-  for marker in 'codebase-memory-mcp==0.9.0' supergraph-ci index_repository detect_changes query_graph changed_count impacted_symbols depth 'Cycle count' 'exit 1'; do contains "$f" "$marker"; done
+  for marker in 'codebase-memory-mcp==0.9.0' supergraph-ci index_repository index_status get_graph_schema detect_changes query_graph changed_count impacted_symbols depth 'Cycle count' next_cursor 'exit 1'; do contains "$f" "$marker"; done
   ! grep -Eq "$LEGACY_EXEC|risk_level|risk_summary|\| true" "$f" || fail 'CI contains legacy/nonexistent/swallowed checks'
 }
 
