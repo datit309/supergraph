@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review, grounded in real codebase analysis.",
   "author": {
     "name": "datit309",
@@ -14,7 +14,11 @@
     "displayName": "Supergraph — Graph-Driven AI Workflows",
     "shortDescription": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review.",
     "category": "workflow",
-    "capabilities": ["skills", "mcp", "hooks"],
+    "capabilities": [
+      "skills",
+      "mcp",
+      "hooks"
+    ],
     "brandColor": "#6C63FF"
   },
   "mcpServers": "./.mcp.json",

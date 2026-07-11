@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "graphProvider": "Codebase Memory",
   "displayName": "Supergraph — Graph-Driven AI Workflows",
   "tagline": "Stop Claude from guessing. Give it a real map of your codebase.",
