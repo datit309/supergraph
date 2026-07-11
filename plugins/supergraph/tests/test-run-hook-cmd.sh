@@ -15,10 +15,11 @@ before() {
 }
 
 [[ -s "$CMD" ]] || fail "run-hook.cmd missing"
-! grep -Fq '"C:\\Program Files\\Git\\bin\\bash.exe"' <<<"$WINDOWS_BLOCK" \
+! grep -Fq '"C:\Program Files\Git\bin\bash.exe"' <<<"$WINDOWS_BLOCK" \
   || fail 'hardcoded Program Files Bash remains'
 contains 'if defined CLAUDE_CODE_GIT_BASH_PATH'
 contains 'if exist "%CLAUDE_CODE_GIT_BASH_PATH%"'
+contains 'if not exist "%CLAUDE_CODE_GIT_BASH_PATH%\NUL"'
 contains 'if exist "%ProgramFiles%\Git\bin\bash.exe"'
 contains 'if exist "%LocalAppData%\Programs\Git\bin\bash.exe"'
 contains "where git.exe"

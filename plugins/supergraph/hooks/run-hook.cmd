@@ -10,7 +10,7 @@ if "%PLUGIN_ROOT%"=="" (
   exit /b 1
 )
 set "GIT_BASH="
-if defined CLAUDE_CODE_GIT_BASH_PATH if exist "%CLAUDE_CODE_GIT_BASH_PATH%" set "GIT_BASH=%CLAUDE_CODE_GIT_BASH_PATH%"
+if defined CLAUDE_CODE_GIT_BASH_PATH if exist "%CLAUDE_CODE_GIT_BASH_PATH%" if not exist "%CLAUDE_CODE_GIT_BASH_PATH%\NUL" set "GIT_BASH=%CLAUDE_CODE_GIT_BASH_PATH%"
 if not defined GIT_BASH if exist "%ProgramFiles%\Git\bin\bash.exe" set "GIT_BASH=%ProgramFiles%\Git\bin\bash.exe"
 if not defined GIT_BASH if exist "%LocalAppData%\Programs\Git\bin\bash.exe" set "GIT_BASH=%LocalAppData%\Programs\Git\bin\bash.exe"
 if not defined GIT_BASH for /f "delims=" %%i in ('where git.exe 2^>nul') do (
