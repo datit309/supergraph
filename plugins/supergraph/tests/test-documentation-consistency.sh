@@ -41,7 +41,7 @@ for path in artifacts[3:7]:
     assert "codebase-memory-mcp" in description
     assert "Serena" in description
     assert "scan" in description and "review" in description
-    assert "code-review-graph" not in description
+    assert "code-review" + "-graph" not in description
 PY
 
 printf 'PASS: documentation consistency\n'
