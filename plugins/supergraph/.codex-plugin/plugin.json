@@ -1,7 +1,7 @@
 {
   "name": "supergraph",
   "version": "2.2.4",
-  "description": "Evidence-based coding pipeline: scan → plan → TDD → fix → verify → review, grounded in real codebase analysis.",
+  "description": "Evidence-gated AI coding workflow: scan → analyze → plan → TDD → execute → fix → verify → review, powered by Codebase Memory MCP >= 0.9.0 with optional Serena LSP intelligence, blast-radius checks, and independent review.",
   "author": {
     "name": "datit309",
     "email": "trantandat0919@gmail.com"

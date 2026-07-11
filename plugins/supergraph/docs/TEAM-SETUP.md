@@ -22,6 +22,16 @@ uv tool install -p 3.13 serena-agent  # requires uv: brew install uv
 ```
 First run builds the graph automatically.
 
+## What Supergraph provides
+
+Every non-trivial change follows the evidence-gated workflow:
+
+`scan → analyze → plan → TDD → execute → fix → verify → review`
+
+Codebase Memory MCP (`>=0.9.0`) indexes the repository locally under `CBM_PROJECT`. The skills use that graph for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed-symbol impact. Serena is optional and adds LSP references and diagnostics.
+
+On Windows, `hooks/run-hook.cmd` dynamically resolves Git Bash from `CLAUDE_CODE_GIT_BASH_PATH`, system Git, user-level Git, or `where git.exe`. If Git Bash is unavailable it prints `supergraph: Git Bash not found — hooks skipped` and exits `0`, so hooks remain non-blocking while skills and MCP continue to work.
+
 > Your team repo should already have `.mcp.json` and `CLAUDE.md` committed — if not, see the [README Team Setup](../../../../README.md#team-setup) for how to add them.
 
 Claude Code auto-loads `.mcp.json` and `CLAUDE.md` from the repo root.
@@ -200,7 +210,7 @@ Create `.claude/settings.local.json` (gitignored):
 
 If optional `.codebase-memory/graph.db.zst` has merge conflicts:
 ```bash
-codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
+codebase-memory-mcp cli index_repository '{"repo_path":"'"$(pwd)"'","name":"supergraph","mode":"moderate"}'
 ```
 
 ### Plan conflicts

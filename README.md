@@ -9,7 +9,21 @@
 
 SuperGraph enforces planning, TDD, verification, review, and architecture-aware decision making through mandatory workflows, graph intelligence, and LSP-powered code analysis.
 
-[![Version](https://img.shields.io/badge/version-2.2.3-blue)](./plugins/supergraph/CHANGELOG.md)
+## What the plugin does
+
+Supergraph is a workflow system for AI coding agents, not just a collection of prompts. Every non-trivial change follows:
+
+`scan → analyze → plan → TDD → execute → fix → verify → review`
+
+The graph layer is powered by [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.9.0`). It indexes the repository locally under a stable project identity, then provides evidence for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed symbols. [Serena](https://github.com/oraios/serena) is optional and adds LSP-level references and diagnostics.
+
+The workflow is evidence-gated: no production change without a verified RED test, no plan execution without an approved plan, and no completion claim without fresh verification and independent review. Hooks provide session reminders, plan guards, failure hints, and asynchronous graph freshness through Codebase Memory auto-watch.
+
+### Windows hook behavior
+
+On Windows, `hooks/run-hook.cmd` resolves Git Bash dynamically: `CLAUDE_CODE_GIT_BASH_PATH`, system Git, user-level Git, then `where git.exe`. This supports Git for Windows installed by winget without administrator rights. If Git Bash is unavailable, hooks print `supergraph: Git Bash not found — hooks skipped` and exit successfully because hooks are non-blocking; skills and MCP remain usable.
+
+[![Version](https://img.shields.io/badge/version-2.2.4-blue)](./plugins/supergraph/CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Privacy](https://img.shields.io/badge/privacy-local--first-success)](./plugins/supergraph/PRIVACY.md)
 
@@ -165,7 +179,7 @@ codebase-memory-mcp --version
 codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
 ```
 
-`/supergraph:scan` builds the graph on first run and manages incremental updates. The `PostToolUse` hook keeps it fresh after every file write.
+`/supergraph:scan` registers or builds the graph on first run and records `CBM_PROJECT` in `.supergraph-env`. Codebase Memory `auto_watch=true` keeps the local index fresh asynchronously; quality gates explicitly check index status and reindex before impact analysis.
 
 ### Serena Setup
 
@@ -594,7 +608,7 @@ See [PRIVACY.md](./plugins/supergraph/PRIVACY.md) for the full policy.
 
 See [CHANGELOG.md](./plugins/supergraph/CHANGELOG.md) for full version history.
 
-**Current: v2.2.3** — Added `flutter-ui` skill, `bump-version.sh` release script, `.mcp.json` plugin MCP config, improved GitHub issue templates and release workflow.
+**Current: v2.2.4** — Migrated graph intelligence to Codebase Memory MCP, added project/index lifecycle checks, and fixed Windows hooks for system/user-level Git Bash installations.
 
 **v2.2.0** — Added 8 new skills (diagnose, handoff, triage, caveman, prd, architecture, prototype, zoom-out), CONTEXT.md shared vocabulary system, 4 smart automation hooks.
 

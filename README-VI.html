@@ -491,7 +491,7 @@
 <div class="hero">
   <div class="hero-badge">
     <span class="dot"></span>
-    Plugin cho AI Coding Agents &middot; v2.2.3
+    Plugin cho AI Coding Agents &middot; v2.2.4
   </div>
   <h1>Hướng dẫn sử dụng<br><em>Supergraph</em></h1>
   <p class="subtitle">
@@ -536,8 +536,8 @@
       </div>
       <div class="card">
         <div class="card-icon green">🔗</div>
-        <h3>Code-Review-Graph</h3>
-        <p>Phân tích AST codebase dạng đồ thị: blast radius, hub nodes, bridge nodes, kết nối bất ngờ, và hơn thế nữa.</p>
+        <h3>Codebase Memory MCP</h3>
+        <p>Index codebase cục bộ (>= 0.9.0) để truy vấn blast radius, caller/callee, cluster kiến trúc, cycle, test gap và complexity hotspot.</p>
       </div>
       <div class="card">
         <div class="card-icon cyan">🧠</div>
@@ -545,6 +545,9 @@
         <p>Tích hợp Language Server Protocol: điều hướng symbol, chẩn đoán lỗi kiểu, rename và replace an toàn toàn codebase.</p>
       </div>
     </div>
+    <p class="section-desc" style="margin-top:24px;">
+      Workflow bắt buộc: <code>scan → analyze → plan → TDD → execute → fix → verify → review</code>. Serena là tuỳ chọn để bổ sung LSP references và diagnostics. Trên Windows, hook tự tìm Git Bash theo cả đường dẫn system-wide và user-level; nếu không có, hook báo <code>Git Bash not found — hooks skipped</code> và thoát non-blocking.
+    </p>
   </section>
 
   <!-- 2. CÀI ĐẶT -->
@@ -622,7 +625,7 @@ plugins/supergraph/install.sh --platform opencode
     <p>OpenCode dùng <code>OPENCODE.md</code> cho project instructions. Skills và MCP chạy ngay. Hooks không có trên OpenCode (nền tảng này dùng mô hình plugin JS/TS).</p>
     <p><strong>Cách gọi skill:</strong> dùng <code>/skills</code>, rồi chọn <code>scan</code>, <code>plan</code>, <code>tdd</code>, v.v. Không dùng <code>/supergraph:*</code> trong OpenCode.</p>
 
-    <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Code-Review-Graph (mọi nền tảng)</h3>
+    <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Codebase Memory MCP (mọi nền tảng)</h3>
     <pre><code><span class="cmd">pip install</span> codebase-memory-mcp==0.9.0
 codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate</code></pre>
 
@@ -1044,7 +1047,7 @@ codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph 
     <a href="https://github.com/datit309/supergraph" target="_blank">GitHub: datit309/supergraph</a>
     &nbsp;·&nbsp; Giấy phép MIT
   </p>
-  <p>Tài liệu hướng dẫn được tạo tự động từ repository. Phiên bản plugin: v2.2.3</p>
+  <p>Tài liệu hướng dẫn được tạo tự động từ repository. Phiên bản plugin: v2.2.4</p>
 </footer>
 
   <p>Index local: <code>~/.cache/codebase-memory-mcp</code>. Artifact chia sẻ tuỳ chọn: <code>.codebase-memory/graph.db.zst</code>.</p>
