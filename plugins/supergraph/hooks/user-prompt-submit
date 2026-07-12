@@ -19,7 +19,12 @@ emit() {
   local ctx="${LANG_CTX}${msg:+ $msg}"
   printf '%s' "$ctx" | python3 -c '
 import sys, json
-print(json.dumps({"additionalContext": sys.stdin.read()}))
+print(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "UserPromptSubmit",
+        "additionalContext": sys.stdin.read(),
+    }
+}))
 '
 }
 

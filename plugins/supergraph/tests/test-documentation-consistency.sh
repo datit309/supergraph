@@ -42,6 +42,11 @@ for path in artifacts[3:7]:
     assert "Serena" in description
     assert "scan" in description and "review" in description
     assert "code-review" + "-graph" not in description
+
+codex_marketplace = json.loads(
+    (root / ".agents/plugins/marketplace.json").read_text(encoding="utf-8")
+)
+assert codex_marketplace.get("name") == "supergraph", codex_marketplace
 PY
 
 printf 'PASS: documentation consistency\n'
