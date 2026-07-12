@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "graphProvider": "Codebase Memory",
   "description": "Supergraph is an evidence-gated AI coding workflow: scan → analyze → plan → TDD → execute → fix → verify → review. Codebase Memory MCP >= 0.9.0 provides local project indexing, blast radius, callers, cycles, test gaps, and architecture evidence; optional Serena adds LSP references and diagnostics. Windows hooks dynamically find system or user-level Git Bash and skip non-blockingly when it is unavailable.",
   "author": {

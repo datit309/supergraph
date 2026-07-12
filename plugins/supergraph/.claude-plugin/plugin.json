@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Evidence-gated AI coding workflow: scan → analyze → plan → TDD → execute → fix → verify → review, powered by Codebase Memory MCP >= 0.9.0 with optional Serena LSP intelligence. Includes blast-radius planning, test/cycle gates, independent review, and Windows Git Bash hook auto-resolution.",
   "author": {
     "name": "datit309",

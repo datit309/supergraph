@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- Fixed `UserPromptSubmit` hook output for Codex by emitting the required `hookSpecificOutput` envelope with `hookEventName` and `additionalContext`.
+- Added the required top-level `name` to the Codex marketplace manifest so `codex plugin marketplace upgrade supergraph` passes marketplace validation.
+
 ### Changed
 
 - Migrated all active graph configuration, workflows, hooks, CI, and documentation to Codebase Memory MCP 0.9.0 with project-scoped indexing and executable query-contract tests.
