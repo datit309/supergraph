@@ -13,6 +13,15 @@ if [ ! -e "$install_dir" ]; then
   mkdir -p "$(dirname "$install_dir")"
   printf 'Cloning Supergraph into %s\n' "$install_dir"
   git clone -- "$repo_url" "$install_dir"
+elif [ ! -d "$install_dir/.git" ]; then
+  printf 'Refusing to update: %s is not a Git checkout.\n' "$install_dir" >&2
+  exit 1
+elif [ -n "$(git -C "$install_dir" status --porcelain)" ]; then
+  printf 'Refusing to update: %s has uncommitted changes.\n' "$install_dir" >&2
+  exit 1
+else
+  printf 'Updating Supergraph in %s\n' "$install_dir"
+  git -C "$install_dir" pull --ff-only
 fi
 
 plugin_installer="$install_dir/plugins/supergraph/install.sh"
