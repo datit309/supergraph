@@ -95,6 +95,19 @@ The Git checkout lives at `${XDG_DATA_HOME:-$HOME/.local/share}/supergraph` on P
 
 Security: inspect both installer scripts before piping remote code into a shell. For example, download the file, review it, then run it locally.
 
+### Automatic update notifications
+
+Supergraph checks for a newer stable version at SessionStart, at most once every 24 hours. The check times out after 2 seconds, uses a local cache, and never blocks startup. When an update exists, the notice shows the installed/latest versions and the matching command:
+
+```text
+Claude Code: /plugin marketplace update supergraph
+Codex: codex plugin marketplace upgrade supergraph
+Antigravity: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform antigravity
+OpenCode: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+```
+
+Set `SUPERGRAPH_UPDATE_CHECK=false` to disable the check. OpenCode does not currently expose a SessionStart hook, so its update command is available here but its notification is not automatic.
+
 ### Option 1 — Claude Code
 
 ```bash

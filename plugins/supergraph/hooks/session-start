@@ -14,7 +14,116 @@ escape_for_json() {
   printf '%s' "$s"
 }
 
+strip_decimal_zeros() {
+  local value=$1
+  while [ "${value#0}" != "$value" ]; do
+    value=${value#0}
+  done
+  printf '%s' "${value:-0}"
+}
+
+normalize_version() {
+  local version=${1#v}
+  local major minor patch
+  if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    IFS=. read -r major minor patch <<<"$version"
+    printf '%s.%s.%s' "$(strip_decimal_zeros "$major")" \
+      "$(strip_decimal_zeros "$minor")" "$(strip_decimal_zeros "$patch")"
+  fi
+}
+
+decimal_is_greater() {
+  if [ "${#1}" -ne "${#2}" ]; then
+    [ "${#1}" -gt "${#2}" ]
+  else
+    [[ "$1" > "$2" ]]
+  fi
+}
+
+version_is_newer() {
+  local latest=$1 current=$2
+  local latest_major latest_minor latest_patch current_major current_minor current_patch
+  IFS=. read -r latest_major latest_minor latest_patch <<<"$latest"
+  IFS=. read -r current_major current_minor current_patch <<<"$current"
+  if [ "$latest_major" != "$current_major" ]; then
+    decimal_is_greater "$latest_major" "$current_major"
+  elif [ "$latest_minor" != "$current_minor" ]; then
+    decimal_is_greater "$latest_minor" "$current_minor"
+  else
+    [ "$latest_patch" != "$current_patch" ] && decimal_is_greater "$latest_patch" "$current_patch"
+  fi
+}
+
+update_platform() {
+  if [ -n "${SUPERGRAPH_PLATFORM:-}" ]; then
+    printf '%s' "$SUPERGRAPH_PLATFORM"
+  elif [ -n "${CODEX_HOME:-}" ]; then
+    printf 'codex'
+  elif [ -n "${ANTIGRAVITY_PLUGIN_ROOT:-${AGY_PLUGIN_ROOT:-${GEMINI_PLUGIN_ROOT:-}}}" ]; then
+    printf 'antigravity'
+  elif [ -n "${OPENCODE_CONFIG_DIR:-${OPENCODE:-}}" ]; then
+    printf 'opencode'
+  else
+    printf 'claude'
+  fi
+}
+
+update_command() {
+  case "$1" in
+    codex) printf 'codex plugin marketplace upgrade supergraph' ;;
+    antigravity) printf 'curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform antigravity' ;;
+    opencode) printf 'curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode' ;;
+    *) printf '/plugin marketplace update supergraph' ;;
+  esac
+}
+
+update_notice() {
+  [ "${SUPERGRAPH_UPDATE_CHECK:-true}" != false ] || return 0
+
+  local current latest="" checked_at="" now cache_dir cache_file response platform command
+  current=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$PLUGIN_ROOT/plugin.json" 2>/dev/null | head -1)
+  current=$(normalize_version "$current")
+  [ -n "$current" ] || return 0
+
+  cache_dir="${XDG_CACHE_HOME:-${HOME:-/tmp}/.cache}/supergraph"
+  cache_file="$cache_dir/update-check"
+  now=$(date +%s)
+  if [ -f "$cache_file" ]; then
+    IFS=$'\t' read -r checked_at latest <"$cache_file" || true
+  fi
+
+  case "$checked_at" in
+    ''|*[!0-9]*) checked_at="" ;;
+  esac
+  if [ "${#checked_at}" -gt 10 ]; then
+    checked_at=""
+  elif [ -n "$checked_at" ]; then
+    checked_at=$(printf '%s' "$checked_at" | sed 's/^0*//')
+    checked_at=${checked_at:-0}
+  fi
+  if [ -z "$checked_at" ] || [ $((now - checked_at)) -ge 86400 ] || [ $((now - checked_at)) -lt 0 ]; then
+    response=$(curl -fsSL --connect-timeout 1 --max-time 2 \
+      https://raw.githubusercontent.com/datit309/supergraph/master/plugins/supergraph/plugin.json 2>/dev/null || true)
+    latest=$(printf '%s' "$response" | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
+    latest=$(normalize_version "$latest")
+    mkdir -p "$cache_dir" 2>/dev/null && printf '%s\t%s\n' "$now" "$latest" >"$cache_file" 2>/dev/null || true
+  else
+    latest=$(normalize_version "$latest")
+  fi
+
+  [ -n "$latest" ] && version_is_newer "$latest" "$current" || return 0
+  platform=$(update_platform)
+  command=$(update_command "$platform")
+  printf '🚨 SUPERGRAPH UPDATE AVAILABLE 🚨\nCurrent: %s → Latest: %s\nPlatform: %s\nUpdate: %s' \
+    "$current" "$latest" "$platform" "$command"
+}
+
 parts=()
+
+notice=$(update_notice)
+if [ -n "$notice" ]; then
+  parts+=("$notice")
+fi
 
 # ── 1. Mandatory workflow reminder ────────────────────────────────────────────
 parts+=("$(cat <<'EOF'

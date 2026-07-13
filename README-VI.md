@@ -95,6 +95,19 @@ Git checkout nằm tại `${XDG_DATA_HOME:-$HOME/.local/share}/supergraph` trên
 
 Bảo mật: nên tải và kiểm tra nội dung installer trước khi pipe code từ xa vào shell, sau đó chạy file local đã kiểm tra.
 
+### Thông báo cập nhật tự động
+
+Supergraph kiểm tra phiên bản stable mới khi SessionStart, tối đa 1 lần mỗi 24 giờ. Check timeout sau 2 giây, dùng cache local và không chặn startup. Khi có bản mới, thông báo hiển thị phiên bản đang cài/mới nhất cùng lệnh phù hợp:
+
+```text
+Claude Code: /plugin marketplace update supergraph
+Codex: codex plugin marketplace upgrade supergraph
+Antigravity: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform antigravity
+OpenCode: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+```
+
+Đặt `SUPERGRAPH_UPDATE_CHECK=false` để tắt kiểm tra. OpenCode hiện chưa cung cấp hook SessionStart, nên có lệnh update ở đây nhưng chưa thể tự động hiện thông báo.
+
 ### Cách 1 — Claude Code
 
 ```bash
