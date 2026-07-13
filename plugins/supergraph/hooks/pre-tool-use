@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-input="${TOOL_INPUT:-}"
+stdin_input=$(cat)
+input="${stdin_input:-${TOOL_INPUT:-}}"
 file=""
 
 if [ -n "$input" ]; then
-  file=$(printf '%s' "$input" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("file_path",""))' 2>/dev/null || true)
+  file=$(printf '%s' "$input" | python3 -c '
+import sys, json
+d = json.load(sys.stdin)
+tool_input = d.get("tool_input", d)
+print(tool_input.get("file_path", ""))
+' 2>/dev/null || true)
 fi
 
 if ! printf '%s' "$file" | grep -qE '\.(py|js|ts|jsx|tsx|go|rs|java|php|dart|vue|svelte)$'; then
@@ -14,20 +20,31 @@ fi
 
 plan=$(ls docs/supergraph/plans/*.md 2>/dev/null | head -1 || true)
 
+messages=()
+
 if [ -z "$plan" ]; then
-  echo '⚠️ No plan file found.'
-  echo 'Fast path: < 10 lines / 1 file → use /supergraph:tdd directly (no plan needed).'
-  echo 'Otherwise: run /supergraph:plan first.'
-  exit 0
+  messages+=('⚠️ No plan file found.')
+  messages+=('Fast path: < 10 lines / 1 file → use /supergraph:tdd directly (no plan needed).')
+  messages+=('Otherwise: run /supergraph:plan first.')
+else
+  pending=$(grep -c '^Status: pending' "$plan" 2>/dev/null || true)
+  in_progress=$(grep -c '^Status: in_progress' "$plan" 2>/dev/null || true)
+  completed=$(grep -c '^Status: completed' "$plan" 2>/dev/null || true)
+  stuck=$(grep -c '^Status: stuck' "$plan" 2>/dev/null || true)
+
+  messages+=("📋 Plan: $(basename "$plan") — completed=$completed pending=$pending in_progress=$in_progress stuck=$stuck")
+
+  if ! grep -q '^Review: Approved' "$plan" 2>/dev/null; then
+    messages+=('⚠️ Plan review not approved yet. Run /supergraph:plan and ensure plan-reviewer approves before implementation.')
+  fi
 fi
 
-pending=$(grep -c '^Status: pending' "$plan" 2>/dev/null || true)
-in_progress=$(grep -c '^Status: in_progress' "$plan" 2>/dev/null || true)
-completed=$(grep -c '^Status: completed' "$plan" 2>/dev/null || true)
-stuck=$(grep -c '^Status: stuck' "$plan" 2>/dev/null || true)
-
-echo "📋 Plan: $(basename "$plan") — completed=$completed pending=$pending in_progress=$in_progress stuck=$stuck"
-
-if ! grep -q '^\*\*Status:\*\* Approved\|^Status: Approved' "$plan" 2>/dev/null; then
-  echo '⚠️ Plan review not approved yet. Run /supergraph:plan and ensure plan-reviewer approves before implementation.'
-fi
+printf '%s\n' "${messages[@]}" | python3 -c '
+import json, sys
+print(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "additionalContext": sys.stdin.read().rstrip("\n"),
+    }
+}))
+'

@@ -26,5 +26,7 @@ else
   raw="⚠️ CONTEXT COMPACTION IMMINENT — run /supergraph:handoff to save session state before context is lost."
 fi
 
-msg=$(escape_for_json "$raw")
-printf '{"additionalContext": "%s"}\n' "$msg"
+printf '%s' "$raw" | python3 -c '
+import json, sys
+print(json.dumps({"systemMessage": sys.stdin.read()}))
+'

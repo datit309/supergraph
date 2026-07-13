@@ -1,9 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-input="${TOOL_INPUT:-}"
+stdin_input=$(cat)
+input="${stdin_input:-${TOOL_INPUT:-}}"
+command=$(printf '%s' "$input" | python3 -c '
+import sys, json
+d = json.load(sys.stdin)
+tool_input = d.get("tool_input", d)
+print(tool_input.get("command", ""))
+' 2>/dev/null || printf '%s' "$input")
 
-if printf '%s' "$input" | grep -qE '(rm -rf /|rm -rf ~|mkfs|dd if=|git push --force|git reset --hard|DROP TABLE|DELETE FROM)'; then
-  echo '🚫 BLOCKED: Destructive command.'
-  exit 1
+if printf '%s' "$command" | grep -qE '(rm -rf /|rm -rf ~|mkfs|dd if=|git push --force|git reset --hard|DROP TABLE|DELETE FROM)'; then
+  python3 -c '
+import json
+print(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": "Destructive command blocked by hook.",
+    }
+}))
+'
 fi

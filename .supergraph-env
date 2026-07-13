@@ -1,10 +1,14 @@
 
 SUPERGRAPH_CAVEMAN=true
 PROJECT_TYPE=markdown/bash
-TEST_CMD=
-LINT_CMD=
+TEST_CMD=for test_file in plugins/supergraph/tests/test-*.sh; do bash "$test_file"; done
+LINT_CMD=bash -n install.sh plugins/supergraph/install.sh plugins/supergraph/tests/test-*.sh
 FORMAT_CMD=
 BUILD_CMD=
 BRANCH=master
+GRAPH_PROVIDER=codebase-memory-mcp
+CBM_PROJECT=supergraph
+CBM_INDEX_MODE=moderate
+CBM_INDEXED_AT=2026-07-13T00:00:00+07:00
 SERENA_ACTIVE=true
-SCAN_TIMESTAMP=2026-07-02T00:00:00
+SCAN_TIMESTAMP=2026-07-13T00:00:00+07:00

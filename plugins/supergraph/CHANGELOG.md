@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- Completed a full Codex hook contract audit: normalized `Stop`, `PreCompact`, `PostToolUse`, and `PreToolUse` JSON, fixed Codex stdin handling, and added executable coverage for every configured hook.
 - Fixed `UserPromptSubmit` hook output for Codex by emitting the required `hookSpecificOutput` envelope with `hookEventName` and `additionalContext`.
 - Added the required top-level `name` to the Codex marketplace manifest so `codex plugin marketplace upgrade supergraph` passes marketplace validation.
 
