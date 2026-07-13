@@ -1,0 +1,35 @@
+name: Installer tests
+
+on:
+  push:
+    paths:
+      - install.sh
+      - install.ps1
+      - plugins/supergraph/tests/test-bootstrap-installer*.sh
+      - .github/workflows/installer-tests.yml
+  pull_request:
+    paths:
+      - install.sh
+      - install.ps1
+      - plugins/supergraph/tests/test-bootstrap-installer*.sh
+      - .github/workflows/installer-tests.yml
+
+jobs:
+  bootstrap-installers:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test POSIX installer
+        if: runner.os != 'Windows'
+        shell: bash
+        run: bash plugins/supergraph/tests/test-bootstrap-installer.sh
+      - name: Test Windows PowerShell 5.1 entrypoint
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: powershell.exe -NoProfile -File ./install.ps1 -Help
+      - name: Test PowerShell installer
+        shell: bash
+        run: bash plugins/supergraph/tests/test-bootstrap-installer-powershell.sh
