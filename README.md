@@ -71,6 +71,30 @@ Antigravity hook environment variables and event names are best-effort until ver
 
 ## Installation
 
+### One-command local installer
+
+macOS, Linux, or WSL:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | bash
+```
+
+Windows PowerShell 5.1+:
+
+```powershell
+irm https://raw.githubusercontent.com/datit309/supergraph/master/install.ps1 | iex
+```
+
+The installer auto-detects Claude Code, Antigravity CLI, Codex CLI, or OpenCode. To select a platform explicitly on macOS, Linux, or WSL:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | bash -s -- --platform codex
+```
+
+The Git checkout lives at `${XDG_DATA_HOME:-$HOME/.local/share}/supergraph` on POSIX systems and `%LOCALAPPDATA%\supergraph` on Windows. Re-running the command performs `git pull --ff-only`; an uncommitted or diverged checkout is never overwritten. The manual clone instructions below remain available for development and auditing.
+
+Security: inspect both installer scripts before piping remote code into a shell. For example, download the file, review it, then run it locally.
+
 ### Option 1 — Claude Code
 
 ```bash

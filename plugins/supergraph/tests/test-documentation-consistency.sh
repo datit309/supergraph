@@ -35,6 +35,21 @@ for path in artifacts[1:3]:
     for marker in ("tự tìm", "Git Bash", "hooks skipped"):
         assert marker.lower() in text.lower(), f"{path} missing Windows hook marker {marker!r}"
 
+installer_markers = (
+    "https://raw.githubusercontent.com/datit309/supergraph/master/install.sh",
+    "https://raw.githubusercontent.com/datit309/supergraph/master/install.ps1",
+    "curl -fsSL",
+    "irm ",
+)
+for path in artifacts[:2]:
+    text = path.read_text(encoding="utf-8")
+    for marker in installer_markers:
+        assert marker in text, f"{path} missing one-command installer marker {marker!r}"
+english = artifacts[0].read_text(encoding="utf-8").lower()
+vietnamese = artifacts[1].read_text(encoding="utf-8").lower()
+assert "inspect" in english and "before piping" in english
+assert "kiểm tra" in vietnamese and "trước khi pipe" in vietnamese
+
 for path in artifacts[3:7]:
     data = json.loads(path.read_text(encoding="utf-8"))
     description = json.dumps(data, ensure_ascii=False)
