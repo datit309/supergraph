@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 repo_url="${SUPERGRAPH_REPO_URL:-https://github.com/datit309/supergraph.git}"
 install_dir="${SUPERGRAPH_INSTALL_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/supergraph}"

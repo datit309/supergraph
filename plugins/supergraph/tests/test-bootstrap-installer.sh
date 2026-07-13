@@ -7,6 +7,11 @@ trap 'rm -rf "$TMP"' EXIT
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 
+test_posix_contract() {
+  test "$(sed -n '1p' "$ROOT/install.sh")" = '#!/bin/sh' || fail 'bootstrap must use POSIX sh shebang'
+  ! grep -Fq 'pipefail' "$ROOT/install.sh" || fail 'bootstrap must not require Bash pipefail'
+}
+
 create_remote() {
   local source_repo="$TMP/source" remote_repo="$TMP/remote.git"
   mkdir -p "$source_repo/plugins/supergraph"
@@ -34,7 +39,7 @@ test_clone_and_forward() {
   SUPERGRAPH_REPO_URL="$remote" \
     SUPERGRAPH_INSTALL_DIR="$checkout" \
     SUPERGRAPH_TEST_RECORD="$record" \
-    bash "$ROOT/install.sh" --platform codex --dry-run
+    sh "$ROOT/install.sh" --platform codex --dry-run
 
   test -d "$checkout/.git" || fail 'bootstrap did not create Git checkout'
   test -f "$record" || fail 'bootstrap did not delegate to plugin installer'
@@ -55,7 +60,7 @@ test_safe_update_and_errors() {
   SUPERGRAPH_REPO_URL="$remote_repo" \
     SUPERGRAPH_INSTALL_DIR="$checkout" \
     SUPERGRAPH_TEST_RECORD="$record" \
-    bash "$ROOT/install.sh" --platform codex
+    sh "$ROOT/install.sh" --platform codex
   test "$(cat "$checkout/version.txt")" = 'updated' || fail 'clean checkout was not updated'
 
   printf '# local change\n' >>"$checkout/plugins/supergraph/install.sh"
@@ -63,7 +68,7 @@ test_safe_update_and_errors() {
   if output="$(SUPERGRAPH_REPO_URL="$remote_repo" \
     SUPERGRAPH_INSTALL_DIR="$checkout" \
     SUPERGRAPH_TEST_RECORD="$record" \
-    bash "$ROOT/install.sh" --platform codex 2>&1)"; then
+    sh "$ROOT/install.sh" --platform codex 2>&1)"; then
     fail 'dirty checkout update unexpectedly succeeded'
   fi
   case "$output" in
@@ -73,7 +78,7 @@ test_safe_update_and_errors() {
   test "$(git -C "$checkout" diff -- plugins/supergraph/install.sh)" = "$before" || fail 'dirty checkout was modified'
 
   mkdir -p "$TMP/not-a-repo"
-  if output="$(SUPERGRAPH_INSTALL_DIR="$TMP/not-a-repo" bash "$ROOT/install.sh" 2>&1)"; then
+  if output="$(SUPERGRAPH_INSTALL_DIR="$TMP/not-a-repo" sh "$ROOT/install.sh" 2>&1)"; then
     fail 'malformed checkout unexpectedly succeeded'
   fi
   case "$output" in
@@ -81,7 +86,7 @@ test_safe_update_and_errors() {
     *) fail 'malformed checkout error is not actionable' ;;
   esac
 
-  if output="$(PATH="$TMP/missing-bin" SUPERGRAPH_INSTALL_DIR="$TMP/missing-git" /bin/bash "$ROOT/install.sh" 2>&1)"; then
+  if output="$(PATH="$TMP/missing-bin" SUPERGRAPH_INSTALL_DIR="$TMP/missing-git" /bin/sh "$ROOT/install.sh" 2>&1)"; then
     fail 'missing Git unexpectedly succeeded'
   fi
   case "$output" in
@@ -90,6 +95,7 @@ test_safe_update_and_errors() {
   esac
 }
 
+test_posix_contract
 test_clone_and_forward
 test_safe_update_and_errors
 printf 'PASS: POSIX bootstrap clones, updates, forwards, and rejects unsafe states\n'

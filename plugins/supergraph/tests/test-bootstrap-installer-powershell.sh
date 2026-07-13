@@ -19,13 +19,18 @@ test_contract() {
   contains "$WORKFLOW" 'windows-latest'
   contains "$WORKFLOW" 'powershell.exe'
   contains "$WORKFLOW" 'test-bootstrap-installer-powershell.sh'
+  local function_body powershell_line pwsh_line
+  function_body="$(sed -n '/^find_powershell()/,/^}/p' "$0")"
+  powershell_line="$(printf '%s\n' "$function_body" | grep -n 'command -v powershell.exe' | head -1 | cut -d: -f1)"
+  pwsh_line="$(printf '%s\n' "$function_body" | grep -n 'command -v pwsh' | head -1 | cut -d: -f1)"
+  [ "$powershell_line" -lt "$pwsh_line" ] || fail 'test runner must prefer Windows PowerShell 5.1'
 }
 
 find_powershell() {
-  if command -v pwsh >/dev/null 2>&1; then
-    command -v pwsh
-  elif command -v powershell.exe >/dev/null 2>&1; then
+  if command -v powershell.exe >/dev/null 2>&1; then
     command -v powershell.exe
+  elif command -v pwsh >/dev/null 2>&1; then
+    command -v pwsh
   fi
 }
 
