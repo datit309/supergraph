@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "graphProvider": "Codebase Memory",
   "displayName": "Supergraph — Graph-Driven AI Workflows",
   "tagline": "Evidence-gated coding workflows powered by Codebase Memory MCP.",
