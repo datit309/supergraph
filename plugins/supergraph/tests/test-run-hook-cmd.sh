@@ -4,9 +4,11 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 CMD="$ROOT/hooks/run-hook.cmd"
 WINDOWS_BLOCK=$(awk '/^CMDBLOCK$/{exit} {print}' "$CMD")
+UNIX_BLOCK=$(awk 'found {print} /^CMDBLOCK$/ {found=1}' "$CMD")
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 contains() { grep -Fq -- "$1" <<<"$WINDOWS_BLOCK" || fail "missing marker: $1"; }
+unix_contains() { grep -Fq -- "$1" <<<"$UNIX_BLOCK" || fail "missing Unix marker: $1"; }
 before() {
   local first second
   first=$(grep -nF -- "$1" <<<"$WINDOWS_BLOCK" | head -1 | cut -d: -f1)
@@ -29,7 +31,25 @@ contains 'exit /b 0'
 contains '"%GIT_BASH%" -l -c'
 contains 'cygpath -u'
 contains '%PLUGIN_ROOT%'
+contains 'set "PLUGIN_ROOT=%~dp0.."'
+unix_contains 'PLUGIN_ROOT=$(cd "$(dirname "$0")/.." && pwd)'
+! grep -Eq 'CLAUDE_PLUGIN_ROOT|ANTIGRAVITY_PLUGIN_ROOT|AGY_PLUGIN_ROOT|GEMINI_PLUGIN_ROOT' "$CMD" \
+  || fail 'vendor plugin-root dependency remains'
 before 'if defined CLAUDE_CODE_GIT_BASH_PATH' 'if exist "%ProgramFiles%\Git\bin\bash.exe"'
 before 'if exist "%ProgramFiles%\Git\bin\bash.exe"' 'if exist "%LocalAppData%\Programs\Git\bin\bash.exe"'
 before 'if exist "%LocalAppData%\Programs\Git\bin\bash.exe"' 'where git.exe'
-printf 'PASS: Windows hook resolver contract\n'
+
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
+mkdir -p "$TMP_DIR/plugin with spaces/hooks"
+cp "$CMD" "$TMP_DIR/plugin with spaces/hooks/run-hook.cmd"
+cat >"$TMP_DIR/plugin with spaces/hooks/probe.sh" <<'EOF'
+#!/usr/bin/env bash
+printf 'self-located\n'
+EOF
+chmod +x "$TMP_DIR/plugin with spaces/hooks/probe.sh"
+OUTPUT=$(env -u CLAUDE_PLUGIN_ROOT -u ANTIGRAVITY_PLUGIN_ROOT -u AGY_PLUGIN_ROOT -u GEMINI_PLUGIN_ROOT \
+  bash "$TMP_DIR/plugin with spaces/hooks/run-hook.cmd" probe.sh)
+[[ "$OUTPUT" == 'self-located' ]] || fail "Unix self-location output: $OUTPUT"
+
+printf 'PASS: cross-platform hook resolver contract\n'
