@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
+input=$(cat)
+is_antigravity=false
+if printf '%s' "$input" | grep -q '"executionNum"'; then
+  is_antigravity=true
+fi
+
+if [ "$is_antigravity" = true ]; then
+  printf '{}\n'
+  exit 0
+fi
+
 messages=()
 
 plan=$(ls docs/supergraph/plans/*.md 2>/dev/null | head -1 || true)
@@ -31,4 +42,6 @@ if [ "${#messages[@]}" -gt 0 ]; then
 import json, sys
 print(json.dumps({"systemMessage": sys.stdin.read().rstrip("\n")}))
 '
+else
+  printf '{"systemMessage": "ok"}\n'
 fi

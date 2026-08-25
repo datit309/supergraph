@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# codebase-memory-mcp owns asynchronous refresh via auto_watch=true.
-# Never synchronously reindex in a post-tool hook or claim graph freshness here.
+stdin_input=$(cat)
+if printf '%s' "$stdin_input" | grep -q '"toolCall"'; then
+  printf '{}\n'
+  exit 0
+fi
+
 exit 0

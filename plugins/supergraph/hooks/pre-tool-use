@@ -4,17 +4,37 @@ set -euo pipefail
 stdin_input=$(cat)
 input="${stdin_input:-${TOOL_INPUT:-}}"
 file=""
+is_antigravity=false
+
+if printf '%s' "$input" | grep -q '"toolCall"'; then
+  is_antigravity=true
+fi
 
 if [ -n "$input" ]; then
   file=$(printf '%s' "$input" | python3 -c '
 import sys, json
-d = json.load(sys.stdin)
-tool_input = d.get("tool_input", d)
-print(tool_input.get("file_path", ""))
+try:
+    d = json.load(sys.stdin)
+    if "toolCall" in d:
+        args = d.get("toolCall", {}).get("args", {})
+        print(args.get("TargetFile", "") or args.get("file_path", ""))
+    else:
+        tool_input = d.get("tool_input", d)
+        print(tool_input.get("file_path", ""))
+except Exception:
+    pass
 ' 2>/dev/null || true)
 fi
 
 if ! printf '%s' "$file" | grep -qE '\.(py|js|ts|jsx|tsx|go|rs|java|php|dart|vue|svelte)$'; then
+  if [ "$is_antigravity" = true ]; then
+    printf '{"decision": "allow"}\n'
+  fi
+  exit 0
+fi
+
+if [ "$is_antigravity" = true ]; then
+  printf '{"decision": "allow"}\n'
   exit 0
 fi
 
