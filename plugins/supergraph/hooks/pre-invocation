@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+import sys
+import json
+import os
+import time
+import glob
+import re
+
+def main():
+    raw_input = sys.stdin.read().strip()
+    data = {}
+    if raw_input:
+        try:
+            data = json.loads(raw_input)
+        except Exception:
+            pass
+
+    invocation_num = data.get("invocationNum", 1)
+    workspace_paths = data.get("workspacePaths", [os.getcwd()])
+    transcript_path = data.get("transcriptPath", "")
+
+    # Resolve workspace dir
+    workspace_dir = workspace_paths[0] if workspace_paths else os.getcwd()
+
+    parts = []
+
+    # 1. Mandatory workflow on first invocation
+    if invocation_num <= 1:
+        workflow_msg = """<EXTREMELY_IMPORTANT>
+You have supergraph.
+
+Mandatory workflow:
+1. /supergraph:scan — load minimal graph context first
+2. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
+3. /supergraph:execute — execute plan, parallel by default when tasks are independent
+4. /supergraph:fix — auto-fix with systematic debugging when needed
+5. /supergraph:integration — run integration/e2e when configured
+6. /supergraph:verify — no completion claims without fresh evidence
+7. /supergraph:review — independent code-reviewer + graph review before merge
+
+Tiered workflow — pick the right tier first:
+- Micro (< 10 lines, 1 file, no hub nodes): /supergraph:tdd → /supergraph:verify
+- Standard (1-3 files, clear req): /supergraph:plan → /supergraph:execute → /supergraph:fix → /supergraph:verify
+- Full (multi-file, ambiguous, hub/bridge): scan→plan→execute→fix→integration→verify→review
+
+Hard rules:
+- Use get_minimal_context_tool() first for graph context (Full tier only).
+- No production code without verified RED test first.
+- Ask instead of guessing when requirements or failures are unclear.
+- Do not proceed on main/master without explicit approval.
+- Never claim done/ready/fixed without fresh verification evidence.
+- ALWAYS reply in the same language the user wrote in. Skill announce strings are templates — translate before output.
+
+New skills available:
+- /supergraph:diagnose — structured 6-phase debugging (use when bug cause is unknown)
+- /supergraph:handoff — compact session state before context runs out
+- /supergraph:zoom-out — get a domain-vocabulary module map fast
+- /supergraph:architecture — HTML+Mermaid architecture review report
+- /supergraph:prd — convert conversation → structured PRD → GitHub Issue
+- /supergraph:triage — classify issues with state machine → ready-for-agent
+- /supergraph:prototype — throwaway Logic/UI code to validate approach
+- /supergraph:caveman — ~75% token compression (say "caveman" to activate)
+</EXTREMELY_IMPORTANT>"""
+        parts.append(workflow_msg)
+
+        # 2. CONTEXT.md
+        context_file = os.path.join(workspace_dir, "CONTEXT.md")
+        if os.path.isfile(context_file) and os.path.getsize(context_file) > 0:
+            try:
+                with open(context_file, "r", encoding="utf-8") as f:
+                    lines = [f.readline() for _ in range(80)]
+                    content = "".join(lines).strip()
+                    if content:
+                        parts.append(f"<DOMAIN_VOCABULARY>\nProject CONTEXT.md loaded — use these terms in all task descriptions and analysis:\n{content}\n</DOMAIN_VOCABULARY>")
+            except Exception:
+                pass
+
+        # 3. Handoff reminder
+        tmp_dir = os.environ.get("TMPDIR", "/tmp")
+        handoff_files = sorted(glob.glob(os.path.join(tmp_dir, "supergraph-handoff-*.md")), key=os.path.getmtime, reverse=True)
+        if handoff_files:
+            latest_handoff = handoff_files[0]
+            try:
+                mtime = os.path.getmtime(latest_handoff)
+                age_hours = int((time.time() - mtime) / 3600)
+                if age_hours < 48:
+                    parts.append(f"📦 HANDOFF FILE FOUND: {latest_handoff} ({age_hours}h ago)\nRead this file BEFORE starting any work — it contains session state, remaining tasks, and resume instructions.")
+            except Exception:
+                pass
+
+        # 4. Zoom-out hint
+        plan_files = glob.glob(os.path.join(workspace_dir, "docs/supergraph/plans/*.md"))
+        if not plan_files:
+            parts.append("💡 No active plan found. If this is an unfamiliar codebase, run /supergraph:zoom-out to get oriented before planning.")
+
+    # Check transcript for latest user prompt if available
+    latest_user_prompt = ""
+    if transcript_path and os.path.isfile(transcript_path):
+        try:
+            with open(transcript_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    try:
+                        step = json.loads(line)
+                        if step.get("type") == "USER_INPUT" or step.get("source") == "USER_EXPLICIT":
+                            content = step.get("content", "")
+                            if isinstance(content, str):
+                                latest_user_prompt = content.lower()
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+
+    # Caveman rules
+    caveman_rules = "🦴 caveman mode ON. Rules: Strip articles/filler/subject pronouns. Keep exact: code, numbers, paths, errors, URLs. Structure: bullet lists over prose, one clause per bullet. Auto-suspend for: safety warnings, destructive ops, error explanations, questions needing full answer — then resume. Disable with: normal mode / full mode / verbose."
+    env_file = os.path.join(workspace_dir, ".supergraph-env")
+
+    if latest_user_prompt and re.search(r'\b(caveman|compress|short mode|token diet|brief mode|terse mode)\b', latest_user_prompt):
+        try:
+            with open(env_file, "a+", encoding="utf-8") as f:
+                f.write("\nSUPERGRAPH_CAVEMAN=true\n")
+        except Exception:
+            pass
+        parts.append(caveman_rules)
+    elif latest_user_prompt and re.search(r'\b(normal mode|full mode|verbose|disable caveman|caveman off|turn off caveman|disable compression)\b', latest_user_prompt):
+        try:
+            if os.path.isfile(env_file):
+                with open(env_file, "r", encoding="utf-8") as f:
+                    c = f.read()
+                c = c.replace("SUPERGRAPH_CAVEMAN=true", "SUPERGRAPH_CAVEMAN=false")
+                with open(env_file, "w", encoding="utf-8") as f:
+                    f.write(c)
+        except Exception:
+            pass
+        parts.append("🦴 caveman mode OFF — returning to normal output.")
+    else:
+        # Check if caveman is already enabled
+        if os.path.isfile(env_file):
+            try:
+                with open(env_file, "r", encoding="utf-8") as f:
+                    if "SUPERGRAPH_CAVEMAN=true" in f.read():
+                        parts.append(caveman_rules)
+            except Exception:
+                pass
+
+    # Keyword hints from latest user prompt
+    if latest_user_prompt:
+        if re.search(r'\b(triage|triaging|backlog|needs[- ]triage|issue queue|classify.*issue|issue.*classif)\b', latest_user_prompt):
+            parts.append("💡 Issue triage detected — /supergraph:triage applies the state machine: needs-triage → needs-info → ready-for-agent → ready-for-human → wontfix.")
+        if re.search(r'\b(bug|not working|why (is|does|did)|broken|failing|error|crash|exception|debug)\b', latest_user_prompt):
+            parts.append("💡 Bug/error detected — /supergraph:diagnose runs structured 6-phase debugging. Use when cause is unknown.")
+        if re.search(r'\b(build.*(ui|page|component|dashboard|landing)|design.*(web|ui|page)|make.*look|style.*component|landing page|web ui|frontend)\b', latest_user_prompt):
+            parts.append("💡 UI/frontend task detected — /supergraph:frontend-design produces production-grade interfaces with high design quality.")
+
+    # Language hint
+    parts.append("🌐 Always reply in the same language the user wrote in.")
+
+    combined = "\n\n".join(parts)
+
+    output = {
+        "injectSteps": [
+            {
+                "ephemeralMessage": combined
+            }
+        ]
+    }
+    print(json.dumps(output))
+
+if __name__ == "__main__":
+    main()

@@ -3,15 +3,38 @@ set -euo pipefail
 
 stdin_input=$(cat)
 input="${stdin_input:-${TOOL_INPUT:-}}"
+
+is_antigravity=false
+if printf '%s' "$input" | grep -q '"toolCall"'; then
+  is_antigravity=true
+fi
+
 command=$(printf '%s' "$input" | python3 -c '
 import sys, json
-d = json.load(sys.stdin)
-tool_input = d.get("tool_input", d)
-print(tool_input.get("command", ""))
+try:
+    d = json.load(sys.stdin)
+    if "toolCall" in d:
+        args = d.get("toolCall", {}).get("args", {})
+        print(args.get("CommandLine", "") or args.get("command", ""))
+    else:
+        tool_input = d.get("tool_input", d)
+        print(tool_input.get("command", ""))
+except Exception:
+    pass
 ' 2>/dev/null || printf '%s' "$input")
 
-if printf '%s' "$command" | grep -qE '(rm -rf /|rm -rf ~|mkfs|dd if=|git push --force|git reset --hard|DROP TABLE|DELETE FROM)'; then
-  python3 -c '
+d_pat='(rm -rf /|rm -rf ~|mkfs|dd if=|git push --force|git reset --hard|DROP TABLE|DELETE FROM)'
+if printf '%s' "$command" | grep -qE "$d_pat"; then
+  if [ "$is_antigravity" = true ]; then
+    python3 -c '
+import json
+print(json.dumps({
+    "decision": "deny",
+    "reason": "🚫 BLOCKED: Destructive command detected by Supergraph bash-guard."
+}))
+'
+  else
+    python3 -c '
 import json
 print(json.dumps({
     "hookSpecificOutput": {
@@ -21,4 +44,10 @@ print(json.dumps({
     }
 }))
 '
+  fi
+  exit 0
+fi
+
+if [ "$is_antigravity" = true ]; then
+  printf '{"decision": "allow"}\n'
 fi
