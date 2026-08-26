@@ -11,7 +11,7 @@ usage() {
     '  claude       -> ~/.claude/plugins/supergraph' \
     '  antigravity  -> ~/.gemini/antigravity-cli/plugins/supergraph' \
     '  codex        -> ./.codex-plugin' \
-    '  opencode     -> ./.opencode/skills/<skill>/ (flat skill symlinks + prints opencode.json snippet)' \
+    '  opencode     -> ~/.config/opencode/skills/<skill>/ (global, flat symlinks + opencode.json)' \
     '  all          -> install for all 4 platforms at once'
 }
 
@@ -57,7 +57,7 @@ next_steps() {
     claude) printf 'Next: run /supergraph:scan\n' ;;
     antigravity) printf 'Next: start Antigravity CLI in your project and ask it to use supergraph skills\n' ;;
     codex) printf 'Next: run codex and confirm plugin skills loaded\n' ;;
-    opencode) printf 'Next: add the printed config snippet to your opencode.json, restart OpenCode, then ask it to use the scan skill\n' ;;
+    opencode) printf 'Next: restart OpenCode and run /scan (global config at ~/.config/opencode/opencode.json)\n' ;;
     all) printf 'Next: run /supergraph:scan on each platform\n' ;;
   esac
 }
@@ -78,7 +78,7 @@ install_one() {
     claude) _target="$HOME/.claude/plugins/supergraph" ;;
     antigravity) _target="$HOME/.gemini/antigravity-cli/plugins/supergraph" ;;
     codex) _target="$PWD/.codex-plugin" ;;
-    opencode) _target="$PWD/.opencode/skills" ;;
+    opencode) _target="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills" ;;
   esac
   printf 'Platform: %s\n' "$_platform"
   printf 'Source: %s\n' "$source_dir"
@@ -87,7 +87,7 @@ install_one() {
     printf 'Dry run: no changes made\n'
     if [ "$_platform" = "opencode" ]; then
       cat "$source_dir/.opencode-plugin/opencode.json"
-      printf '\n\n[DRY RUN] Would add the above to your project opencode.json, then restart OpenCode.\n'
+      printf '\n\n[DRY RUN] Would create ~/.config/opencode/opencode.json, then restart OpenCode.\n'
     fi
     next_steps "$_platform"
     return 0
@@ -119,13 +119,21 @@ install_one() {
           rm "$link"
         fi
       done
-      if [ -e "$PWD/OPENCODE.md" ] && [ ! -L "$PWD/OPENCODE.md" ]; then
-        printf 'Refusing to overwrite non-symlink: %s (keep your custom OPENCODE.md)\n' "$PWD/OPENCODE.md" >&2
+      _global_config="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+      mkdir -p "$_global_config"
+      if [ -e "$_global_config/OPENCODE.md" ] && [ ! -L "$_global_config/OPENCODE.md" ]; then
+        printf 'Refusing to overwrite non-symlink: %s (keep your custom OPENCODE.md)\n' "$_global_config/OPENCODE.md" >&2
       else
-        cp "$source_dir/OPENCODE.md" "$PWD/OPENCODE.md" 2>/dev/null || true
+        cp "$source_dir/OPENCODE.md" "$_global_config/OPENCODE.md" 2>/dev/null || true
       fi
-      cat "$source_dir/.opencode-plugin/opencode.json"
-      printf '\n\nAdd the above to your project opencode.json (or create it at project root), then restart OpenCode.\n'
+      if [ ! -f "$_global_config/opencode.json" ]; then
+        cat "$source_dir/.opencode-plugin/opencode.json" > "$_global_config/opencode.json"
+        printf 'Created %s/opencode.json — restart OpenCode.\n' "$_global_config"
+      else
+        printf 'Global config exists at %s/opencode.json — ensure it contains instructions and mcp entries from:\n' "$_global_config"
+        cat "$source_dir/.opencode-plugin/opencode.json"
+        printf '\n'
+      fi
       ;;
   esac
   printf 'Installed Supergraph plugin for %s.\n' "$_platform"
