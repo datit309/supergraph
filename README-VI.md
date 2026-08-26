@@ -88,7 +88,14 @@ irm https://raw.githubusercontent.com/datit309/supergraph/master/install.ps1 | i
 Installer tự phát hiện Claude Code, Antigravity CLI, Codex CLI hoặc OpenCode. Chọn nền tảng rõ ràng trên macOS, Linux hoặc WSL:
 
 ```bash
+# Claude Code
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform claude
+# Antigravity
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform antigravity
+# Codex
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform codex
+# OpenCode
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
 ```
 
 Git checkout nằm tại `${XDG_DATA_HOME:-$HOME/.local/share}/supergraph` trên POSIX và `%LOCALAPPDATA%\supergraph` trên Windows. Chạy lại lệnh sẽ dùng `git pull --ff-only`; installer không ghi đè checkout có thay đổi local hoặc history diverged. Hướng dẫn clone thủ công bên dưới vẫn dùng được cho development và audit.
