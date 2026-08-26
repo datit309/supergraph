@@ -53,14 +53,14 @@ For each task in scope:
 
 - Read Files, Acceptance, Steps, Checkpoint from task section (plan metadata only — source files already read in Step 6.5)
 
-**C. RED** — Follow TDD + Steps sections: write failing test, run RED command, verify failure is for expected missing behavior.
+**C. 🔴 RED** — Follow TDD + Steps sections: write failing test, run 🔴 RED command, verify failure is for expected missing behavior.
 
 - If test passes immediately → STOP, revise test
 - If test errors due setup/import/syntax → STOP, fix test/setup first
-- If failure reason differs from Expected RED failure → STOP and report
-- Do not edit production code until RED is verified
+- If failure reason differs from Expected 🔴 RED failure → STOP and report
+- Do not edit production code until 🔴 RED is verified
 
-**D. GREEN** — Follow TDD + Steps sections: write minimal implementation only after valid RED, run command, expect PASS.
+**D. 🟢 GREEN** — Follow TDD + Steps sections: write minimal implementation only after valid 🔴 RED, run command, expect PASS.
 
 **E. REFACTOR** — Follow Steps section: cleanup if specified, keep tests green.
 
