@@ -96,6 +96,8 @@ curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform codex
 # OpenCode
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+# All platforms at once
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform all
 ```
 
 The Git checkout lives at `${XDG_DATA_HOME:-$HOME/.local/share}/supergraph` on POSIX systems and `%LOCALAPPDATA%\supergraph` on Windows. Re-running the command performs `git pull --ff-only`; an uncommitted or diverged checkout is never overwritten. The manual clone instructions below remain available for development and auditing.
