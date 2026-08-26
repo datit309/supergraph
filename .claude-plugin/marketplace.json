@@ -8,7 +8,7 @@
     {
       "name": "supergraph",
       "source": "./plugins/supergraph",
-      "version": "2.2.7",
+      "version": "2.2.8",
       "description": "Engineering workflow system for AI coding agents that enforces planning, TDD, verification, review, and architecture-aware decisions with local codebase graph intelligence across Claude Code, Codex CLI, Antigravity, and OpenCode.",
       "author": {
         "name": "datit309",
