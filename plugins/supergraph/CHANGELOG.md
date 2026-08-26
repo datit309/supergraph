@@ -1,16 +1,29 @@
 # Changelog
 
-## Unreleased
+## 2.2.8 - 2026-08-26
+
+### Performance
+
+- **Token trim 19.5%** — deduplicated Serena/graph lifecycle to `references/codebase-memory-contract.md`, shortened `plan`/`review`/`architecture`/`frontend` prose, compressed `user-prompt-submit` caveman/triage hints; `plan 6989→4622`, `review 6527→5137`, `frontend 6272→3222`, `skills` total `60317→48536` chars
+- **Review speed tiered+parallel** — `review` now tiered recipes (Micro 2 recipes 0.04s vs Full 6 recipes 0.12s), parallel `code-reviewer` + `tests` (save 6s), `Micro` skip LLM 30-60s, `Standard` Stage1 only; measured `979 nodes` `tests 6s` → `Micro ~6s` vs `~40s` before
+- **Subagent trim 30%** — `executor 8904→7126` removed re-parse, `plan-writer 4904→3228` dedup to `plan` skill, `code-reviewer` diff bound `300 lines`, parallel shared prefix
+
+### Changed
+
+- **Tier thresholds relaxed** — `Micro <20 lines ≤2 files complexity<10` (was `<10 1 file`), `Standard ≤5 files no cross-boundary` (was `1-3`), `Full >5 files` (was `>5` gap fixed), `AGENTS.md:53` `SKILL.md:38` `plan:14` `scan:85` + hooks `session-start:143`/`pre-invocation:42`
+- **RED/GREEN icons** — `plan`/`tdd`/`executor` now `🔴 RED`/`🟢 GREEN` (icon+text, keep `RED` for grep), `tdd:32` already had `🔴`
+- **Hooks keywords expanded** — `user-prompt-submit` + `pre-invocation` from 5→9 groups: added `plan`/`execute`/`verify`/`review` hints, tightened `bug` regex (`error|why is|debug` → `bug|broken|failing|crash|exception` + guard `!verify|review`) to fix false positives `error in verify step`
+- **Security** — `hooks/bash-guard:27` harden `rm -rf` to catch `; rm` `&& rm` `$(rm` `/tmp/*` `$HOME` while allowing `rm -rf node_modules`, `settings.json:33` remove `Bash(eval:*)` overly permissive
+- **Install** — `install.sh` now `--platform all` + default `all` (was auto-detect single `claude`), `opencode` global `~/.config/opencode/skills` (was per-project `./.opencode/skills`), `dry-run` prints `opencode.json` snippet, `OPENCODE.md` guard, stale skill cleanup, docs `README.md:92-100` show 4 explicit curls + `all`
+- **Bump** — `bump-version.sh:5-8` synced 4 manifests `2.2.7→2.2.8` (`.claude-plugin/plugin.json`, `marketplace.json`, `plugin.json`, `.codex-plugin/plugin.json`)
 
 ### Fixed
 
 - Completed a full Codex hook contract audit: normalized `Stop`, `PreCompact`, `PostToolUse`, and `PreToolUse` JSON, fixed Codex stdin handling, and added executable coverage for every configured hook.
 - Fixed `UserPromptSubmit` hook output for Codex by emitting the required `hookSpecificOutput` envelope with `hookEventName` and `additionalContext`.
 - Added the required top-level `name` to the Codex marketplace manifest so `codex plugin marketplace upgrade supergraph` passes marketplace validation.
-
-### Changed
-
 - Migrated all active graph configuration, workflows, hooks, CI, and documentation to Codebase Memory MCP 0.9.0 with project-scoped indexing and executable query-contract tests.
+- `hooks/post-tool-use` restored `auto_watch=true` marker, `install.sh` `opencode` global path, `README` curl docs
 
 ## 2.2.3
 
