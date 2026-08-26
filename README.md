@@ -88,7 +88,14 @@ irm https://raw.githubusercontent.com/datit309/supergraph/master/install.ps1 | i
 The installer auto-detects Claude Code, Antigravity CLI, Codex CLI, or OpenCode. To select a platform explicitly on macOS, Linux, or WSL:
 
 ```bash
+# Claude Code
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform claude
+# Antigravity
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform antigravity
+# Codex
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform codex
+# OpenCode
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
 ```
 
 The Git checkout lives at `${XDG_DATA_HOME:-$HOME/.local/share}/supergraph` on POSIX systems and `%LOCALAPPDATA%\supergraph` on Windows. Re-running the command performs `git pull --ff-only`; an uncommitted or diverged checkout is never overwritten. The manual clone instructions below remain available for development and auditing.
