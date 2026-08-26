@@ -62,7 +62,7 @@ Shared executor instructions (see `serena/SKILL.md:Setup`): per task RED→GREEN
 
 **Sequential:** `Agent(subagent_type="supergraph:executor")` — run baseline tests first, execute tasks IN ORDER respecting dependencies, report tasks done/stuck + files changed + risks.
 
-**Parallel:** one `Agent(subagent_type="supergraph:executor")` per task — each gets self-contained Task N section + Environment Context. Do NOT edit files outside Task N scope. Do NOT refactor unrelated code. Spawn all in one message.
+**Parallel:** one `Agent(subagent_type="supergraph:executor")` per task — orchestrator sends `Environment Context` + shared rules once; each Agent receives only `## Task N` snippet. Do NOT edit outside Task N scope. Spawn all in one message.
 
 ### 7. Post-Execution Safety
 If same-file edits for `CBM_PROJECT`: reindex if stale (`index_status`→`index_repository`, see `references/codebase-memory-contract.md`), then `detect_changes`/`trace_path`/`cross-boundary` via `codebase-memory-mcp`.

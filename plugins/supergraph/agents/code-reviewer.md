@@ -19,16 +19,17 @@ The prompt must provide:
 
 ## Review Process
 
-### 1. Inspect Actual Diff
+### 1. Inspect Actual Diff (bounded)
 
 Use the supplied range:
 
 ```bash
 git diff --stat BASE_SHA..HEAD_SHA
-git diff BASE_SHA..HEAD_SHA
+git diff BASE_SHA..HEAD_SHA | head -300
+# If diff >300 lines: use git diff --name-only + get_code_snippet for hub/bridge files only
 ```
 
-Ground findings in actual changed code. Do not comment on unread code.
+Ground findings in actual changed code. Do not comment on unread code. Summarize if truncated.
 
 ### 2. Check Plan Alignment
 

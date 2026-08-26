@@ -9,41 +9,9 @@ Create implementation plans. Never execute or review them. The separate `plan-re
 
 ## Process
 
-### 1. Scan Codebase
+### 1-3. Scan & Graph (see `skills/plan/SKILL.md: Steps 0-3`)
 
-```bash
-eval "$(bash bin/detect-project.sh)"
-```
-
-**Fallback** (if script missing):
-
-```bash
-[ -f pubspec.yaml ] && PROJECT_TYPE=flutter && TEST_CMD="flutter test" && LINT_CMD="flutter analyze" && FORMAT_CMD="dart format ." && BUILD_CMD="flutter build"
-[ -f package.json ] && PROJECT_TYPE=node && TEST_CMD="npm test" && LINT_CMD="npx eslint ." && FORMAT_CMD="npx prettier --write ." && BUILD_CMD="npm run build"
-[ -f Cargo.toml ] && PROJECT_TYPE=rust && TEST_CMD="cargo test" && LINT_CMD="cargo clippy" && FORMAT_CMD="cargo fmt" && BUILD_CMD="cargo build"
-[ -f pyproject.toml ] && PROJECT_TYPE=python && TEST_CMD="pytest" && LINT_CMD="ruff check ." && FORMAT_CMD="ruff format ." && BUILD_CMD="python -m build"
-[ -f go.mod ] && PROJECT_TYPE=go && TEST_CMD="go test ./..." && LINT_CMD="golangci-lint run" && FORMAT_CMD="gofmt -w ." && BUILD_CMD="go build ./..."
-[ -f Gemfile ] && PROJECT_TYPE=ruby && TEST_CMD="bundle exec rspec" && LINT_CMD="rubocop" && FORMAT_CMD="rubocop -A" && BUILD_CMD="bundle exec rake"
-[ -f pom.xml ] || [ -f build.gradle* ] && PROJECT_TYPE=java && TEST_CMD="mvn test" && LINT_CMD="mvn checkstyle:check" && FORMAT_CMD="mvn spotless:apply" && BUILD_CMD="mvn compile"
-```
-
-Read config, 2-3 source files, 1-2 test files. Note conventions.
-
-### 2. Ensure Graph
-
-Require `GRAPH_PROVIDER=codebase-memory-mcp`, `CBM_PROJECT`, and healthy
-`index_status(project=CBM_PROJECT)`. If unavailable, STOP with:
-`python3 -m pip install --user codebase-memory-mcp==0.9.0`, then
-`codebase-memory-mcp cli index_repository --repo-path <absolute> --name
-<CBM_PROJECT> --mode moderate`.
-
-### 3. Graph Analysis
-
-Use project-scoped `detect_changes`, `search_graph`, `trace_path`, and
-`get_architecture`. Read `get_graph_schema`, then execute shared contract recipes
-`hubs`, `bridges`, `test-gaps`, and `cross-boundary`. Derive surprise/risk from
-cross-boundary evidence. Do not invent missing callers or flows. More than 20
-affected files stops for user discussion; hub/bridge impact requires approval.
+Reuse `plan` skill Steps 0-3 for `CBM_PROJECT`/`codebase-memory-mcp` scan, `detect_changes`/`search_graph`/`trace_path`/`get_architecture`, recipes `hubs/bridges/test-gaps/cross-boundary`. Read 2-3 source + 1-2 test files for conventions. `>20 files STOP`, hub/bridge needs approval.
 
 ### 3.5. Spec Alignment Check
 
