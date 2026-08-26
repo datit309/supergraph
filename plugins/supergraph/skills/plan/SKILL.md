@@ -58,17 +58,17 @@ TDD:
 - Behavior: [single externally visible behavior]
 - Test file: [exact test path]
 - Test name: [behavior-focused test name]
-- RED command: `$FOCUSED_TEST_CMD`
-- Expected RED failure: [missing behavior, not setup/import/syntax error]
-- Minimal GREEN change: [smallest implementation idea]
-- Refactor candidates: [optional, only after GREEN]
+- 🔴 RED command: `$FOCUSED_TEST_CMD`
+- Expected 🔴 RED failure: [missing behavior, not setup/import/syntax error]
+- Minimal 🟢 GREEN change: [smallest implementation idea]
+- Refactor candidates: [optional, only after 🟢 GREEN]
 - Mocking: none | [why unavoidable]
 
 Steps:
-1. RED: [write exact failing test]
+1. 🔴 RED: [write exact failing test]
    Command: `$TEST_CMD`
    Expected: FAIL
-2. GREEN: [write minimal implementation]
+2. 🟢 GREEN: [write minimal implementation]
    Command: `$TEST_CMD`
    Expected: PASS
 3. REFACTOR: [safe cleanup or "none"]

@@ -39,7 +39,7 @@ Expected RED: [why it should fail before implementation]
 
 **One behavior per test. Public behavior, not internals. Real code over mocks.**
 
-### 2. RED — Write + Verify in One Round
+### 2. 🔴 RED — Write + Verify in One Round
 
 Write one failing test, then run immediately:
 
@@ -47,36 +47,36 @@ Write one failing test, then run immediately:
 <write test> && $TEST_CMD <focused command>
 ```
 
-Valid RED: fails **for the expected missing behavior**, not syntax/import/typo.
+Valid 🔴 RED: fails **for the expected missing behavior**, not syntax/import/typo.
 
 Record evidence:
 ```markdown
-## TDD Evidence — RED
-- RED: `[command]` → FAIL ([expected missing behavior])
+## TDD Evidence — 🔴 RED
+- 🔴 RED: `[command]` → FAIL ([expected missing behavior])
 ```
 
 **Serena diagnostics (optional):** See `serena/SKILL.md:Setup` — `get_diagnostics_for_file` before/after GREEN; use `replace_symbol_body`/`rename_symbol` over raw edits. Skip if `SERENA_ACTIVE=false` or unavailable.
 
 Invalid RED → fix test setup, don't write production code yet.
 
-### 3. GREEN — Minimal Implementation
+### 3. 🟢 GREEN — Minimal Implementation
 
 Write only enough code to pass the test. No abstractions, no cleanup, no extra features.
 
 Delete any production code written before RED.
 
-### 4. GREEN Verify
+### 4. 🟢 GREEN Verify
 
 Run focused test → broader suite:
 ```markdown
-## TDD Evidence — GREEN
-- GREEN: `[command]` → PASS
+## TDD Evidence — 🟢 GREEN
+- 🟢 GREEN: `[command]` → PASS
 - Suite: PASS
 ```
 
 Failing test → fix code, not test. Other tests fail → fix now.
 
-### 5. REFACTOR — Only After GREEN
+### 5. REFACTOR — Only After 🟢 GREEN
 
 Rename, deduplicate, extract. No behavior changes. Re-run tests.
 
