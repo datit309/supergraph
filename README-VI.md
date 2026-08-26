@@ -73,7 +73,7 @@ Biến môi trường hook và tên event của Antigravity hiện là best-effo
 
 ### Cài local bằng một lệnh
 
-macOS, Linux hoặc WSL:
+macOS, Linux hoặc WSL (mặc định **tất cả nền tảng**):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh
@@ -85,7 +85,7 @@ Windows PowerShell 5.1+:
 irm https://raw.githubusercontent.com/datit309/supergraph/master/install.ps1 | iex
 ```
 
-Installer tự phát hiện Claude Code, Antigravity CLI, Codex CLI hoặc OpenCode. Chọn nền tảng rõ ràng trên macOS, Linux hoặc WSL:
+Để cài riêng một nền tảng trên macOS, Linux hoặc WSL:
 
 ```bash
 # Claude Code

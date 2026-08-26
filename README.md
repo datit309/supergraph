@@ -73,7 +73,7 @@ Antigravity hook environment variables and event names are best-effort until ver
 
 ### One-command local installer
 
-macOS, Linux, or WSL:
+macOS, Linux, or WSL (defaults to **all platforms**):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh
@@ -85,7 +85,7 @@ Windows PowerShell 5.1+:
 irm https://raw.githubusercontent.com/datit309/supergraph/master/install.ps1 | iex
 ```
 
-The installer auto-detects Claude Code, Antigravity CLI, Codex CLI, or OpenCode. To select a platform explicitly on macOS, Linux, or WSL:
+To install for a single platform explicitly on macOS, Linux, or WSL:
 
 ```bash
 # Claude Code

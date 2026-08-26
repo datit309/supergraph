@@ -47,17 +47,8 @@ platform_detect() {
       claude|antigravity|codex|opencode|all) printf '%s\n' "$platform_arg" ;;
       *) printf 'Unsupported platform: %s\n' "$platform_arg" >&2; exit 2 ;;
     esac
-  elif command -v claude >/dev/null 2>&1; then
-    printf 'claude\n'
-  elif command -v agy >/dev/null 2>&1 || command -v antigravity >/dev/null 2>&1; then
-    printf 'antigravity\n'
-  elif command -v codex >/dev/null 2>&1; then
-    printf 'codex\n'
-  elif command -v opencode >/dev/null 2>&1; then
-    printf 'opencode\n'
   else
-    printf 'No supported CLI detected. Re-run with --platform claude|antigravity|codex|opencode.\n' >&2
-    exit 1
+    printf 'all\n'
   fi
 }
 
