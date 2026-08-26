@@ -34,65 +34,14 @@ git diff --stat "$BASE_SHA..$HEAD_SHA" && git diff --name-only "$BASE_SHA..$HEAD
 Use plan checkpoint commits as range if available. No changed files → check plan for incomplete tasks.
 
 ### 3. Graph Analysis
-Reindex changed files first so graph reflects current code (not stale pre-edit state):
+Reindex first for `CBM_PROJECT` (see `references/codebase-memory-contract.md#Lifecycle`): `index_status`; if stale/degraded → `index_repository`. Then `codebase-memory-mcp` `detect_changes`, `trace_path` (inbound/outbound/data_flow), `get_graph_schema` + recipes `cycles, hubs, bridges, test-gaps, complexity, cross-boundary`. Per file: `query_graph(query_type="tests", target=file)`.
+
+**3b. Serena (optional):** See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions` first, then `find_referencing_symbols`/`find_implementations` per symbol and `get_diagnostics_for_file` per file. Pass as "Serena findings". Skip if unavailable.
+
+### 4. Dispatch Code Reviewer (2-stage)
+Stage 1 Spec Compliance → Stage 2 Code Quality (never invert).
 ```
-index_status(project=CBM_PROJECT); stale/degraded → index_repository(repo_path=<absolute>, name=CBM_PROJECT, mode=CBM_INDEX_MODE)
-```
-```
-detect_changes(project=CBM_PROJECT)
-trace_path(project=CBM_PROJECT, mode="inbound/outbound/data_flow")
-# After get_graph_schema, run validated cycles, hubs, bridges, test-gaps,
-# complexity, and cross-boundary recipes.
-```
-Per file: `query_graph(query_type="tests", target=file)`.
-
-**3b. Serena code intelligence (optional):**
-If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first.
-For each changed symbol/function:
-```
-mcp__serena__find_referencing_symbols(symbol=<changed_symbol>)
-mcp__serena__find_implementations(symbol=<changed_symbol>)
-```
-For each changed file:
-```
-mcp__serena__get_diagnostics_for_file(file=<changed_file>)
-```
-Pass results to code-reviewer agent prompt under "Serena findings: [callers, implementations, diagnostics]".
-Skip gracefully if Serena unavailable — log "Serena unavailable, skipping code intelligence".
-
-### 4. Dispatch Code Reviewer (2-Stage Review)
-
-**Stage 1 — Spec Compliance:** Verify implementation matches plan requirements.
-**Stage 2 — Code Quality:** Verify code is clean, tested, maintainable.
-
-Never start code quality review before spec compliance is verified.
-
-```
-Agent(
-  subagent_type="supergraph:code-reviewer",
-  description="Independent review: [plan-name or scope]",
-  prompt="Review BASE_SHA..HEAD_SHA. First verify spec compliance, then code quality.
-
-BASE_SHA: [base] | HEAD_SHA: [head]
-
-Changes:
-[git diff --stat + git diff output]
-
-Graph context:
-- Hub/Bridge affected: [list/none]
-- Surprise connections: [list/none]
-- Affected flows: [list/none]
-- Knowledge gaps: [list/none]
-
-Serena findings (if available):
-- find_referencing_symbols: [callers per changed symbol]
-- get_diagnostics_for_file: [diagnostics per changed file]
-
-Plan requirements: [task sections or none]
-
-Focus: plan alignment, bugs, security, architecture, tests, graph risks, Serena diagnostics (if provided).
-Output: strengths, Critical, Important, Minor, verdict (YES|WITH_FIXES|NO)"
-)
+Agent(subagent_type="supergraph:code-reviewer", prompt="Review BASE_SHA..HEAD_SHA. Spec first, then quality. BASE_SHA/HEAD_SHA, git diff --stat + diff, Graph: hubs/bridges/surprise/flows/gaps, Serena findings, Plan requirements. Output: strengths, Critical/Important/Minor, verdict YES|WITH_FIXES|NO")
 ```
 
 ### 5. Verify Tests + Lint
@@ -106,16 +55,15 @@ Run `$TEST_CMD` and `$LINT_CMD`. Failures → add to Critical.
 | **Important** | Reviewer Important, surprise 0.5-0.7, missing hotspot tests, bridge node without validation, `stuck` tasks | Fix unless risk accepted |
 | **Minor** | Reviewer Minor, clean graph, good coverage | Note only |
 
-### 7. Apply Checklist
-
+### 7. Checklist
 | Gate | Check |
 |---|---|
-| **Blast radius** | All affected files handled? Unexpected files? |
-| **Hub safety** | Callers tested? API backward-compatible? Breaking changes documented? |
-| **Bridge nodes** | Cross-community impact assessed? |
-| **Surprise** | >0.7: investigate coupling. 0.5-0.7: document or refactor. <0.5: ok |
-| **Knowledge gaps** | Untested hotspots changed? Add tests or accept risk |
-| **TDD** | RED/GREEN evidence per behavior? Regression tests for bugs? Tests assert behavior not internals? |
+| Blast radius | All affected files handled? |
+| Hub safety | Callers tested? API compatible? |
+| Bridge | Cross-community impact? |
+| Surprise | >0.7 investigate, 0.5-0.7 document |
+| Gaps | Untested hotspots? |
+| TDD | RED/GREEN evidence? |
 
 ### 8. Act on Feedback
 

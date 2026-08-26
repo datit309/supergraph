@@ -49,14 +49,7 @@ If none found → skip: "No integration/e2e config found — skipping."
 ### 4. Run Integration Tests
 Max 3 retries. On failure:
 
-**4b. Serena cross-module analysis (optional):**
-If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first. Skip if `SERENA_ACTIVE=false`.
-For each failed integration module:
-```
-mcp__serena__find_referencing_symbols(symbol=<failing_export>)
-mcp__serena__get_diagnostics_for_file(file=<failing_file>)
-```
-Interface mismatches surface immediately — check for signature changes or missing implementations. Skip if Serena unavailable.
+**4b. Serena (optional):** See `serena/SKILL.md:Setup` — `find_referencing_symbols`/`get_diagnostics_for_file` per failing module to surface mismatches. Skip if unavailable.
 
 Trace failure to source module, fix, re-run.
 
@@ -64,10 +57,7 @@ Trace failure to source module, fix, re-run.
 Max 2 retries (e2e is inherently flaky). Flaky tests: annotate with `@flaky` / `test.slow()` / `@pytest.mark.flaky` per framework — do not block merge on known-flaky tests.
 
 ### 6. Graph Validation
-Use `CBM_PROJECT` with `search_graph`, `trace_path` for affected call/data-flow
-paths, and validated `dependencies`, `cross-boundary`, and `test-gaps` recipes.
-Empty results are unavailable evidence; fall back to Serena/filesystem checks.
-Cross-module flows all covered? Surprising connections investigated?
+For `CBM_PROJECT` via `codebase-memory-mcp` (see `references/codebase-memory-contract.md`) — `search_graph`/`trace_path` + recipes `dependencies/cross-boundary/test-gaps`; fall back to Serena/filesystem if empty.
 
 ### 7. Update Plan Status
 Pass → mark in-progress tasks `Status: completed`.

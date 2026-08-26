@@ -28,29 +28,9 @@ Read from plan `## Environment Context` or `.supergraph-env` (set by `/supergrap
 Missing command → skip phase, report as `SKIP`.
 
 ### 3. Get Changed Files
+`git diff --name-only && git diff --cached --name-only`. Reindex `CBM_PROJECT` if stale (`index_status`→`index_repository`, see `references/codebase-memory-contract.md`) via `codebase-memory-mcp`.
 
-```bash
-git diff --name-only && git diff --cached --name-only
-```
-Reindex changed files before graph analysis (graph may be stale after edits):
-```
-index_status(project=CBM_PROJECT); if stale/degraded, index_repository(repo_path=<absolute>, name=CBM_PROJECT, mode=CBM_INDEX_MODE)
-```
-Graph: project-scoped `detect_changes`, `trace_path` call/data-flow, and validated
-`cycles`, `test-gaps`, `complexity`, and `cross-boundary` recipes.
-No changed files and no in-progress/stuck tasks → STOP: nothing to fix.
-
-### 3b. Serena pre-loop diagnostics (optional)
-
-If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first. Skip entire step if `SERENA_ACTIVE=false` in `.supergraph-env`.
-
-Before starting the fix loop, triage IDE-level errors with Serena:
-```
-for each changed_file:
-    mcp__serena__get_diagnostics_for_file(file=changed_file)
-```
-Fix any type errors found before entering the loop — reduces iterations by catching obvious errors early.
-Skip if Serena unavailable.
+### 3b. Serena pre-loop (optional): See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions`; `get_diagnostics_for_file` per changed file to catch type errors early. Skip if `SERENA_ACTIVE=false` or unavailable.
 
 ### 4. Auto-Fix Loop (max 3 iterations)
 
@@ -58,12 +38,12 @@ At iteration start: "🔧 Fix iteration N/3 — running tests..."
 
 | Phase | Action |
 |---|---|
-| **Reproduce** | Smallest failing command + expected vs actual. Classify: assertion / crash / timeout / env / data pollution / race. |
-| **Tests** | Run targeted tests (from graph) else `$TEST_CMD`. FAIL → trace to root cause, fix source. Don't modify tests unless demonstrably wrong. |
-| **Serena fix** | After source fix: `mcp__serena__get_diagnostics_for_file(file=<fixed_file>)` — confirm fix didn't introduce new type errors before re-running suite. For body fixes: prefer `mcp__serena__replace_symbol_body(symbol=<fn>)`. For renames: `mcp__serena__rename_symbol(old, new)`. Skip if Serena unavailable. |
-| **Format+Lint** | `$FORMAT_CMD` then `$LINT_CMD`. If format changed files → re-run lint. |
-| **Graph** | Check `index_status`; stale/degraded triggers `index_repository`. Then `detect_changes`, `trace_path`, and contract recipes `cycles`, `test-gaps`, `complexity`, `cross-boundary`. CRITICAL → fix. WARNING → fix or record. |
-| **Decide** | All clean → break. Tests/lint fail → continue loop. |
+| Reproduce | Smallest failing cmd + expected vs actual |
+| Tests | Targeted tests else `$TEST_CMD`; fix source |
+| Serena fix | `get_diagnostics_for_file` + `replace_symbol_body`/`rename_symbol` (see `serena/SKILL.md`) |
+| Format+Lint | `$FORMAT_CMD`→`$LINT_CMD`; rerun lint if formatted |
+| Graph | Reindex `CBM_PROJECT` if stale (`index_status`→`index_repository`), then `codebase-memory-mcp` recipes `cycles/test-gaps/complexity/cross-boundary` |
+| Decide | All clean→break else continue |
 
 ### 5. Update Plan Status (if plan exists)
 

@@ -6,10 +6,7 @@ mcp: codebase-memory-mcp
 
 # /supergraph:tdd
 
-Use `CBM_PROJECT` graph evidence only after healthy `index_status`. A stale or
-degraded index requires `index_repository` before `detect_changes`, `trace_path`,
-or validated `cycles`, `hubs`, `bridges`, and `test-gaps` recipes. Missing required
-tests blocks GREEN.
+Requires healthy `index_status` for `CBM_PROJECT` (see `references/codebase-memory-contract.md` with `codebase-memory-mcp`); if stale/degraded → `index_repository` before graph calls.
 
 Strict TDD for features, bug fixes, refactors.
 
@@ -58,7 +55,7 @@ Record evidence:
 - RED: `[command]` → FAIL ([expected missing behavior])
 ```
 
-**Serena diagnostics (optional):** If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first. Then: `mcp__serena__get_diagnostics_for_file(file=<test_file>)` — confirm no type errors mask the real missing behavior. Skip if Serena unavailable or `SERENA_ACTIVE=false`.
+**Serena diagnostics (optional):** See `serena/SKILL.md:Setup` — `get_diagnostics_for_file` before/after GREEN; use `replace_symbol_body`/`rename_symbol` over raw edits. Skip if `SERENA_ACTIVE=false` or unavailable.
 
 Invalid RED → fix test setup, don't write production code yet.
 
@@ -67,8 +64,6 @@ Invalid RED → fix test setup, don't write production code yet.
 Write only enough code to pass the test. No abstractions, no cleanup, no extra features.
 
 Delete any production code written before RED.
-
-**Serena surgery (optional):** Prefer `mcp__serena__replace_symbol_body(symbol=<fn>)` over raw file edits for targeted function-body implementation — exact, no risk of touching surrounding code. Skip if Serena unavailable.
 
 ### 4. GREEN Verify
 
@@ -79,20 +74,11 @@ Run focused test → broader suite:
 - Suite: PASS
 ```
 
-**Serena diagnostics (optional):** `mcp__serena__get_diagnostics_for_file(file=<source_file>)` — confirm no new type errors introduced by implementation. Skip if Serena unavailable.
-
 Failing test → fix code, not test. Other tests fail → fix now.
 
 ### 5. REFACTOR — Only After GREEN
 
 Rename, deduplicate, extract. No behavior changes. Re-run tests.
-
-**Before any rename (optional):** Enumerate all callers first to confirm scope:
-```
-mcp__serena__find_referencing_symbols(symbol=<symbol_to_rename>)
-```
-Then use `mcp__serena__rename_symbol(old=<name>, new=<name>)` for safe codebase-wide rename instead of grep/replace.
-Skip if Serena unavailable — fall back to manual grep + Edit.
 
 ### 6. Complete
 

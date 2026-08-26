@@ -31,75 +31,9 @@ mcp__serena__get_symbols_overview()
 **1d. Read 3-5 hub node files** — understand actual structure, naming, patterns.
 
 ## Phase 2 — Generate HTML Report
+Write self-contained `docs/supergraph/architecture-review-<YYYY-MM-DD>.html` with Tailwind+Mermaid header, architecture `graph TD`, per-candidate card (Problem/Proposal/Before/After Mermaid/Impact/Trade-offs with badge Strong/Worth exploring/Speculative), plus tables for Test Gaps and Unexpected Coupling.
 
-Write a self-contained HTML file to `docs/supergraph/architecture-review-<YYYY-MM-DD>.html`.
-
-Structure:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Architecture Review — [Project] — [Date]</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-</head>
-<body class="bg-gray-50 p-8 font-sans">
-
-  <!-- Header -->
-  <h1>Architecture Review: [Project]</h1>
-  <p>[Date] | [N communities] | [N hub nodes] | [N bridge nodes]</p>
-
-  <!-- Current Architecture Diagram -->
-  <h2>Current Architecture</h2>
-  <div class="mermaid">
-    graph TD
-      [community nodes and edges from graph data]
-  </div>
-
-  <!-- Candidate Improvements -->
-  <!-- One card per candidate -->
-  <div class="candidate-card">
-    <h3>[Candidate N]: [Short name]</h3>
-    <span class="badge">[Strong / Worth exploring / Speculative]</span>
-
-    <p><strong>Problem:</strong> [what's wrong now]</p>
-    <p><strong>Proposal:</strong> [what to change]</p>
-
-    <h4>Before</h4>
-    <div class="mermaid">graph TD; [before state]</div>
-
-    <h4>After</h4>
-    <div class="mermaid">graph TD; [after state]</div>
-
-    <p><strong>Impact:</strong> [blast radius, effort, risk]</p>
-    <p><strong>Trade-offs:</strong> [pros / cons]</p>
-  </div>
-
-  <!-- Knowledge Gaps -->
-  <h2>Test Coverage Gaps</h2>
-  [table of untested hotspot files]
-
-  <!-- Surprising Connections -->
-  <h2>Unexpected Coupling</h2>
-  [list of surprise connections with scores]
-
-</body>
-</html>
-```
-
-**Recommendation strength badges:**
-- `Strong` — clear problem, low risk, high ROI
-- `Worth exploring` — plausible improvement, some uncertainty
-- `Speculative` — possible but needs investigation
-
-Open report automatically:
-```bash
-open docs/supergraph/architecture-review-<date>.html \
-  || xdg-open docs/supergraph/architecture-review-<date>.html \
-  || echo "Report saved: docs/supergraph/architecture-review-<date>.html"
-```
+Open: `open docs/supergraph/architecture-review-<date>.html || xdg-open ... || echo "Report saved: ..."`
 
 ## Phase 3 — Grilling Loop
 

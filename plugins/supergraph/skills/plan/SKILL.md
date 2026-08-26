@@ -26,43 +26,13 @@ Use domain vocabulary from CONTEXT.md in all plan task descriptions — never us
 - Read 2-3 source files near target area → naming, imports, error handling
 - Read 1-2 test files → test structure, assertion style
 
-**2. Ensure graph:**
-Reuse graph context from `/supergraph:scan`. If scan not done → run `/supergraph:scan` first.
-Require `CBM_PROJECT` and healthy `index_status`. If stale/degraded, call
-`index_repository` with the absolute repository path before analysis.
+**2. Ensure graph:** Reuse `/supergraph:scan` context. If not done → run scan first. Requires `CBM_PROJECT` + healthy `index_status`; if stale/degraded → `index_repository` (absolute path).
 
-**3. Graph analysis:**
-Call `detect_changes(project=CBM_PROJECT)`, `search_graph` for target symbols,
-`trace_path` inbound/outbound/data-flow, and `get_architecture` for overview,
-clusters, boundaries, and hotspots. After `get_graph_schema`, run named contract
-recipes `hubs`, `bridges`, `test-gaps`, and `cross-boundary`. Derive risk from
-impact plus recipe evidence; never invent missing results. Preserve escalation:
-more than 20 files stops for discussion; hub/bridge changes require approval;
-cross-boundary findings require justification.
+**3. Graph analysis:** See `references/codebase-memory-contract.md#Lifecycle`. Call `detect_changes`, `search_graph`, `trace_path` (inbound/outbound/data-flow), `get_architecture` (overview/clusters/boundaries/hotspots). After `get_graph_schema`, run recipes `hubs`, `bridges`, `test-gaps`, `cross-boundary`. Derive risk from evidence; preserve escalation: >20 files STOP, hub/bridge needs approval.
 
-**3b. Serena symbol analysis (optional — deepens blast radius):**
-If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first.
-For key symbols in target files:
-```
-mcp__serena__find_referencing_symbols(symbol=<key_symbol>)
-mcp__serena__find_implementations(symbol=<interface_or_abstract>)
-```
-Cross-reference with graph blast radius — add any missed callers to task `Blast radius` fields.
-**Optional — for large blast radius (> 10 files) or hub/bridge nodes:** persist caller list for future sessions:
-```
-mcp__serena__write_memory(title="<plan-slug>-blast-callers", content="[caller list from find_referencing_symbols]")
-```
-Skip gracefully if Serena unavailable — log "Serena unavailable, skipping symbol analysis".
+**3b. Serena (optional):** See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions` first, then `find_referencing_symbols`/`find_implementations` for key symbols. Cross-check with graph blast radius; persist callers via `write_memory` only if >10 files or hub/bridge. Skip if Serena unavailable.
 
-**4. Discuss approach with user (MANDATORY, use user's language):**
-Before creating tasks, present findings from steps 1-3 to the user:
-- What was found in codebase (naming, conventions, patterns)
-- Graph risk (blast radius, hubs, bridges affected)
-- Proposed task breakdown (just summaries, not full tasks yet)
-
-Ask for approval in the user's language. If user disagrees with approach → revise.
-If user wants changes → incorporate, then re-present.
-**Do not proceed to step 5 until user approves the approach.**
+**4. Discuss approach (MANDATORY, user's language):** Present findings 1-3 (naming/patterns, graph risk, task summaries). Get approval before step 5; revise if needed.
 
 **5. Create plan tasks** — each task 2-5 min. Use exact machine-readable format:
 
@@ -113,68 +83,17 @@ Checkpoint:
 
 Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by executor)
 
-**6. Validate:**
-- [ ] Every task uses `## Task N:` heading exactly
-- [ ] Every task has all 8 fields: Status, Risk, Dependencies, Files, Acceptance, TDD, Steps, Checkpoint
-- [ ] No placeholders (TBD, TODO, "add validation", "similar to Task N")
-- [ ] Test commands real (from .supergraph-env)
-- [ ] Hub nodes have review steps
-- [ ] Each behavior task has expected RED failure reason
-- [ ] NO indentation under field lines — `Status: pending` starts at column 0, not spaces
-- [ ] No extra blank lines between fields within a task section
+**6. Validate:** All tasks have `## Task N:` + 8 fields (Status,Risk,Dependencies,Files,Acceptance,TDD,Steps,Checkpoint), no TBD/TODO, real commands from .supergraph-env, no indentation under fields, no extra blank lines.
 
 **7. Save plan:** `docs/supergraph/plans/YYYY-MM-DD-<slug>.md`
 
-**8. Analysis Review Gate (if /supergraph:analyze was used):**
-If analyze step was completed — verify plan aligns with documented analysis decisions:
-```markdown
-## Analysis Decisions
-- Approach: [chosen approach from analyze step]
-- Alternatives rejected: [from analyze step with reasons]
-```
-If analysis was skipped for ambiguous task → WARN user: "No analyze step — proceeding with plan as-is."
+**8. Analysis Gate (if analyze used):** Verify plan aligns with `## Analysis Decisions`; if skipped → WARN "No analyze step".
 
-**9. Environment Context (MANDATORY at plan end):**
-```markdown
-## Environment Context
-- **Language:** [X] v[Y]
-- **Test command:** [from .supergraph-env]
-- **Linter command:** [from .supergraph-env]
-- **Formatter command:** [from .supergraph-env]
-- **Build command:** [from .supergraph-env]
-- **Branch:** [current]
-- **Conventional commit style:** [e.g., "feat: / fix:"]
+**9. Environment Context (MANDATORY):** Include Language, TEST/LINT/FORMAT/BUILD cmds from .supergraph-env, Branch, commit style, codebase conventions, Graph Context (blast radius/hubs/bridges/communities).
 
-**Codebase conventions:** [naming, imports, error handling, test structure]
-
-**Graph Context:**
-- Blast radius: M files | Hub nodes: [list]
-- Bridge nodes: [list] | Communities crossed: [list]
-```
-
-**10. Auto-review:**
-Dispatch `supergraph:plan-reviewer` subagent. Fix issues. Do not hand off to execute until `Approved`.
-
-**11. User Review Gate (MANDATORY):**
-Present plan summary to user:
-```
-Plan: [plan path]
-Tasks: N ([list summaries])
-Blast radius: M files | Hub nodes affected: [list/none]
-Review: Approved (by plan-reviewer)
-```
-Ask user for approval in their language: "[yes / modify / reject]"
-If modify → incorporate feedback, re-run auto-review.
-If rejected → ask for direction, return to design.
-
-**12. Report:**
-```
-✅ /supergraph:plan complete
-- Plan: docs/supergraph/plans/YYYY-MM-DD-<slug>.md
-- Tasks: N | Blast radius: M files | Review: Approved
-- User: yes | modify | rejected
-- Next: /supergraph:execute plan <slug> (multi-task) or /supergraph:tdd (single-task)
-```
+**10. Auto-review:** Dispatch `plan-reviewer`; fix issues; require `Approved` before execute.
+**11. User Gate (MANDATORY):** Present summary (plan path, Tasks N, blast radius, hubs, Review Approved); ask `[yes/modify/reject]` in user's language.
+**12. Report:** `✅ /supergraph:plan complete — Plan: ... Tasks: N | Blast: M | Review: Approved | User: yes/modify/rejected | Next: execute/tdd`
 
 ## Rules
 - Codebase first, plan second — never plan blindly
