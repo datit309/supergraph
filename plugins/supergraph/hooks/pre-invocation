@@ -145,11 +145,19 @@ New skills available:
     # Keyword hints from latest user prompt
     if latest_user_prompt:
         if re.search(r'\b(triage|triaging|backlog|needs[- ]triage|issue queue|classify.*issue|issue.*classif)\b', latest_user_prompt):
-            parts.append("💡 Issue triage detected — /supergraph:triage applies the state machine: needs-triage → needs-info → ready-for-agent → ready-for-human → wontfix.")
-        if re.search(r'\b(bug|not working|why (is|does|did)|broken|failing|error|crash|exception|debug)\b', latest_user_prompt):
-            parts.append("💡 Bug/error detected — /supergraph:diagnose runs structured 6-phase debugging. Use when cause is unknown.")
+            parts.append("💡 Triage → /supergraph:triage: needs-triage→needs-info→ready-for-agent→ready-for-human→wontfix.")
+        if not re.search(r'\b(verify|verification|review|PR|pull request)\b', latest_user_prompt) and re.search(r'\b(bug|not working|broken|failing|crash|exception)\b', latest_user_prompt):
+            parts.append("💡 Bug detected — /supergraph:diagnose: 6-phase debugging.")
         if re.search(r'\b(build.*(ui|page|component|dashboard|landing)|design.*(web|ui|page)|make.*look|style.*component|landing page|web ui|frontend)\b', latest_user_prompt):
-            parts.append("💡 UI/frontend task detected — /supergraph:frontend-design produces production-grade interfaces with high design quality.")
+            parts.append("💡 Frontend → /supergraph:frontend-design.")
+        if re.search(r'\b(plan|plann?ing|lên kế hoạch|create plan)\b', latest_user_prompt):
+            parts.append("💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps.")
+        if re.search(r'\b(implement|execute|thực thi|build feature)\b', latest_user_prompt):
+            parts.append("💡 Execute → /supergraph:execute (or /supergraph:tdd for single task).")
+        if re.search(r'\b(verify|verification|kiểm tra|xác minh|check done|ready to merge)\b', latest_user_prompt):
+            parts.append("💡 Verify → /supergraph:verify: fresh evidence before done.")
+        if re.search(r'\b(review|code review|merge|pull request|PR)\b', latest_user_prompt):
+            parts.append("💡 Review → /supergraph:review: independent reviewer + graph check.")
 
     # Language hint
     parts.append("🌐 Always reply in the same language the user wrote in.")

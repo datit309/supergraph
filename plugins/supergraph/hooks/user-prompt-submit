@@ -56,8 +56,8 @@ if printf '%s' "$prompt" | grep -qE '\b(triage|triaging|backlog|needs[- ]triage|
   exit 0
 fi
 
-# ── Diagnose hint ─────────────────────────────────────────────────────────────
-if printf '%s' "$prompt" | grep -qE '\b(bug|not working|why (is|does|did)|broken|failing|error|crash|exception|debug)\b'; then
+# ── Diagnose hint (skip if verify intent) ─────────────────────────────────────
+if ! printf '%s' "$prompt" | grep -qE '\b(verify|verification|review|PR|pull request)\b' && printf '%s' "$prompt" | grep -qE '\b(bug|not working|broken|failing|crash|exception)\b'; then
   emit "💡 Bug detected — /supergraph:diagnose: 6-phase debugging."
   exit 0
 fi
@@ -65,6 +65,30 @@ fi
 # ── Frontend/UI hint ──────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(build.*(ui|page|component|dashboard|landing)|design.*(web|ui|page)|make.*look|style.*component|landing page|web ui|frontend)\b'; then
   emit "💡 Frontend → /supergraph:frontend-design."
+  exit 0
+fi
+
+# ── Plan hint ─────────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(plan|plann?ing|lên kế hoạch|create plan)\b'; then
+  emit "💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps."
+  exit 0
+fi
+
+# ── Execute hint ──────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(implement|execute|thực thi|build feature)\b'; then
+  emit "💡 Execute → /supergraph:execute (or /supergraph:tdd for single task)."
+  exit 0
+fi
+
+# ── Verify hint ───────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(verify|verification|kiểm tra|xác minh|check done|ready to merge)\b'; then
+  emit "💡 Verify → /supergraph:verify: fresh evidence before done."
+  exit 0
+fi
+
+# ── Review hint ───────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(review|code review|merge|pull request|PR)\b'; then
+  emit "💡 Review → /supergraph:review: independent reviewer + graph check."
   exit 0
 fi
 
