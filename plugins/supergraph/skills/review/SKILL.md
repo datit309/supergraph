@@ -33,19 +33,24 @@ git diff --stat "$BASE_SHA..$HEAD_SHA" && git diff --name-only "$BASE_SHA..$HEAD
 ```
 Use plan checkpoint commits as range if available. No changed files → check plan for incomplete tasks.
 
-### 3. Graph Analysis
-Reindex first for `CBM_PROJECT` (see `references/codebase-memory-contract.md#Lifecycle`): `index_status`; if stale/degraded → `index_repository`. Then `codebase-memory-mcp` `detect_changes`, `trace_path` (inbound/outbound/data_flow), `get_graph_schema` + recipes `cycles, hubs, bridges, test-gaps, complexity, cross-boundary`. Per file: `query_graph(query_type="tests", target=file)`.
+### 3. Graph Analysis (tiered)
+Reindex first for `CBM_PROJECT` (see `references/codebase-memory-contract.md#Lifecycle`): `index_status`; if stale/degraded → `index_repository` (skip if `BASE_SHA` unchanged and `.supergraph-env` fresh). Then `codebase-memory-mcp` `detect_changes`, `trace_path`, `get_graph_schema`.
 
-**3b. Serena (optional):** See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions` first, then `find_referencing_symbols`/`find_implementations` per symbol and `get_diagnostics_for_file` per file. Pass as "Serena findings". Skip if unavailable.
+Tiered recipes (pick by blast radius):
+- Micro (≤2 files, <20 lines, no hub/bridge): `cycles` + `test-gaps` only (0.04s)
+- Standard (≤5 files, no cross-boundary): `cycles`/`hubs`/`test-gaps` + optional `cross-boundary`
+- Full (>5 files or hub/bridge/cross-boundary): all `cycles, hubs, bridges, test-gaps, complexity, cross-boundary` (0.12s). Per file: `query_graph(query_type="tests", target=file)`.
 
-### 4. Dispatch Code Reviewer (2-stage)
-Stage 1 Spec Compliance → Stage 2 Code Quality (never invert).
+**3b. Serena (optional, selective):** See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions` first. Only for hub/bridge or `complexity>10` files: `find_referencing_symbols`/`find_implementations` per symbol and `get_diagnostics_for_file` per file. Otherwise skip. Pass as "Serena findings". Skip if unavailable.
+
+### 4. Dispatch Code Reviewer (2-stage, parallel with tests)
+Stage 1 Spec Compliance → Stage 2 Code Quality (never invert). **Run concurrently with Step 5** — spawn `Agent(code-reviewer)` and `$TEST_CMD`/`$LINT_CMD` in parallel; join before Step 6.
 ```
 Agent(subagent_type="supergraph:code-reviewer", prompt="Review BASE_SHA..HEAD_SHA. Spec first, then quality. BASE_SHA/HEAD_SHA, git diff --stat + diff, Graph: hubs/bridges/surprise/flows/gaps, Serena findings, Plan requirements. Output: strengths, Critical/Important/Minor, verdict YES|WITH_FIXES|NO")
 ```
 
-### 5. Verify Tests + Lint
-Run `$TEST_CMD` and `$LINT_CMD`. Failures → add to Critical.
+### 5. Verify Tests + Lint (parallel with Step 4)
+Run `$TEST_CMD` and `$LINT_CMD` concurrently with reviewer. Failures → add to Critical. Join both before Classify.
 
 ### 6. Classify Issues
 
