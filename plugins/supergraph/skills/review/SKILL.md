@@ -43,14 +43,17 @@ Tiered recipes (pick by blast radius):
 
 **3b. Serena (optional, selective):** See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions` first. Only for hub/bridge or `complexity>10` files: `find_referencing_symbols`/`find_implementations` per symbol and `get_diagnostics_for_file` per file. Otherwise skip. Pass as "Serena findings". Skip if unavailable.
 
-### 4. Dispatch Code Reviewer (2-stage, parallel with tests)
-Stage 1 Spec Compliance → Stage 2 Code Quality (never invert). **Run concurrently with Step 5** — spawn `Agent(code-reviewer)` and `$TEST_CMD`/`$LINT_CMD` in parallel; join before Step 6.
+### 4. Dispatch Code Reviewer (tiered, parallel with tests)
+Tiered (pick by blast radius):
+- Micro (≤2 files, <20 lines, no hub/bridge): **skip** code-reviewer agent — `tests+lint` + `cycles+test-gaps` đủ, `Critical` chỉ từ `tests/lint/circular` (LLM 30-60s saved)
+- Standard (≤5 files, no cross-boundary): Stage1 Spec Compliance only, parallel with tests
+- Full (>5 files or hub/bridge/cross-boundary): 2-stage (Spec→Quality), parallel with tests. Join before Step 6.
 ```
-Agent(subagent_type="supergraph:code-reviewer", prompt="Review BASE_SHA..HEAD_SHA. Spec first, then quality. BASE_SHA/HEAD_SHA, git diff --stat + git diff (first 300 lines, or --name-only + snippets for large diffs), Graph: hubs/bridges/surprise/flows/gaps, Serena findings, Plan requirements. Output: strengths, Critical/Important/Minor, verdict YES|WITH_FIXES|NO")
+Agent(subagent_type="supergraph:code-reviewer", prompt="Review BASE_SHA..HEAD_SHA. Spec first, then quality (Standard: Stage1 only). BASE_SHA/HEAD_SHA, git diff --stat + git diff (first 300 lines, or --name-only + snippets for large diffs), Graph: hubs/bridges/surprise/flows/gaps, Serena findings, Plan requirements. Output: strengths, Critical/Important/Minor, verdict YES|WITH_FIXES|NO")
 ```
 
-### 5. Verify Tests + Lint (parallel with Step 4)
-Run `$TEST_CMD` and `$LINT_CMD` concurrently with reviewer. Failures → add to Critical. Join both before Classify.
+### 5. Verify Tests + Lint (parallel with Step 4 when reviewer runs)
+Run `$TEST_CMD` and `$LINT_CMD`; if reviewer skipped (Micro), run tests alone. Failures → add to Critical. Join both before Classify.
 
 ### 6. Classify Issues
 
@@ -130,7 +133,7 @@ BLOCKED → escalate immediately, no auto-fix.
 
 ## Rules
 
-- Always dispatch independent code-reviewer agent
+- Dispatch code-reviewer per tier (Micro skip, Standard Stage1, Full 2-stage); always join with tests before Classify
 - Critical issues block merge — no exceptions
 - Hub/bridge changes need extra scrutiny
 - Max 2 fix-review cycles, then escalate
