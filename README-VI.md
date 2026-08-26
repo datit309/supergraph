@@ -96,6 +96,8 @@ curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform codex
 # OpenCode
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+# Tất cả nền tảng cùng lúc
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform all
 ```
 
 Git checkout nằm tại `${XDG_DATA_HOME:-$HOME/.local/share}/supergraph` trên POSIX và `%LOCALAPPDATA%\supergraph` trên Windows. Chạy lại lệnh sẽ dùng `git pull --ff-only`; installer không ghi đè checkout có thay đổi local hoặc history diverged. Hướng dẫn clone thủ công bên dưới vẫn dùng được cho development và audit.
