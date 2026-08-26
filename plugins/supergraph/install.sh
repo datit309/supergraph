@@ -95,6 +95,10 @@ printf 'Target: %s\n' "$target"
 
 if [ "$dry_run" -eq 1 ]; then
   printf 'Dry run: no changes made\n'
+  if [ "$platform" = "opencode" ]; then
+    cat "$source_dir/.opencode-plugin/opencode.json"
+    printf '\n\n[DRY RUN] Would add the above to your project opencode.json, then restart OpenCode.\n'
+  fi
   next_steps "$platform"
   exit 0
 fi
@@ -118,7 +122,20 @@ case "$platform" in
       [ -d "$skill_dir" ] || continue
       link_path "$skill_dir" "$target/$(basename "$skill_dir")"
     done
-    cp "$source_dir/OPENCODE.md" "$PWD/OPENCODE.md" 2>/dev/null || true
+    # Clean stale skill symlinks no longer in source
+    for link in "$target"/*; do
+      [ -L "$link" ] || continue
+      base="$(basename "$link")"
+      if [ ! -e "$source_dir/skills/$base" ]; then
+        printf 'Removing stale skill link: %s\n' "$link"
+        rm "$link"
+      fi
+    done
+    if [ -e "$PWD/OPENCODE.md" ] && [ ! -L "$PWD/OPENCODE.md" ]; then
+      printf 'Refusing to overwrite non-symlink: %s (keep your custom OPENCODE.md)\n' "$PWD/OPENCODE.md" >&2
+    else
+      cp "$source_dir/OPENCODE.md" "$PWD/OPENCODE.md" 2>/dev/null || true
+    fi
     cat "$source_dir/.opencode-plugin/opencode.json"
     printf '\n\nAdd the above to your project opencode.json (or create it at project root), then restart OpenCode.\n'
     ;;
