@@ -37,9 +37,9 @@ Dispatch to the right skill. 1% rule: if it *might* apply, invoke it.
 
 ## Adaptive Gate
 
-- **< 10 lines, 1 file, no hub nodes** → use `/supergraph:tdd` directly
-- **1-3 files, clear requirement** → `/supergraph:plan` with lightweight tasks
-- **Multi-file, ambiguous, hub/bridge nodes** → `/supergraph:analyze` first, then plan
+- **< 20 lines, ≤2 files, no hub/bridge, complexity <10** → use `/supergraph:tdd` directly
+- **≤5 files, clear requirement, no cross-boundary** → `/supergraph:plan` with lightweight tasks
+- **>5 files, ambiguous, hub/bridge, cross-boundary** → `/supergraph:analyze` first, then plan
 
 ## User Instructions
 

@@ -82,4 +82,4 @@ available from the response, Serena status, and whether scan was fresh or reused
 - Never record false freshness after errors or degraded state.
 - All graph calls include `project=CBM_PROJECT` where supported.
 - Respect pagination and failure semantics in the shared contract.
-- For a trivial one-file change, graph discovery may stop after verified status.
+- For trivial ≤2 files / <20 lines, graph discovery may stop after verified status (no hubs/bridges needed).

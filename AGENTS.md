@@ -50,9 +50,9 @@ Use the correct test/lint commands for the detected language.
 
 | Tier | Condition | Path |
 |---|---|---|
-| **Micro** | < 10 lines, 1 file, no hub/bridge nodes | `/supergraph:tdd` directly → `/supergraph:verify` |
-| **Standard** | 1-3 files, clear requirement | `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
-| **Full** | Multi-file, ambiguous, hub/bridge nodes, or blast radius > 5 | Full pipeline below |
+| **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` |
+| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
+| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below |
 
 **When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
 

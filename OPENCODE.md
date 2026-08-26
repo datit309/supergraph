@@ -36,7 +36,7 @@ Supergraph skills are installed as OpenCode skills. Use `/skills` and pick the s
 
 ## Hard rules
 
-- Never code without a plan unless the change is trivial (<10 lines, 1 file).
+- Never code without a plan unless the change is trivial (<20 lines, ≤2 files, no hub/bridge).
 - Never implement without a verified failing test first.
 - Never modify hub/bridge nodes without user approval.
 - Never claim done without fresh verification evidence.

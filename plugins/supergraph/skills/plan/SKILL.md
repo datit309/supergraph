@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Create graph-informed implementation plans before writing code. Use before any non-trivial task. Skip for small changes (1-2 files, <10 lines).
+description: Create graph-informed implementation plans before writing code. Use before any non-trivial task. Skip for small changes (≤2 files, <20 lines, no hub/bridge).
 mcp: codebase-memory-mcp
 ---
 
@@ -11,7 +11,7 @@ Scan codebase, map blast radius, create machine-readable plan.
 Announce: "📐 /supergraph:plan — scanning codebase, creating plan..."
 
 ## Quick Gate
-< 10 lines, 1 file, no hub/bridge nodes → skip to `/supergraph:tdd`.
+< 20 lines, ≤2 files, no hub/bridge, complexity <10 → skip to `/supergraph:tdd`.
 
 ## Steps
 
