@@ -6,11 +6,7 @@ mcp: codebase-memory-mcp
 
 # /supergraph:verify
 
-Before claiming completion, require healthy `index_status(project=CBM_PROJECT)`.
-Stale/degraded state triggers `index_repository`; then run `detect_changes`,
-`trace_path`, and validated `cycles`, `hubs`, `bridges`, and `test-gaps` recipes.
-Block on degraded evidence, a new cycle, unapproved hub impact, or required tests
-missing.
+Requires healthy `index_status` for `CBM_PROJECT` (see `references/codebase-memory-contract.md`); then `codebase-memory-mcp` `detect_changes`, `trace_path`, recipes `cycles/hubs/bridges/test-gaps`. Block on degraded/new cycle/unapproved hub/missing tests.
 
 Fresh verification gate before completion claims.
 
@@ -55,14 +51,7 @@ Map claim to required proofs from evidence mapping.
 Read from plan `## Environment Context` or `.supergraph-env` (set by `/supergraph:scan`). Missing → STOP, run scan first.
 No command can prove claim → STOP: "Required check is unknown."
 
-### 3b. Serena diagnostic sweep (optional — highest value step)
-For each file touched by the current claim:
-```
-mcp__serena__get_diagnostics_for_file(file=<file>)
-```
-If type errors found → STOP verification, report as FAIL before running test suite.
-This is the last line of defense — catches LSP-level errors that lint and tests may not surface.
-Skip gracefully if Serena unavailable or `SERENA_ACTIVE=false` in `.supergraph-env`.
+### 3b. Serena sweep (optional): See `serena/SKILL.md:Setup` — `get_diagnostics_for_file` per touched file; STOP on type errors before test suite. Skip if `SERENA_ACTIVE=false` or unavailable.
 
 ### 4. Run Fresh Verification (NOW — no reuse of old output)
 For agent output: `git diff --stat && git diff --name-only`.

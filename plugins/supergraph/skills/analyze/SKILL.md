@@ -52,24 +52,9 @@ Use existing domain vocabulary in all analysis — never invent new terms for co
 
 **Grilling rules:** ONE question at a time, offer recommended answer, max 3 questions. Stop when goal + constraints are clear enough that approach won't reverse on new info.
 
-**2. Check graph risk:**
-Reuse graph context from `/supergraph:scan`. Only call if targets are identified:
-Use `CBM_PROJECT` from `.supergraph-env`. Call `detect_changes(project=CBM_PROJECT)`,
-`search_graph` for likely symbols, `trace_path` inbound/outbound, and
-`get_architecture` for boundaries/hotspots. Run the validated `hubs`, `bridges`,
-and `cross-boundary` contract recipes. Empty results are evidence, not permission
-to invent relationships. If files involve a hub/bridge node or cross a boundary,
-flag risk; more than 20 affected files requires user discussion.
+**2. Check graph risk:** Reuse `/supergraph:scan` context (`CBM_PROJECT`, `codebase-memory-mcp`, see `references/codebase-memory-contract.md`). If targets identified, call `detect_changes`, `search_graph`, `trace_path`, `get_architecture`, recipes `hubs/bridges/cross-boundary`. Empty = evidence. >20 files STOP.
 
-**2b. Serena dependency check (optional):**
-If `/supergraph:scan` was not run this session, call `mcp__serena__initial_instructions()` first.
-For each likely target symbol:
-```
-mcp__serena__find_referencing_symbols(symbol=<likely_target>)
-mcp__serena__find_implementations(symbol=<likely_target>)
-```
-`find_referencing_symbols` — all callers/usages. `find_implementations` — all concrete impls of interfaces/abstract classes. Results enrich approach comparison in step 3.
-Skip gracefully if Serena unavailable — log "Serena unavailable, skipping dependency check".
+**2b. Serena (optional):** See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions` first, then `find_referencing_symbols`/`find_implementations` per target. Skip if unavailable.
 
 **3. Propose 2-3 approaches + persona debate:**
 For each approach: pros, cons, risk level, effort. Prefer minimal viable.

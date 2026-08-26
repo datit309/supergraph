@@ -58,38 +58,17 @@ User approves → continue.
 
 ### 6. Dispatch Executor(s)
 
-Shared executor instructions (apply to both modes):
-```
-- Call mcp__serena__initial_instructions() once before any Serena tool (skip if scan ran this session)
-- Per task: RED → GREEN → REFACTOR → Lint → Format
-- After GREEN: mcp__serena__get_diagnostics_for_file() per modified file (skip if Serena unavailable)
-- Prefer Serena surgery: replace_symbol_body(), rename_symbol(), insert_after/before_symbol() over raw edits
-- Commit ONCE after all tests pass using Checkpoint from plan
-- Max 3 retries per step → mark stuck
-- Stop and ask on: unclear instruction, missing file, placeholder, any blocker
-```
+Shared executor instructions (see `serena/SKILL.md:Setup`): per task RED→GREEN→REFACTOR→Lint→Format, `get_diagnostics_for_file` after GREEN, prefer `replace_symbol_body`/`rename_symbol` over raw edits. Commit once per task. Max 3 retries.
 
 **Sequential:** `Agent(subagent_type="supergraph:executor")` — run baseline tests first, execute tasks IN ORDER respecting dependencies, report tasks done/stuck + files changed + risks.
 
 **Parallel:** one `Agent(subagent_type="supergraph:executor")` per task — each gets self-contained Task N section + Environment Context. Do NOT edit files outside Task N scope. Do NOT refactor unrelated code. Spawn all in one message.
 
-### 7. Post-Execution Integration Safety
-```bash
-git diff --name-only  # check for same-file edits by different agents
-```
-If overlap: require `CBM_PROJECT`; call `index_status`, and when stale/degraded
-call `index_repository` with the absolute repo path. Then run project-scoped
-`detect_changes`, `trace_path`, and `cross-boundary` recipe evidence.
-
-Serena conflict check (optional): `find_referencing_symbols()` on symbols changed by multiple agents. Skip if Serena unavailable.
-
-If conflicts → STOP: review manually / revert & retry sequential / keep X & redo Y.
+### 7. Post-Execution Safety
+If same-file edits for `CBM_PROJECT`: reindex if stale (`index_status`→`index_repository`, see `references/codebase-memory-contract.md`), then `detect_changes`/`trace_path`/`cross-boundary` via `codebase-memory-mcp`.
 
 ### 8. Final Verification
-Run `$TEST_CMD`, `$LINT_CMD`, `$BUILD_CMD`. Require healthy
-`index_status(project=CBM_PROJECT)`; stale/degraded state triggers
-`index_repository`. Run `detect_changes`, `trace_path`, and validated `cycles`,
-`test-gaps`, `complexity`, and `cross-boundary` recipes.
+Run `$TEST_CMD`/`$LINT_CMD`/`$BUILD_CMD`. Reindex `CBM_PROJECT` if stale (`index_status`→`index_repository`), then `codebase-memory-mcp` `detect_changes`/`trace_path`, recipes `cycles/test-gaps/complexity/cross-boundary`.
 
 ### 9. Handoff
 `/supergraph:fix` → `/supergraph:integration` → `/supergraph:verify` → `/supergraph:review`
