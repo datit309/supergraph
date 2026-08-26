@@ -46,7 +46,7 @@ Tiered recipes (pick by blast radius):
 ### 4. Dispatch Code Reviewer (2-stage, parallel with tests)
 Stage 1 Spec Compliance → Stage 2 Code Quality (never invert). **Run concurrently with Step 5** — spawn `Agent(code-reviewer)` and `$TEST_CMD`/`$LINT_CMD` in parallel; join before Step 6.
 ```
-Agent(subagent_type="supergraph:code-reviewer", prompt="Review BASE_SHA..HEAD_SHA. Spec first, then quality. BASE_SHA/HEAD_SHA, git diff --stat + diff, Graph: hubs/bridges/surprise/flows/gaps, Serena findings, Plan requirements. Output: strengths, Critical/Important/Minor, verdict YES|WITH_FIXES|NO")
+Agent(subagent_type="supergraph:code-reviewer", prompt="Review BASE_SHA..HEAD_SHA. Spec first, then quality. BASE_SHA/HEAD_SHA, git diff --stat + git diff (first 300 lines, or --name-only + snippets for large diffs), Graph: hubs/bridges/surprise/flows/gaps, Serena findings, Plan requirements. Output: strengths, Critical/Important/Minor, verdict YES|WITH_FIXES|NO")
 ```
 
 ### 5. Verify Tests + Lint (parallel with Step 4)
