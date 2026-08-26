@@ -23,7 +23,7 @@ except Exception:
     pass
 ' 2>/dev/null || printf '%s' "$input")
 
-d_pat='(rm -rf /|rm -rf ~|mkfs|dd if=|git push --force|git reset --hard|DROP TABLE|DELETE FROM)'
+d_pat='(rm[[:space:]]+.*-[a-z]*r[a-z]*f.*[[:space:]]+(/.*|~|\$HOME)|;[[:space:]]*rm|&&[[:space:]]*rm|\$\([[:space:]]*rm|`rm|mkfs|dd[[:space:]]+if=|git[[:space:]]+push[[:space:]]+--force|git[[:space:]]+reset[[:space:]]+--hard|DROP[[:space:]]+TABLE|DELETE[[:space:]]+FROM)'
 if printf '%s' "$command" | grep -qE "$d_pat"; then
   if [ "$is_antigravity" = true ]; then
     python3 -c '
