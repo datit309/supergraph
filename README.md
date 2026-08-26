@@ -197,7 +197,7 @@ pip install codebase-memory-mcp==0.9.0
 /supergraph:scan
 ```
 
-The installer symlinks each skill folder into `.opencode/skills/<name>`, copies `OPENCODE.md` to your project root, and prints the config snippet to add to your `opencode.json`:
+The installer symlinks each skill folder into `~/.config/opencode/skills/<name>` (global), copies `OPENCODE.md` to `~/.config/opencode/`, and creates/prints `~/.config/opencode/opencode.json`:
 
 ```json
 {

@@ -197,7 +197,7 @@ pip install codebase-memory-mcp==0.9.0
 /supergraph:scan
 ```
 
-Installer symlink từng skill vào `.opencode/skills/<name>`, copy `OPENCODE.md` vào project root, và in snippet để thêm vào `opencode.json`:
+Installer symlink từng skill vào `~/.config/opencode/skills/<name>` (global), copy `OPENCODE.md` vào `~/.config/opencode/`, và tạo/in `~/.config/opencode/opencode.json`:
 
 ```json
 {
