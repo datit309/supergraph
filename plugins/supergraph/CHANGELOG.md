@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.9 - 2026-08-27
+
+### Performance
+
+- **Skills perf: cache+parallel+dedup 40-50%** — `scan` TTL 10m reuse `index_status` (skip `index_repository` khi `ready+BRANCH` fresh, vẫn `index_status` verify + `get_graph_schema||get_architecture` parallel), `plan` graph calls `detect_changes+search_graph+trace_path+get_architecture` parallel (save 1.5-2s), `fix/verify/review` dedup suite với freshness guard `HEAD_SHA unchanged + diff unchanged + PASS <120s` (tiết kiệm 3-5 suite 60-180s), `flutter-ui` `find|xargs grep` 4 lần → `rg --type dart --type yaml -l` 1 lần 10-20x, `with_server.py` `start→wait` tuần tự 60s → Phase1 Popen all + Phase2 poll shared 30s; pipeline 8-12p → 4-6p trên `979 nodes`; giữ `>20 files STOP` và `verify Iron Law fresh`
+- **Bump** — `bump-version.sh` synced 4 manifests `2.2.8→2.2.9` (`.claude-plugin/plugin.json`, `marketplace.json`, `plugin.json`, `.codex-plugin/plugin.json`)
+
+### Changed
+
+- `scan:37,73` TTL guard + `SERENA_ACTIVE` guard + parallel schema/arch, `plan:31` parallel note, `fix:45` dedup + TTL respect, `verify:57` freshness guard, `review:56` reuse `verify` evidence, `flutter-ui:26` ripgrep + codebase-memory fallback, `with_server.py:64` 2-phase parallel startup
+
 ## 2.2.8 - 2026-08-26
 
 ### Performance
