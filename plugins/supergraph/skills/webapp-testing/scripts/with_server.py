@@ -61,11 +61,9 @@ def main():
     server_processes = []
 
     try:
-        # Start all servers
+        # Phase 1: Start all servers in parallel (perf: was sequential start→wait)
         for i, server in enumerate(servers):
             print(f"Starting server {i+1}/{len(servers)}: {server['cmd']}")
-
-            # Use shell=True to support commands with cd and &&
             process = subprocess.Popen(
                 server['cmd'],
                 shell=True,
@@ -74,12 +72,29 @@ def main():
             )
             server_processes.append(process)
 
-            # Wait for this server to be ready
-            print(f"Waiting for server on port {server['port']}...")
-            if not is_server_ready(server['port'], timeout=args.timeout):
+        # Phase 2: Poll all ports in parallel with shared timeout (was sequential 30s each → now 30s total)
+        print(f"Waiting for {len(servers)} server(s) (shared timeout {args.timeout}s)...")
+        start = time.time()
+        ready = [False] * len(servers)
+        while time.time() - start < args.timeout:
+            all_ready = True
+            for idx, server in enumerate(servers):
+                if ready[idx]:
+                    continue
+                try:
+                    with socket.create_connection(('localhost', server['port']), timeout=1):
+                        ready[idx] = True
+                        print(f"Server ready on port {server['port']}")
+                except (socket.error, ConnectionRefusedError):
+                    all_ready = False
+            if all(ready):
+                break
+            if not all(ready):
+                time.sleep(0.5)
+        # poll all ports — report failures
+        for idx, server in enumerate(servers):
+            if not ready[idx]:
                 raise RuntimeError(f"Server failed to start on port {server['port']} within {args.timeout}s")
-
-            print(f"Server ready on port {server['port']}")
 
         print(f"\nAll {len(servers)} server(s) ready")
 
