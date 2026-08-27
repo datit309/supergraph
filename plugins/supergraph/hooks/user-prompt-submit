@@ -3,13 +3,22 @@ set -euo pipefail
 
 input=$(cat)
 
-prompt=$(printf '%s' "$input" | python3 -c '
+# Portable python: python3 → python fallback, no fail if missing
+_py="python3"
+command -v python3 >/dev/null 2>&1 || _py="python"
+command -v "$_py" >/dev/null 2>&1 || _py=""
+if [ -n "$_py" ] && [ -n "$input" ]; then
+  prompt=$(printf '%s' "$input" | "$_py" -c '
 import sys, json
-d = json.load(sys.stdin)
-print(d.get("prompt", "").lower())
+try:
+  d=json.load(sys.stdin)
+  print(d.get("prompt","").lower())
+except Exception:
+  print("")
 ' 2>/dev/null || echo "")
-
-[ -z "$prompt" ] && exit 0
+else
+  prompt=""
+fi
 
 LANG_CTX="🌐 Always reply in the same language the user wrote in."
 
@@ -17,7 +26,11 @@ LANG_CTX="🌐 Always reply in the same language the user wrote in."
 emit() {
   local msg="${1:-}"
   local ctx="${LANG_CTX}${msg:+ $msg}"
-  printf '%s' "$ctx" | python3 -c '
+  # portable python fallback
+  _py2="python3"
+  command -v python3 >/dev/null 2>&1 || _py2="python"
+  if command -v "$_py2" >/dev/null 2>&1; then
+    printf '%s' "$ctx" | "$_py2" -c '
 import sys, json
 print(json.dumps({
     "hookSpecificOutput": {
@@ -26,10 +39,17 @@ print(json.dumps({
     }
 }))
 '
+  else
+    # fallback: raw text (hooks still non-blocking)
+    printf '%s' "$ctx"
+  fi
 }
 
 # ── Caveman always-on ───────────────────────────────────────────────────────
 CAVEMAN_RULES="🦴 caveman ON (always). Strip articles/filler. Keep exact: code, paths, numbers, errors. Use bullets, one clause each. Auto-suspend for safety/destructive ops."
+
+# always-on: even empty prompt gets caveman (hooks are non-blocking anyway)
+[ -z "$prompt" ] && { emit "$CAVEMAN_RULES"; exit 0; }
 
 # ── Triage hint ───────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(triage|triaging|backlog|needs[- ]triage|issue queue|classify.*issue|issue.*classif)\b'; then

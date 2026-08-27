@@ -32,7 +32,7 @@ Supergraph skills are installed as OpenCode skills. Use `/skills` and pick the s
 | Issue triage | `triage` |
 | Throwaway validation | `prototype` |
 | Session compaction | `handoff` |
-| Token compression style | `caveman` |
+| Token compression style | `caveman` — always-on, ~75% reduction |
 
 ## Hard rules
 
@@ -42,7 +42,8 @@ Supergraph skills are installed as OpenCode skills. Use `/skills` and pick the s
 - Never claim done without fresh verification evidence.
 - Use graph MCP tools before assuming file relationships.
 - Use Serena MCP tools when available for diagnostics and symbol impact.
+- Caveman always-on: strip articles/filler, keep code/numbers/paths exact, bullets over prose, auto-suspend for safety warnings only.
 
 ## OpenCode limitations
 
-OpenCode skills are invoked through `/skills`, not `/supergraph:*` slash commands. Bash hooks from Claude Code are not active on OpenCode; trigger workflow skills manually.
+OpenCode skills are invoked through `/skills`, not `/supergraph:*` slash commands. Bash hooks from Claude Code are not active on OpenCode; trigger workflow skills manually. Caveman compression is still always-on via this instruction file — no hook needed.
