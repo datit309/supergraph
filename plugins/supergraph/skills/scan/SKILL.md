@@ -34,12 +34,12 @@ the repository root name and retain it across branches. Default
 2. If found, call `index_status(project=CBM_PROJECT)`.
 3. Treat missing project, changed branch, stale state, tool error, failed state,
    or `status: "degraded"` as requiring a new index.
-4. Call `index_repository(repo_path=<absolute repo path>, name=CBM_PROJECT,
-   mode=CBM_INDEX_MODE)` when required. Require `status: "indexed"`.
-5. Re-run `index_status`; never claim reuse without a healthy response.
-6. Call `get_graph_schema(project=CBM_PROJECT)` before structural queries.
-7. Load `get_architecture(project=CBM_PROJECT,
-   aspects=["overview","layers","boundaries","clusters","hotspots"])`.
+4. **TTL reuse (10m):** If `index_status` returns `status: "ready"` and `BRANCH` matches `.supergraph-env:BRANCH` and `now - CBM_INDEXED_AT < 600s` and `head_sha` unchanged, reuse index — skip `index_repository`. Otherwise proceed to step 5. TTL check requires healthy `index_status`; never cache degraded/stale/error. On cache hit, still re-run `index_status` once to confirm liveness before `get_graph_schema`.
+5. Call `index_repository(repo_path=<absolute repo path>, name=CBM_PROJECT,
+   mode=CBM_INDEX_MODE)` when required (cache miss or stale/degraded). Require `status: "indexed"`.
+6. Re-run `index_status`; never claim reuse without a healthy response.
+7. Call `get_graph_schema(project=CBM_PROJECT)` and `get_architecture(project=CBM_PROJECT, aspects=["overview","layers","boundaries","clusters","hotspots"])` **in parallel** after verified `index_status`.
+8. On cache hit, `get_graph_schema` and `get_architecture` may run in parallel immediately after TTL-passed `index_status`.
 
 On any mandatory provider/index/schema error: STOP, show the exact error and the
 recovery command (`codebase-memory-mcp cli index_repository --repo-path
@@ -70,7 +70,7 @@ SERENA_ACTIVE=true|false
 SCAN_TIMESTAMP=YYYY-MM-DDTHH:MM:SS
 ```
 
-Branch-matched reuse still requires `index_status` and Serena revalidation.
+Branch-matched TTL reuse still requires `index_status` and Serena revalidation; TTL only skips `index_repository`, never skips `index_status` or schema checks. Serena revalidation is guarded by `SERENA_ACTIVE` — skip `initial_instructions` if `.supergraph-env:SERENA_ACTIVE=true` and scan ran <10m ago.
 
 ## 5. Report
 

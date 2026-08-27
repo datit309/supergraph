@@ -39,10 +39,10 @@ At iteration start: "🔧 Fix iteration N/3 — running tests..."
 | Phase | Action |
 |---|---|
 | Reproduce | Smallest failing cmd + expected vs actual |
-| Tests | Targeted tests else `$TEST_CMD`; fix source |
+| Tests | Targeted tests else `$TEST_CMD`; fix source. **Dedup:** if same `HEAD_SHA` and last `PASS <120s` and `git diff` unchanged, reuse evidence; else rerun fresh (respects `verify` freshness guard) |
 | Serena fix | `get_diagnostics_for_file` + `replace_symbol_body`/`rename_symbol` (see `serena/SKILL.md`) |
 | Format+Lint | `$FORMAT_CMD`→`$LINT_CMD`; rerun lint if formatted |
-| Graph | Reindex `CBM_PROJECT` if stale (`index_status`→`index_repository`), then `codebase-memory-mcp` recipes `cycles/test-gaps/complexity/cross-boundary` |
+| Graph | Reindex `CBM_PROJECT` if stale (`index_status`→`index_repository`) — respect `scan: TTL 10m` (skip `index_repository` if fresh per `.supergraph-env`), then `codebase-memory-mcp` recipes `cycles/test-gaps/complexity/cross-boundary` |
 | Decide | All clean→break else continue |
 
 ### 5. Update Plan Status (if plan exists)

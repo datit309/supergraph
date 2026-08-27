@@ -53,7 +53,7 @@ Agent(subagent_type="supergraph:code-reviewer", prompt="Review BASE_SHA..HEAD_SH
 ```
 
 ### 5. Verify Tests + Lint (parallel with Step 4 when reviewer runs)
-Run `$TEST_CMD` and `$LINT_CMD`; if reviewer skipped (Micro), run tests alone. Failures → add to Critical. Join both before Classify.
+Run `$TEST_CMD` and `$LINT_CMD`; if reviewer skipped (Micro), run tests alone. **Dedup:** if `verify` just passed with same `HEAD_SHA` and `<120s` ago and `git diff` unchanged, reuse `verify` evidence; else rerun fresh. Failures → add to Critical. Join both before Classify.
 
 ### 6. Classify Issues
 

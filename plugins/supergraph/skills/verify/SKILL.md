@@ -53,9 +53,10 @@ No command can prove claim → STOP: "Required check is unknown."
 
 ### 3b. Serena sweep (optional): See `serena/SKILL.md:Setup` — `get_diagnostics_for_file` per touched file; STOP on type errors before test suite. Skip if `SERENA_ACTIVE=false` or unavailable.
 
-### 4. Run Fresh Verification (NOW — no reuse of old output)
+### 4. Run Fresh Verification (NOW — no reuse of old output unless freshness guard passes)
 For agent output: `git diff --stat && git diff --name-only`.
 Then run relevant tests/lint/build locally.
+**Freshness guard (dedup suite, preserves Iron Law):** Reuse of immediately prior evidence is allowed **only if** `HEAD_SHA` unchanged and `git diff --name-only HEAD` unchanged and last `PASS` timestamp `<120s` ago (same commit). Otherwise **must rerun** ` $TEST_CMD`/`$LINT_CMD` fresh NOW. Guard respects `CBM_INDEXED_AT` TTL from `/supergraph:scan` but never skips verification before merge/PR — if `HEAD_SHA` changed, reuse is invalid.
 
 ### 5. Read Output
 Check: exit code, failure count, error count, warnings. Don't confuse lint ≠ build, targeted ≠ suite.

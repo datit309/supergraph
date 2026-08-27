@@ -28,7 +28,7 @@ Use domain vocabulary from CONTEXT.md in all plan task descriptions — never us
 
 **2. Ensure graph:** Reuse `/supergraph:scan` context. If not done → run scan first. Requires `CBM_PROJECT` + healthy `index_status`; if stale/degraded → `index_repository` (absolute path).
 
-**3. Graph analysis:** See `references/codebase-memory-contract.md#Lifecycle`. Call `detect_changes`, `search_graph`, `trace_path` (inbound/outbound/data-flow), `get_architecture` (overview/clusters/boundaries/hotspots). After `get_graph_schema`, run recipes `hubs`, `bridges`, `test-gaps`, `cross-boundary`. Derive risk from evidence; preserve escalation: >20 files STOP, hub/bridge needs approval.
+**3. Graph analysis (parallel where independent):** See `references/codebase-memory-contract.md#Lifecycle`. Run `detect_changes`, `search_graph`, `trace_path` (inbound/outbound/data-flow), and `get_architecture` (overview/clusters/boundaries/hotspots) **in parallel** (no dependencies). After `get_graph_schema`, run recipes `hubs`, `bridges`, `test-gaps`, `cross-boundary` (requires schema). Derive risk from evidence; preserve escalation: >20 files STOP, hub/bridge needs approval. Respect `scan: TTL` — skip `index_repository` if fresh per scan logic.
 
 **3b. Serena (optional):** See `serena/SKILL.md:Setup`. If scan not run, call `initial_instructions` first, then `find_referencing_symbols`/`find_implementations` for key symbols. Cross-check with graph blast radius; persist callers via `write_memory` only if >10 files or hub/bridge. Skip if Serena unavailable.
 
