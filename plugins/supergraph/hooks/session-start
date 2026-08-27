@@ -160,7 +160,7 @@ New skills available:
 - /supergraph:prd — convert conversation → structured PRD → GitHub Issue
 - /supergraph:triage — classify issues with state machine → ready-for-agent
 - /supergraph:prototype — throwaway Logic/UI code to validate approach
-- /supergraph:caveman — ~75% token compression (say "caveman" to activate)
+- /supergraph:caveman — ~75% token compression (always-on)
 </EXTREMELY_IMPORTANT>
 EOF
 )")
@@ -187,10 +187,8 @@ if [ -n "$handoff_file" ]; then
   fi
 fi
 
-# ── 4. Caveman mode — opt-in via .supergraph-env flag ─────────────────────────
-if grep -q 'SUPERGRAPH_CAVEMAN=true' .supergraph-env 2>/dev/null; then
-  parts+=("🦴 caveman mode ON (SUPERGRAPH_CAVEMAN=true in .supergraph-env) — strip filler, keep code exact, ~75% token reduction. Disable: set SUPERGRAPH_CAVEMAN=false or say 'normal mode'.")
-fi
+# ── 4. Caveman mode — always-on ───────────────────────────────────────────
+parts+=("🦴 caveman mode ON (always) — strip articles/filler, keep code exact, ~75% token reduction. Auto-suspend for safety/destructive ops. No toggle needed.")
 
 # ── 5. Zoom-out hint — no plan + no recent commits ────────────────────────────
 plan_count=$(ls docs/supergraph/plans/*.md 2>/dev/null | wc -l | tr -d ' ' || echo "0")

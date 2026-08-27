@@ -59,7 +59,7 @@ New skills available:
 - /supergraph:prd — convert conversation → structured PRD → GitHub Issue
 - /supergraph:triage — classify issues with state machine → ready-for-agent
 - /supergraph:prototype — throwaway Logic/UI code to validate approach
-- /supergraph:caveman — ~75% token compression (say "caveman" to activate)
+- /supergraph:caveman — ~75% token compression (always-on)
 </EXTREMELY_IMPORTANT>"""
         parts.append(workflow_msg)
 
@@ -110,37 +110,9 @@ New skills available:
         except Exception:
             pass
 
-    # Caveman rules
-    caveman_rules = "🦴 caveman mode ON. Rules: Strip articles/filler/subject pronouns. Keep exact: code, numbers, paths, errors, URLs. Structure: bullet lists over prose, one clause per bullet. Auto-suspend for: safety warnings, destructive ops, error explanations, questions needing full answer — then resume. Disable with: normal mode / full mode / verbose."
-    env_file = os.path.join(workspace_dir, ".supergraph-env")
-
-    if latest_user_prompt and re.search(r'\b(caveman|compress|short mode|token diet|brief mode|terse mode)\b', latest_user_prompt):
-        try:
-            with open(env_file, "a+", encoding="utf-8") as f:
-                f.write("\nSUPERGRAPH_CAVEMAN=true\n")
-        except Exception:
-            pass
-        parts.append(caveman_rules)
-    elif latest_user_prompt and re.search(r'\b(normal mode|full mode|verbose|disable caveman|caveman off|turn off caveman|disable compression)\b', latest_user_prompt):
-        try:
-            if os.path.isfile(env_file):
-                with open(env_file, "r", encoding="utf-8") as f:
-                    c = f.read()
-                c = c.replace("SUPERGRAPH_CAVEMAN=true", "SUPERGRAPH_CAVEMAN=false")
-                with open(env_file, "w", encoding="utf-8") as f:
-                    f.write(c)
-        except Exception:
-            pass
-        parts.append("🦴 caveman mode OFF — returning to normal output.")
-    else:
-        # Check if caveman is already enabled
-        if os.path.isfile(env_file):
-            try:
-                with open(env_file, "r", encoding="utf-8") as f:
-                    if "SUPERGRAPH_CAVEMAN=true" in f.read():
-                        parts.append(caveman_rules)
-            except Exception:
-                pass
+    # Caveman always-on
+    caveman_rules = "🦴 caveman mode ON (always). Rules: Strip articles/filler/subject pronouns. Keep exact: code, numbers, paths, errors, URLs. Structure: bullet lists over prose, one clause per bullet. Auto-suspend for: safety warnings, destructive ops, error explanations, questions needing full answer — then resume. No toggle needed."
+    parts.append(caveman_rules)
 
     # Keyword hints from latest user prompt
     if latest_user_prompt:

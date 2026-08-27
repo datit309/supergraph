@@ -28,70 +28,51 @@ print(json.dumps({
 '
 }
 
-# ── Caveman activation ────────────────────────────────────────────────────────
-CAVEMAN_RULES="🦴 caveman ON. Strip articles/filler. Keep exact: code, paths, numbers, errors. Use bullets, one clause each. Auto-suspend for safety/destructive ops. Disable: normal mode."
-
-if printf '%s' "$prompt" | grep -qE '\b(caveman|compress|short mode|token diet|brief mode|terse mode)\b'; then
-  sed -i.bak 's/SUPERGRAPH_CAVEMAN=.*/SUPERGRAPH_CAVEMAN=true/' .supergraph-env 2>/dev/null || printf '\nSUPERGRAPH_CAVEMAN=true\n' >> .supergraph-env 2>/dev/null || true
-  emit "$CAVEMAN_RULES"
-  exit 0
-fi
-
-# ── Caveman deactivation ──────────────────────────────────────────────────────
-if printf '%s' "$prompt" | grep -qE '\b(normal mode|full mode|verbose|disable caveman|caveman off|turn off caveman|disable compression)\b'; then
-  sed -i.bak 's/SUPERGRAPH_CAVEMAN=.*/SUPERGRAPH_CAVEMAN=false/' .supergraph-env 2>/dev/null || true
-  emit "🦴 caveman mode OFF — returning to normal output."
-  exit 0
-fi
-
-# ── Caveman persist (mode already active from prior turn) ─────────────────────
-if grep -q 'SUPERGRAPH_CAVEMAN=true' .supergraph-env 2>/dev/null; then
-  emit "$CAVEMAN_RULES"
-  exit 0
-fi
+# ── Caveman always-on ───────────────────────────────────────────────────────
+CAVEMAN_RULES="🦴 caveman ON (always). Strip articles/filler. Keep exact: code, paths, numbers, errors. Use bullets, one clause each. Auto-suspend for safety/destructive ops."
 
 # ── Triage hint ───────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(triage|triaging|backlog|needs[- ]triage|issue queue|classify.*issue|issue.*classif)\b'; then
-  emit "💡 Triage → /supergraph:triage: needs-triage→needs-info→ready-for-agent→ready-for-human→wontfix."
+  emit "$CAVEMAN_RULES 💡 Triage → /supergraph:triage: needs-triage→needs-info→ready-for-agent→ready-for-human→wontfix."
   exit 0
 fi
 
 # ── Diagnose hint (skip if verify intent) ─────────────────────────────────────
 if ! printf '%s' "$prompt" | grep -qE '\b(verify|verification|review|PR|pull request)\b' && printf '%s' "$prompt" | grep -qE '\b(bug|not working|broken|failing|crash|exception)\b'; then
-  emit "💡 Bug detected — /supergraph:diagnose: 6-phase debugging."
+  emit "$CAVEMAN_RULES 💡 Bug detected — /supergraph:diagnose: 6-phase debugging."
   exit 0
 fi
 
 # ── Frontend/UI hint ──────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(build.*(ui|page|component|dashboard|landing)|design.*(web|ui|page)|make.*look|style.*component|landing page|web ui|frontend)\b'; then
-  emit "💡 Frontend → /supergraph:frontend-design."
+  emit "$CAVEMAN_RULES 💡 Frontend → /supergraph:frontend-design."
   exit 0
 fi
 
 # ── Plan hint ─────────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(plan|plann?ing|lên kế hoạch|create plan)\b'; then
-  emit "💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps."
+  emit "$CAVEMAN_RULES 💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps."
   exit 0
 fi
 
 # ── Execute hint ──────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(implement|execute|thực thi|build feature)\b'; then
-  emit "💡 Execute → /supergraph:execute (or /supergraph:tdd for single task)."
+  emit "$CAVEMAN_RULES 💡 Execute → /supergraph:execute (or /supergraph:tdd for single task)."
   exit 0
 fi
 
 # ── Verify hint ───────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(verify|verification|kiểm tra|xác minh|check done|ready to merge)\b'; then
-  emit "💡 Verify → /supergraph:verify: fresh evidence before done."
+  emit "$CAVEMAN_RULES 💡 Verify → /supergraph:verify: fresh evidence before done."
   exit 0
 fi
 
 # ── Review hint ───────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(review|code review|merge|pull request|PR)\b'; then
-  emit "💡 Review → /supergraph:review: independent reviewer + graph check."
+  emit "$CAVEMAN_RULES 💡 Review → /supergraph:review: independent reviewer + graph check."
   exit 0
 fi
 
 # ── Language-only context (no keyword matched) ────────────────────────────────
-emit ""
+emit "$CAVEMAN_RULES"
 exit 0

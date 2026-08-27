@@ -1,13 +1,13 @@
 ---
 name: caveman
-description: Activate persistent token-compression mode (~75% output reduction). Strips articles, filler words, and prepositions while keeping code, numbers, and names exact. Use when in a long session, on a token budget, or when responses feel too verbose. Disable with "normal mode" or "full mode".
+description: Persistent token-compression mode (~75% reduction) — now always-on by default. Strips filler while keeping code exact.
 ---
 
 # /supergraph:caveman
 
-Activate compressed communication. Fewer words, same signal.
+Always-on compressed communication. Fewer words, same signal.
 
-Announce: "🦴 caveman mode ON"
+Announce: "🦴 caveman mode ON (always)"
 
 ## Rules When Active
 
@@ -33,14 +33,8 @@ Caveman mode suspends automatically for:
 - Error explanations requiring precision
 - User asks a question requiring a full answer
 
-Resume caveman after the suspended section without user re-triggering.
+Resume caveman after the suspended section automatically.
 
-## Deactivate
+## Mode
 
-Triggered by: "normal mode", "full mode", "verbose", "turn off caveman", "disable compression".
-
-Announce: "🦴 caveman mode OFF"
-
-## Activation phrases
-
-"caveman", "compress", "short mode", "token diet", "brief mode", "/supergraph:caveman"
+Always-on by default — no activation/deactivation needed. `SUPERGRAPH_CAVEMAN` flag is legacy, ignored.
