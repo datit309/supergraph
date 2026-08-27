@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.10 - 2026-08-27
+
+### Changed
+
+- **Caveman always-on** — bỏ toggle bật/tắt, mặc định luôn nén ~75%: `hooks/user-prompt-submit:32` luôn `emit CAVEMAN_RULES` (không `grep caveman|normal mode`), `hooks/session-start:191` `parts+= always`, `hooks/pre-invocation:114` `parts.append(caveman_rules)` always, `skills/caveman:6` `Always-on` + `OPENCODE.md:35` always-on; xoá `SUPERGRAPH_CAVEMAN` flag logic
+- **Cross-platform compat** — `hooks/user-prompt-submit:6` fallback `python3→python` + empty prompt vẫn emit caveman, `emit` fallback raw text nếu thiếu python, `OPENCODE.md:48` ghi rõ caveman vẫn active dù hooks không chạy trên OpenCode; `bash -n` + `7/7 tests` PASS
+- **Bump** — `bump-version.sh` synced 4 manifests `2.2.9→2.2.10` (`.claude-plugin/plugin.json`, `marketplace.json`, `plugin.json`, `.codex-plugin/plugin.json`)
+
 ## 2.2.9 - 2026-08-27
 
 ### Performance
