@@ -20,12 +20,12 @@ Figma URL: extract `fileKey` (after `/design/`) and `nodeId` (`node-id` param, r
 
 ## Step 1 — Scan project design system
 
-### 1a. Locate token files
+### 1a. Locate token files (prefer ripgrep, fallback to codebase-memory)
 
 ```bash
-find . -type f -name "*.dart" | xargs grep -l "Color\|Colors\." | grep -iE "color|theme|token|palette|constant|style" | head -20
-find . -type f -name "*.dart" | xargs grep -l "TextStyle\|fontSize" | grep -iE "text|typo|font|style|theme" | head -20
-find . -type f -name "*.dart" | xargs grep -l "EdgeInsets\|Radius\|double" | grep -iE "dimen|size|spacing|radius|constant" | head -20
+# Prefer ripgrep — 10-20x faster than find|xargs grep; single pass covers all token types
+rg --type dart --type yaml -l "Color|Colors\.|TextStyle|fontSize|FontWeight|EdgeInsets|Radius|ThemeData|colorScheme" | grep -iE "color|theme|token|palette|constant|style|text|typo|font|dimen|size|spacing|radius" | head -20
+# Fallback if rg not available: codebase-memory search_graph(project=CBM_PROJECT, query="Color TextStyle EdgeInsets") or serena get_symbols_overview
 find . \( -name "theme" -o -name "themes" \) -type d | head -10
 ```
 
