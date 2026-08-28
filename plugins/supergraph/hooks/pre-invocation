@@ -31,17 +31,18 @@ You have supergraph.
 
 Mandatory workflow:
 1. /supergraph:scan — load minimal graph context first
-2. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
-3. /supergraph:execute — execute plan, parallel by default when tasks are independent
-4. /supergraph:fix — auto-fix with systematic debugging when needed
-5. /supergraph:integration — run integration/e2e when configured
-6. /supergraph:verify — no completion claims without fresh evidence
-7. /supergraph:review — independent code-reviewer + graph review before merge
+2. /supergraph:analyze — assess ambiguity/risk, hub/bridge, select approach (required before plan for Standard/Full; skip only for Micro)
+3. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
+4. /supergraph:execute — execute plan, parallel by default when tasks are independent
+5. /supergraph:fix — auto-fix with systematic debugging when needed
+6. /supergraph:integration — run integration/e2e when configured
+7. /supergraph:verify — no completion claims without fresh evidence
+8. /supergraph:review — independent code-reviewer + graph review before merge
 
 Tiered workflow — pick the right tier first:
-- Micro (< 20 lines, ≤2 files, no hub/bridge, complexity <10): /supergraph:tdd → /supergraph:verify
-- Standard (≤5 files, clear req, no cross-boundary): /supergraph:plan → /supergraph:execute → /supergraph:fix → /supergraph:verify
-- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→plan→execute→fix→integration→verify→review
+- Micro (< 20 lines, ≤2 files, no hub/bridge, complexity <10): /supergraph:tdd → /supergraph:verify (skip analyze/plan)
+- Standard (≤5 files, clear req, no cross-boundary): scan→analyze→plan→execute→fix→verify
+- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→analyze→plan→execute→fix→integration→verify→review
 
 Hard rules:
 - Use get_minimal_context_tool() first for graph context (Full tier only).
@@ -122,10 +123,12 @@ New skills available:
             parts.append("💡 Bug detected — /supergraph:diagnose: 6-phase debugging.")
         if re.search(r'\b(build.*(ui|page|component|dashboard|landing)|design.*(web|ui|page)|make.*look|style.*component|landing page|web ui|frontend)\b', latest_user_prompt):
             parts.append("💡 Frontend → /supergraph:frontend-design.")
+        if re.search(r'\b(analyze|analysis|phân tích|risk|ambiguous|hub|bridge)\b', latest_user_prompt):
+            parts.append("💡 Analyze → /supergraph:analyze: frame problem, check graph risk, propose approaches before plan.")
         if re.search(r'\b(plan|plann?ing|lên kế hoạch|create plan)\b', latest_user_prompt):
-            parts.append("💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps.")
+            parts.append("💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps (run analyze first).")
         if re.search(r'\b(implement|execute|thực thi|build feature)\b', latest_user_prompt):
-            parts.append("💡 Execute → /supergraph:execute (or /supergraph:tdd for single task).")
+            parts.append("💡 Execute → /supergraph:execute (or /supergraph:tdd for single task) — ensure analyze→plan done.")
         if re.search(r'\b(verify|verification|kiểm tra|xác minh|check done|ready to merge)\b', latest_user_prompt):
             parts.append("💡 Verify → /supergraph:verify: fresh evidence before done.")
         if re.search(r'\b(review|code review|merge|pull request|PR)\b', latest_user_prompt):

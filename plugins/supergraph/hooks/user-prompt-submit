@@ -69,15 +69,21 @@ if printf '%s' "$prompt" | grep -qE '\b(build.*(ui|page|component|dashboard|land
   exit 0
 fi
 
+# ── Analyze hint ──────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(analyze|analysis|phân tích|risk|ambiguous|hub|bridge)\b'; then
+  emit "$CAVEMAN_RULES 💡 Analyze → /supergraph:analyze: frame problem, check graph risk, propose approaches before plan."
+  exit 0
+fi
+
 # ── Plan hint ─────────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(plan|plann?ing|lên kế hoạch|create plan)\b'; then
-  emit "$CAVEMAN_RULES 💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps."
+  emit "$CAVEMAN_RULES 💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps (run analyze first)."
   exit 0
 fi
 
 # ── Execute hint ──────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(implement|execute|thực thi|build feature)\b'; then
-  emit "$CAVEMAN_RULES 💡 Execute → /supergraph:execute (or /supergraph:tdd for single task)."
+  emit "$CAVEMAN_RULES 💡 Execute → /supergraph:execute (or /supergraph:tdd for single task) — ensure analyze→plan done."
   exit 0
 fi
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.11 - 2026-08-28
+
+### Changed
+
+- **Workflow: analyze → plan (all platforms)** — `AGENTS.md:49-77` tiered `Standard: analyze→plan`, `Full: scan→analyze→plan→...`, `OPENCODE.md:5-7` mandatory `2. analyze` required before `plan` (skip Micro), `hooks/session-start:128-145` + `hooks/pre-invocation:28-44` inject `2. analyze` + tiered `scan→analyze→plan`, `hooks/user-prompt-submit:72-82` + `hooks/pre-invocation:118-133` thêm hint `analyze`, `plugins/supergraph/.opencode-plugin/plugin.ts:68-131` system transform + keywordHint thêm `analyze` trước `plan`, `opencode debug info` plugins OK
+- **OpenCode hooks compat** — tạo `plugins/supergraph/.opencode-plugin/plugin.ts:1-284` (`SupergraphPlugin: Plugin` với `experimental.chat.system.transform` + `tool.execute.before` bash-guard/plan-guard + `chat.message` hint + `event` session.idle + `experimental.session.compacting`), `install.sh:4-91,109-174` cài `~/.config/opencode/plugins/supergraph.ts` + skills flat + merge `opencode.json` mcp `codebase-memory-mcp` + `serena`, `OPENCODE.md:47-49` ghi hooks active via plugin, `opencode mcp list` 2 servers, `bun --check` PASS; `install.sh --platform all` sync claude/antigravity/codex lên 2.2.11
+- **Bump** — `bump-version.sh` synced 4 manifests `2.2.10→2.2.11` (`.claude-plugin/plugin.json`, `marketplace.json`, `plugin.json`, `.codex-plugin/plugin.json`)
+
 ## 2.2.10 - 2026-08-27
 
 ### Changed

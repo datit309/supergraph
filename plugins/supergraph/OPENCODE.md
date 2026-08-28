@@ -5,8 +5,8 @@ Supergraph skills are installed as OpenCode skills. Use `/skills` and pick the s
 ## Mandatory workflow
 
 1. Start every session with the `scan` skill.
-2. For ambiguous work, use `analyze` before planning.
-3. Before non-trivial code changes, use `plan`.
+2. Run `analyze` to assess ambiguity/risk and select approach — required before `plan` (skip only for Micro: <20 lines, ≤2 files).
+3. Create plan with `plan` (graph-informed, plan-reviewer approval required).
 4. Implement through `tdd` or execute a saved plan with `execute`.
 5. After coding, use `fix`.
 6. Before claiming done, use `verify`.
@@ -44,6 +44,6 @@ Supergraph skills are installed as OpenCode skills. Use `/skills` and pick the s
 - Use Serena MCP tools when available for diagnostics and symbol impact.
 - Caveman always-on: strip articles/filler, keep code/numbers/paths exact, bullets over prose, auto-suspend for safety warnings only.
 
-## OpenCode limitations
+## OpenCode integration
 
-OpenCode skills are invoked through `/skills`, not `/supergraph:*` slash commands. Bash hooks from Claude Code are not active on OpenCode; trigger workflow skills manually. Caveman compression is still always-on via this instruction file — no hook needed.
+OpenCode skills are invoked through `/skills`, not `/supergraph:*` slash commands. Hooks are active via `plugins/supergraph.ts` (installed to `~/.config/opencode/plugins/` and `.opencode/plugins/`): bash-guard (destructive block), plan guard (warn if no plan), system injection (mandatory workflow + CONTEXT.md + handoff + caveman), prompt hints, and session progress. Restart OpenCode after `install.sh --platform opencode` to load the plugin.

@@ -132,17 +132,18 @@ You have supergraph.
 
 Mandatory workflow:
 1. /supergraph:scan — load minimal graph context first
-2. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
-3. /supergraph:execute — execute plan, parallel by default when tasks are independent
-4. /supergraph:fix — auto-fix with systematic debugging when needed
-5. /supergraph:integration — run integration/e2e when configured
-6. /supergraph:verify — no completion claims without fresh evidence
-7. /supergraph:review — independent code-reviewer + graph review before merge
+2. /supergraph:analyze — assess ambiguity/risk, hub/bridge, select approach (required before plan for Standard/Full; skip only for Micro)
+3. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
+4. /supergraph:execute — execute plan, parallel by default when tasks are independent
+5. /supergraph:fix — auto-fix with systematic debugging when needed
+6. /supergraph:integration — run integration/e2e when configured
+7. /supergraph:verify — no completion claims without fresh evidence
+8. /supergraph:review — independent code-reviewer + graph review before merge
 
 Tiered workflow — pick the right tier first:
-- Micro (< 20 lines, ≤2 files, no hub/bridge, complexity <10): /supergraph:tdd → /supergraph:verify
-- Standard (≤5 files, clear req, no cross-boundary): /supergraph:plan → /supergraph:execute → /supergraph:fix → /supergraph:verify
-- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→plan→execute→fix→integration→verify→review
+- Micro (< 20 lines, ≤2 files, no hub/bridge, complexity <10): /supergraph:tdd → /supergraph:verify (skip analyze/plan)
+- Standard (≤5 files, clear req, no cross-boundary): scan→analyze→plan→execute→fix→verify
+- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→analyze→plan→execute→fix→integration→verify→review
 
 Hard rules:
 - Use get_minimal_context_tool() first for graph context (Full tier only).

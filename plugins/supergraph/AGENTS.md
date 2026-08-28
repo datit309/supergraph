@@ -50,8 +50,8 @@ Use the correct test/lint commands for the detected language.
 
 | Tier | Condition | Path |
 |---|---|---|
-| **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` |
-| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
+| **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` (skip analyze/plan) |
+| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
 | **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below |
 
 **When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
@@ -65,18 +65,23 @@ Use the correct test/lint commands for the detected language.
 Read `/supergraph:scan` and execute it.
 NEVER start full-pipeline work without graph context.
 
-### Step 1: Plan
+### Step 1: Analyze
+
+Read `/supergraph:analyze` and execute it.
+Frame problem, check graph risk (hub/bridge/cross-boundary), propose approaches, get approval.
+
+### Step 2: Plan
 
 Read `/supergraph:plan` and execute it.
 blast_radius → identify affected files. Tasks 2-5 min each. User approval.
 Save plan to `docs/supergraph/plans/` for resume capability.
 
-### Step 2: Execute TDD
+### Step 3: Execute TDD
 
 Read `/supergraph:tdd` and execute it.
 Each task: RED → GREEN → REFACTOR. No exceptions.
 
-### Step 3: Auto-Fix Loop
+### Step 4: Auto-Fix Loop
 
 After ALL coding, read `/supergraph:fix` and execute it.
 
@@ -88,17 +93,17 @@ After ALL coding, read `/supergraph:fix` and execute it.
         break
     if iteration >= 3: STOP, ask user
 
-### Step 4: Integration (optional)
+### Step 5: Integration (optional)
 
 Read `/supergraph:integration` and execute it.
 Run integration/e2e tests if configured.
 
-### Step 5: Verify
+### Step 6: Verify
 
 Read `/supergraph:verify` and execute it.
 NO completion claims without fresh verification evidence.
 
-### Step 6: Final Review
+### Step 7: Final Review
 
 Read `/supergraph:review` and execute it.
 All checks pass before merge.
