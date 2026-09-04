@@ -75,6 +75,8 @@ function keywordHint(prompt: string): string | null {
     return "💡 Frontend → /supergraph:frontend-design."
   if (/\b(analyze|analysis|phân tích|risk|ambiguous|hub|bridge)\b/.test(p))
     return "💡 Analyze → /supergraph:analyze: frame problem, check graph risk, propose approaches before plan."
+  if (/\b(sdd|design doc|software design|system design|data contract|api spec|interface contract|đặc tả thiết kế)\b/.test(p))
+    return "💡 SDD → /skills → sdd: component architecture, data contracts, and platform matrix before plan."
   if (/\b(plan|plann?ing|lên kế hoạch|create plan)\b/.test(p))
     return "💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps (run analyze first)."
   if (/\b(implement|execute|thực thi|build feature)\b/.test(p))
@@ -121,17 +123,18 @@ You have supergraph.
 Mandatory workflow:
 1. scan — load minimal graph context first (use /skills → scan)
 2. analyze — assess ambiguity/risk, hub/bridge, select approach (required before plan for Standard/Full; skip only for Micro)
-3. plan — create machine-readable plan and get plan-reviewer approval
-4. execute — execute plan, parallel by default when tasks are independent
-5. fix — auto-fix with systematic debugging when needed
-6. integration — run integration/e2e when configured
-7. verify — no completion claims without fresh evidence
-8. review — independent code-reviewer + graph review before merge
+3. sdd — software design document, data contracts, API specs & platform matrix (Full tier)
+4. plan — create machine-readable plan and get plan-reviewer approval
+5. execute — execute plan, parallel by default when tasks are independent
+6. fix — auto-fix with systematic debugging when needed
+7. integration — run integration/e2e when configured
+8. verify — no completion claims without fresh evidence
+9. review — independent code-reviewer + graph review before merge
 
 Tiered workflow — pick the right tier first:
 - Micro (< 20 lines, ≤2 files, no hub/bridge, complexity <10): tdd → verify (skip analyze/plan)
 - Standard (≤5 files, clear req, no cross-boundary): scan → analyze → plan → execute → fix → verify
-- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→analyze→plan→execute→fix→integration→verify→review
+- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→analyze→sdd→plan→execute→fix→integration→verify→review
 
 Hard rules:
 - No production code without verified RED test first.

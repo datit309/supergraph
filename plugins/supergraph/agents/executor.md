@@ -123,14 +123,16 @@ Stuck: [list or "none"]
 Next: /supergraph:fix → /supergraph:review
 ```
 
-## Parallel Dispatch
+## Parallel Dispatch (Wave-based)
 
-When called from `/supergraph:execute` with parallel groups:
+When called from `/supergraph:execute` within a Wave:
 
-1. Only execute assigned task group
-2. Commit with group prefix: `feat(group-N): [description]`
-3. Report status back to orchestrator
-4. Orchestrator handles merge + final verification
+1. Only execute the single assigned task or task group
+2. When running in an isolated workspace (`Workspace: branch` or git worktree):
+   - All TDD commits remain local to the isolated branch
+   - Commit message follows Checkpoint section
+3. Avoid race conditions editing the shared plan file directly in parallel mode — report `ACCEPTANCE_PASSED: Task N` with files modified back to orchestrator
+4. Orchestrator handles worktree merge, plan status updates, and Wave verification
 
 ## Anti-Loop Guard
 

@@ -48,21 +48,44 @@ Check dependencies: Task X depends on Task Y → is Y `Status: completed`? If no
 If main/master → STOP, suggest new branch or worktree.
 User approves → continue.
 
-### 5. Determine Execution Mode
+### 5. Determine Execution Mode & Group by Waves
 
-| Condition | Mode |
-|---|---|
-| No file overlap + no dependencies | Parallel (one agent per task) |
-| Any dependency/overlap | Sequential |
-| Uncertain | Ask user |
+Parse tasks from plan:
+- **Wave-based DAG:** Group incomplete tasks by `Wave: N` (e.g. Wave 1, Wave 2, Wave 3).
+- **Auto-Wave fallback:** If plan lacks `Wave:` fields, group tasks dynamically by dependencies:
+  - Wave 1: Tasks with `Dependencies: none`.
+  - Wave N: Tasks whose dependencies are all satisfied by Wave < N.
+- **Wave Strategy:**
+  - Wave with 1 task → Sequential dispatch.
+  - Wave with >1 tasks → **Parallel dispatch** of concurrent subagents.
 
-### 6. Dispatch Executor(s)
+### 6. Wave-by-Wave Dispatch
+
+Execute wave by wave in strict DAG order:
+
+```text
+Wave 1 (Base/Schema) ──> Wave 2 (Independent Features: PARALLEL) ──> Wave 3 (Integration/UI)
+```
 
 Shared executor instructions (see `serena/SKILL.md:Setup`): per task RED→GREEN→REFACTOR→Lint→Format, `get_diagnostics_for_file` after GREEN, prefer `replace_symbol_body`/`rename_symbol` over raw edits. Commit once per task. Max 3 retries.
 
-**Sequential:** `Agent(subagent_type="supergraph:executor")` — run baseline tests first, execute tasks IN ORDER respecting dependencies, report tasks done/stuck + files changed + risks.
-
-**Parallel:** one `Agent(subagent_type="supergraph:executor")` per task — orchestrator sends `Environment Context` + shared rules once; each Agent receives only `## Task N` snippet. Do NOT edit outside Task N scope. Spawn all in one message.
+For each Wave:
+1. **Prepare Wave Scope:** Identify tasks belonging to current Wave.
+2. **Sequential (1 task):** Dispatch `Agent(subagent_type="supergraph:executor")` — run baseline tests first, execute task respecting dependencies, report task done/stuck + files changed.
+3. **Parallel (>1 tasks):**
+   - **Antigravity / Subagent Runners:** Call `invoke_subagent` with concurrent executors in a single call:
+     - `Workspace: "branch"` (isolated git worktree/branch — guarantees zero file conflicts & avoids git index lock collisions).
+     - `Model: task.Model || "inherit"` (use `flash` for low-risk boilerplate/tests, `pro` for complex logic).
+     - Each subagent receives only its self-contained `## Task N` snippet + `## Environment Context`.
+   - **Claude Code / CLI:** Spawn one subagent per task in one message with self-contained task scope.
+   - Subagents execute TDD, report `ACCEPTANCE_PASSED: Task N`.
+   - Orchestrator waits for all subagents in current Wave to report completion.
+4. **Wave Synchronization & Merge:**
+   - Merge worktree/branch changes back to target branch.
+   - Run Wave Verification `$TEST_CMD`.
+   - Orchestrator updates task statuses to `completed` in plan file.
+   - If tests pass → proceed to Wave N+1.
+   - If any task fails/stuck (after max 3 retries) → trigger `/supergraph:fix` or STOP and consult user.
 
 ### 7. Post-Execution Safety
 If same-file edits for `CBM_PROJECT`: reindex if stale (`index_status`→`index_repository`, see `references/codebase-memory-contract.md`), then `detect_changes`/`trace_path`/`cross-boundary` via `codebase-memory-mcp`.

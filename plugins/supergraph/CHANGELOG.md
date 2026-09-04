@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.13 - 2026-09-04
+
+### Added
+
+- **Skill `/supergraph:sdd` (Software Design Document)** — tạo `plugins/supergraph/skills/sdd/SKILL.md` cung cấp template thiết kế hệ thống chuẩn: Component & Flow Architecture (Mermaid), Interface & Data Contracts (JSON Schemas, types), Platform Compatibility Matrix (Claude/Antigravity/OpenCode/Codex), Failure Modes & Fallback Matrix, và ADRs; tích hợp vào Step 2 của Tier 3 (Full Pipeline: `scan → analyze → sdd → plan → ...`) trong `AGENTS.md`, `CLAUDE.md`, `OPENCODE.md`; bổ sung keyword hints trong `user-prompt-submit`, `pre-invocation`, `session-start`, và `plugin.ts`
+- **Wave-based DAG Parallelism & Subagent Optimization** — `skills/plan/SKILL.md` bổ sung trường `Wave: 1 | 2 | 3` (DAG scheduling) và gợi ý phân cấp `Model: flash | inherit | pro` (tối ưu chi phí/tốc độ); `skills/execute/SKILL.md` nâng cấp engine thành Wave-by-Wave Dispatch thực thi song song các subagents trong cùng một Wave với `Workspace: "branch"` (isolated git worktrees) triệt tiêu xung đột ghi đè file và tránh lock git index; `agents/executor.md` và `agents/plan-reviewer.md` chống race condition ghi file plan và kiểm tra tính hợp lệ của Wave dependency
+
+### Changed
+
+- **Bump** — `bump-version.sh` synced 4 manifests `2.2.12→2.2.13` (`.claude-plugin/plugin.json`, `marketplace.json`, `plugin.json`, `.codex-plugin/plugin.json`)
+
 ## 2.2.12 - 2026-09-04
 
 ### Changed

@@ -60,6 +60,8 @@ Check:
 - Dependencies are explicit
 - Task order is executable
 - Parallelizable tasks are actually independent
+- Wave assignments match dependency graph (tasks in Wave N only depend on Wave < N)
+- Tasks in the same Wave are parallel-safe (isolated files or branch workspaces)
 
 ### 4. Buildability
 

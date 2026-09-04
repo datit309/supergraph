@@ -14,6 +14,7 @@ Agent MUST read and follow the relevant skill before each phase.
 | --- | --- |
 | `/supergraph:scan` | Start of every session |
 | `/supergraph:analyze` | Ambiguous scope, touching hub/bridge |
+| `/supergraph:sdd` | System/Software design, data contracts, API schemas, multi-platform matrix |
 | `/supergraph:plan` | Before writing any code |
 | `/supergraph:tdd` | When implementing any feature or fix |
 | `/supergraph:execute` | When executing saved plans |
@@ -50,9 +51,9 @@ Use the correct test/lint commands for the detected language.
 
 | Tier | Condition | Path |
 |---|---|---|
-| **Micro** | < 10 lines, 1 file, no hub/bridge nodes | `/supergraph:tdd` directly → `/supergraph:verify` |
-| **Standard** | 1-3 files, clear requirement | `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
-| **Full** | Multi-file, ambiguous, hub/bridge nodes, or blast radius > 5 | Full pipeline below |
+| **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` (skip analyze/plan) |
+| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
+| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → sdd → plan → ...`) |
 
 **When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
 
@@ -65,18 +66,28 @@ Use the correct test/lint commands for the detected language.
 Read `/supergraph:scan` and execute it.
 NEVER start full-pipeline work without graph context.
 
-### Step 1: Plan
+### Step 1: Analyze
+
+Read `/supergraph:analyze` and execute it.
+Frame problem, check graph risk (hub/bridge/cross-boundary), propose approaches, get approval.
+
+### Step 2: SDD (Software Design Document)
+
+Read `/supergraph:sdd` and execute it.
+Define architecture diagrams, data/interface contracts, platform matrix, failure modes, ADRs. Get approval before planning.
+
+### Step 3: Plan
 
 Read `/supergraph:plan` and execute it.
 blast_radius → identify affected files. Tasks 2-5 min each. User approval.
 Save plan to `docs/supergraph/plans/` for resume capability.
 
-### Step 2: Execute TDD
+### Step 4: Execute TDD
 
 Read `/supergraph:tdd` and execute it.
 Each task: RED → GREEN → REFACTOR. No exceptions.
 
-### Step 3: Auto-Fix Loop
+### Step 5: Auto-Fix Loop
 
 After ALL coding, read `/supergraph:fix` and execute it.
 

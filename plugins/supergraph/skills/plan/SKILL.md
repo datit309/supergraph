@@ -38,9 +38,11 @@ Use domain vocabulary from CONTEXT.md in all plan task descriptions — never us
 
 ```markdown
 ## Task N: [Short description]
+Wave: 1
 Status: pending
 Risk: low|medium|high
 Dependencies: none | Task 1, Task 2
+Model: flash|inherit|pro
 
 Files:
 - Create: path/to/new-file.ext
@@ -55,35 +57,45 @@ Acceptance:
 - [test/assertion that proves completion]
 
 TDD:
-- Behavior: [single externally visible behavior]
-- Test file: [exact test path]
-- Test name: [behavior-focused test name]
-- 🔴 RED command: `$FOCUSED_TEST_CMD`
-- Expected 🔴 RED failure: [missing behavior, not setup/import/syntax error]
-- Minimal 🟢 GREEN change: [smallest implementation idea]
-- Refactor candidates: [optional, only after 🟢 GREEN]
-- Mocking: none | [why unavoidable]
+- Behavior: single externally visible behavior
+- Test file: exact test path
+- Test name: behavior-focused test name
+- 🔴 RED command: $FOCUSED_TEST_CMD
+- Expected 🔴 RED failure: missing behavior, not setup/import/syntax error
+- Minimal 🟢 GREEN change: smallest implementation idea
+- Refactor candidates: optional, only after 🟢 GREEN
+- Mocking: none | why unavoidable
 
 Steps:
-1. 🔴 RED: [write exact failing test]
-   Command: `$TEST_CMD`
+1. 🔴 RED: write exact failing test
+   Command: $TEST_CMD
    Expected: FAIL
-2. 🟢 GREEN: [write minimal implementation]
-   Command: `$TEST_CMD`
+2. 🟢 GREEN: write minimal implementation
+   Command: $TEST_CMD
    Expected: PASS
-3. REFACTOR: [safe cleanup or "none"]
+3. REFACTOR: safe cleanup or none
 4. VERIFY:
-   - `$TEST_CMD`
-   - `$LINT_CMD` (skip if none)
+   - $TEST_CMD
+   - $LINT_CMD (skip if none)
 
 Checkpoint:
-- Files: `path/to/test-file.ext path/to/source-file.ext`
-- Commit: `type: short description`
+- Files: path/to/test-file.ext path/to/source-file.ext
+- Commit: type: short description
 ```
 
 Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by executor)
 
-**6. Validate:** All tasks have `## Task N:` + 8 fields (Status,Risk,Dependencies,Files,Acceptance,TDD,Steps,Checkpoint), no TBD/TODO, real commands from .supergraph-env, no indentation under fields, no extra blank lines.
+### Wave Assignment Rules (DAG Parallelism):
+- **Wave 1:** Foundational setup, data schemas, interface contracts, base types (`Dependencies: none`).
+- **Wave 2:** Independent business features, service implementations, API endpoints (depend only on Wave 1). Executed **in parallel** by concurrent subagents.
+- **Wave 3:** UI components, glue code, feature integration (depend on Wave 2).
+- **Wave 4:** E2E / integration tests, migration scripts, documentation, cleanup.
+- **Model Tiering Hint:**
+  - `Model: flash` for low-risk boilerplate, test fixtures, types, docs (3x faster, 5x cheaper).
+  - `Model: inherit` for standard feature logic and tests.
+  - `Model: pro` for high-risk core algorithms, architecture refactoring, complex multi-file coupling.
+
+**6. Validate:** All tasks have `## Task N:` + fields (Wave,Status,Risk,Dependencies,Files,Acceptance,TDD,Steps,Checkpoint), no TBD/TODO, real commands from .supergraph-env, no indentation under fields, no extra blank lines.
 
 **7. Save plan:** `docs/supergraph/plans/YYYY-MM-DD-<slug>.md`
 

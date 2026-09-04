@@ -5,12 +5,13 @@ Supergraph skills are installed as OpenCode skills. Use `/skills` and pick the s
 ## Mandatory workflow
 
 1. Start every session with the `scan` skill.
-2. For ambiguous work, use `analyze` before planning.
-3. Before non-trivial code changes, use `plan`.
-4. Implement through `tdd` or execute a saved plan with `execute`.
-5. After coding, use `fix`.
-6. Before claiming done, use `verify`.
-7. Before merge, use `review`.
+2. Run `analyze` to assess ambiguity/risk and select approach — required before `plan` (skip only for Micro: <20 lines, ≤2 files).
+3. For architectural, data model, or API contract changes, draft `sdd` before planning.
+4. Create plan with `plan` (graph-informed, plan-reviewer approval required).
+5. Implement through `tdd` or execute a saved plan with `execute`.
+6. After coding, use `fix`.
+7. Before claiming done, use `verify`.
+8. Before merge, use `review`.
 
 ## Skill routing
 
@@ -18,6 +19,7 @@ Supergraph skills are installed as OpenCode skills. Use `/skills` and pick the s
 |---|---|
 | Start session / load graph | `scan` |
 | Ambiguous scope / risk analysis | `analyze` |
+| Software design & contracts | `sdd` |
 | Create implementation plan | `plan` |
 | Implement one task with RED → GREEN → REFACTOR | `tdd` |
 | Execute saved plan | `execute` |

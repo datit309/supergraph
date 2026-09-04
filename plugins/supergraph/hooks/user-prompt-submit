@@ -75,6 +75,12 @@ if printf '%s' "$prompt" | grep -qE '\b(analyze|analysis|phân tích|risk|ambigu
   exit 0
 fi
 
+# ── SDD hint ──────────────────────────────────────────────────────────────────
+if printf '%s' "$prompt" | grep -qE '\b(sdd|design doc|software design|system design|data contract|api spec|interface contract|đặc tả thiết kế)\b'; then
+  emit "$CAVEMAN_RULES 💡 SDD → /supergraph:sdd: component architecture, data contracts, and platform matrix before plan."
+  exit 0
+fi
+
 # ── Plan hint ─────────────────────────────────────────────────────────────────
 if printf '%s' "$prompt" | grep -qE '\b(plan|plann?ing|lên kế hoạch|create plan)\b'; then
   emit "$CAVEMAN_RULES 💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps (run analyze first)."

@@ -32,17 +32,18 @@ You have supergraph.
 Mandatory workflow:
 1. /supergraph:scan — load minimal graph context first
 2. /supergraph:analyze — assess ambiguity/risk, hub/bridge, select approach (required before plan for Standard/Full; skip only for Micro)
-3. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
-4. /supergraph:execute — execute plan, parallel by default when tasks are independent
-5. /supergraph:fix — auto-fix with systematic debugging when needed
-6. /supergraph:integration — run integration/e2e when configured
-7. /supergraph:verify — no completion claims without fresh evidence
-8. /supergraph:review — independent code-reviewer + graph review before merge
+3. /supergraph:sdd — software design document, data contracts, API specs & platform matrix (Full tier)
+4. /supergraph:plan — create machine-readable plan and get plan-reviewer approval
+5. /supergraph:execute — execute plan, parallel by default when tasks are independent
+6. /supergraph:fix — auto-fix with systematic debugging when needed
+7. /supergraph:integration — run integration/e2e when configured
+8. /supergraph:verify — no completion claims without fresh evidence
+9. /supergraph:review — independent code-reviewer + graph review before merge
 
 Tiered workflow — pick the right tier first:
 - Micro (< 20 lines, ≤2 files, no hub/bridge, complexity <10): /supergraph:tdd → /supergraph:verify (skip analyze/plan)
 - Standard (≤5 files, clear req, no cross-boundary): scan→analyze→plan→execute→fix→verify
-- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→analyze→plan→execute→fix→integration→verify→review
+- Full (>5 files, ambiguous, hub/bridge, cross-boundary): scan→analyze→sdd→plan→execute→fix→integration→verify→review
 
 Hard rules:
 - Use get_minimal_context_tool() first for graph context (Full tier only).
@@ -53,6 +54,7 @@ Hard rules:
 - ALWAYS reply in the same language the user wrote in. Skill announce strings are templates — translate before output.
 
 New skills available:
+- /supergraph:sdd — software design document, data contracts, API schemas & platform matrix
 - /supergraph:diagnose — structured 6-phase debugging (use when bug cause is unknown)
 - /supergraph:handoff — compact session state before context runs out
 - /supergraph:zoom-out — get a domain-vocabulary module map fast
@@ -125,6 +127,8 @@ New skills available:
             parts.append("💡 Frontend → /supergraph:frontend-design.")
         if re.search(r'\b(analyze|analysis|phân tích|risk|ambiguous|hub|bridge)\b', latest_user_prompt):
             parts.append("💡 Analyze → /supergraph:analyze: frame problem, check graph risk, propose approaches before plan.")
+        if re.search(r'\b(sdd|design doc|software design|system design|data contract|api spec|interface contract|đặc tả thiết kế)\b', latest_user_prompt):
+            parts.append("💡 SDD → /supergraph:sdd: component architecture, data contracts, and platform matrix before plan.")
         if re.search(r'\b(plan|plann?ing|lên kế hoạch|create plan)\b', latest_user_prompt):
             parts.append("💡 Plan → /supergraph:plan: graph-informed tasks with TDD steps (run analyze first).")
         if re.search(r'\b(implement|execute|thực thi|build feature)\b', latest_user_prompt):
