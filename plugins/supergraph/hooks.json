@@ -8,7 +8,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "write_to_file|replace_file_content",
+        "matcher": "write_to_file|replace_file_content|write_file|edit_file|update_file|apply_patch",
         "hooks": [
           {
             "type": "command",
@@ -28,7 +28,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "write_to_file|replace_file_content",
+        "matcher": "write_to_file|replace_file_content|write_file|edit_file|update_file|apply_patch",
         "hooks": [
           {
             "type": "command",

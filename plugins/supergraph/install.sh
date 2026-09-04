@@ -9,7 +9,7 @@ usage() {
     '' \
     'Platforms:' \
     '  claude       -> ~/.claude/plugins/supergraph' \
-    '  antigravity  -> ~/.gemini/antigravity-cli/plugins/supergraph' \
+    '  antigravity  -> ~/.gemini/antigravity-cli/plugins/supergraph + ~/.gemini/config/plugins/supergraph' \
     '  codex        -> ./.codex-plugin' \
     '  opencode     -> ~/.config/opencode/skills/<skill>/ + ~/.config/opencode/plugins/supergraph.ts (skills + hooks, flat symlinks + opencode.json)' \
     '  all          -> install for all 4 platforms at once'
@@ -76,13 +76,17 @@ install_one() {
   _platform="$1"
   case "$_platform" in
     claude) _target="$HOME/.claude/plugins/supergraph" ;;
-    antigravity) _target="$HOME/.gemini/antigravity-cli/plugins/supergraph" ;;
+    antigravity) _target="$HOME/.gemini/antigravity-cli/plugins/supergraph"
+                 _target2="$HOME/.gemini/config/plugins/supergraph" ;;
     codex) _target="$PWD/.codex-plugin" ;;
     opencode) _target="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills" ;;
   esac
   printf 'Platform: %s\n' "$_platform"
   printf 'Source: %s\n' "$source_dir"
   printf 'Target: %s\n' "$_target"
+  if [ "$_platform" = "antigravity" ]; then
+    printf 'Target2: %s\n' "$_target2"
+  fi
   if [ "$dry_run" -eq 1 ]; then
     printf 'Dry run: no changes made\n'
     if [ "$_platform" = "opencode" ]; then
@@ -94,9 +98,17 @@ install_one() {
     return 0
   fi
   case "$_platform" in
-    claude|antigravity)
+    claude)
       mkdir -p "$(dirname "$_target")"
       link_path "$source_dir" "$_target"
+      ;;
+    antigravity)
+      mkdir -p "$(dirname "$_target")"
+      link_path "$source_dir" "$_target"
+      # Modern Antigravity also discovers plugins via ~/.gemini/config/plugins
+      mkdir -p "$(dirname "$_target2")"
+      link_path "$source_dir" "$_target2"
+      printf 'Also linked: %s\n' "$_target2"
       ;;
     codex)
       mkdir -p "$_target"

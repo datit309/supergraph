@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.12 - 2026-09-04
+
+### Changed
+
+- **Antigravity hooks compat & enhancements** — `plugins/supergraph/hooks.json` mở rộng matcher cho `PreToolUse` và `PostToolUse` bao gồm `write_file|edit_file|update_file|apply_patch` cùng với `write_to_file|replace_file_content`, `plugins/supergraph/hooks/pre-tool-use` bổ sung resolve workspace từ `workspacePaths` và kiểm tra trạng thái plan cho Antigravity (`is_antigravity`), `plugins/supergraph/install.sh` thêm symlink vào `~/.gemini/config/plugins/supergraph` để hỗ trợ cơ chế discovery của Antigravity
+- **Bump** — `bump-version.sh` synced 4 manifests `2.2.11→2.2.12` (`.claude-plugin/plugin.json`, `marketplace.json`, `plugin.json`, `.codex-plugin/plugin.json`)
+
 ## 2.2.11 - 2026-08-28
 
 ### Changed
