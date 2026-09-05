@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.14 - 2026-09-05
+
+### Changed
+
+- **Permissions — safe auto-allow + API-port-scoped kill** — `plugins/supergraph/settings.json` allow `Read/Edit/Write/Glob/Grep/TodoWrite/AskUserQuestion/Skill/WebFetch/WebSearch` + safe bash `ls/cat/pwd/echo/head/tail/wc/find/mkdir/touch` + `git diff/status/log/branch/checkout/add/commit`; thêm full test/lint stack `bash -n/sh` `npm/yarn/pnpm/bun test|dev|start` `make` `npx jest|vitest|tsc|eslint|prettier|playwright` `flutter/dart` `vendor/bin/phpunit|pest` `cargo/go/pytest/ruff` + `playwright` `python -m playwright|pip install|scripts/with_server.py` + `node/nodemon/ts-node/pm2` + Node API `npm run dev|api|server`; kill port **chỉ whitelist API** `3000/3001/4000/5000/8000/8080/5173` via `lsof -i :PORT` `kill -9 $(lsof -ti:PORT)` `fuser -k PORT` `npx kill-port PORT` (bỏ generic `lsof *|kill *`); `plugins/supergraph/.opencode-plugin/opencode.json` sync `permission` tương ứng `read/edit/glob/grep/list/todowrite/question/skill/webfetch/websearch: allow` + `bash` allow `ls/cat/pwd/echo/.../git` `bash -n` `bash plugins/supergraph/tests/*` `npm/npx/pnpm/yarn/bun/make/composer/php/dart/flutter/fvm/go/cargo/pytest/ruff/playwright/python` + deny `rm -rf /*|~` `mkfs` `dd if=` `git push --force|reset --hard`; global `~/.config/opencode/opencode.json` merged
+- **Bump** — `bump-version.sh` synced 4 manifests `2.2.13→2.2.14` (`.claude-plugin/plugin.json`, `marketplace.json`, `plugin.json`, `.codex-plugin/plugin.json`)
+
 ## 2.2.13 - 2026-09-04
 
 ### Added
