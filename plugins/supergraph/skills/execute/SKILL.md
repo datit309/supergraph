@@ -87,6 +87,16 @@ For each Wave:
    - If tests pass → proceed to Wave N+1.
    - If any task fails/stuck (after max 3 retries) → trigger `/supergraph:fix` or STOP and consult user.
 
+### 6.5 Durable Task Artifacts and Dispatch Safety
+
+Before dispatch, create the plan workspace with `sdd-workspace PLAN_FILE`, then run a **Pre-dispatch conflict scan** over task file sets and dependencies. Record the scan and any non-catastrophic ruling in `.supergraph/sdd/<plan-basename>/ledger.md`.
+
+- batch only tasks with disjoint write sets and the same execution shape.
+- Send each worker `task-N-brief.md`; require `task-N-report.md` with exact RED/GREEN/REFACTOR and verification evidence.
+- Implementers and reviewers **must not spawn subagents**. The controller owns dispatch depth and parallelism.
+- On a conflict that is not catastrophic, the controller records the ruling, affected files, and why execution can continue. Catastrophic conflicts stop the wave.
+- Generate `review-<base>..<head>.diff` with `review-package` before scoped review.
+
 ### 7. Post-Execution Safety
 If same-file edits for `CBM_PROJECT`: reindex if stale (`index_status`→`index_repository`, see `references/codebase-memory-contract.md`), then `detect_changes`/`trace_path`/`cross-boundary` via `codebase-memory-mcp`.
 

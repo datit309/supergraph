@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+  printf 'ERROR: %s\n' "$*" >&2
+  exit 1
+}
+
+case "$#" in
+  2|3) ;;
+  *) fail 'usage: task-brief PLAN_FILE TASK_NUMBER [OUTFILE]' ;;
+esac
+plan_file=$1
+task_number=$2
+[ -f "$plan_file" ] || fail "plan file not found: $plan_file"
+case "$task_number" in
+  ''|*[!0-9]*) fail "invalid task number: $task_number" ;;
+esac
+[ "$task_number" -gt 0 ] || fail "invalid task number: $task_number"
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+workspace=$("$script_dir/sdd-workspace" "$plan_file")
+if [ "$#" -eq 3 ]; then
+  output_name=$3
+  case "$output_name" in
+    ''|.|..|/*|../*|*/../*|*/..|*/*) fail 'OUTFILE must be a filename inside the plan workspace' ;;
+  esac
+  output="$workspace/$output_name"
+else
+  output="$workspace/task-$task_number-brief.md"
+fi
+if [ -L "$output" ] || { [ -e "$output" ] && [ ! -f "$output" ]; }; then
+  fail "refusing non-regular output: $output"
+fi
+temporary=$(mktemp "$workspace/.task-brief.XXXXXX")
+cleanup() { rm -f "$temporary"; }
+trap cleanup EXIT
+
+if ! awk -v requested="$task_number" '
+  BEGIN { found = 0; fence = "" }
+  {
+    line = $0
+    if (line ~ /^[[:space:]]*(```|~~~)/) {
+      marker = line
+      sub(/^[[:space:]]*/, "", marker)
+      delimiter = substr(marker, 1, 3)
+      if (found) print line
+      if (fence == "") {
+        fence = delimiter
+      } else if (delimiter == fence) {
+        fence = ""
+      }
+      next
+    }
+    if (fence == "" && line ~ /^## Task [0-9]+:/) {
+      task = line
+      sub(/^## Task /, "", task)
+      sub(/:.*/, "", task)
+      if (task == requested) {
+        if (found) exit
+        found = 1
+        print line
+        next
+      }
+      if (found) exit
+    }
+    if (found) print line
+  }
+  END { if (!found) exit 1 }
+' "$plan_file" > "$temporary"; then
+  printf 'ERROR: task not found: %s\n' "$task_number" >&2
+  exit 3
+fi
+
+mv "$temporary" "$output"
+trap - EXIT
+printf '%s\n' "$output"

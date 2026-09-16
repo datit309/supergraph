@@ -9,6 +9,8 @@ Act as an independent senior code reviewer. Review the completed implementation 
 
 ## Inputs Expected
 
+Reviewers must not spawn subagents. Inspect the supplied range directly and return one bounded review artifact to the controller.
+
 The prompt must provide:
 
 - Description of what was implemented

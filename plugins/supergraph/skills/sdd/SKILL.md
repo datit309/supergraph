@@ -106,6 +106,17 @@ sequenceDiagram
 | Contract Mismatch | Payload missing field | Reject with validation error | Log diagnostic warning |
 | Missing Dependency | CLI/MCP not available | Soft degrade | Skip feature non-blockingly |
 
+## 5.1 Durable Workflow Artifacts
+
+For every approved Full-tier design, keep execution evidence under the deterministic artifact root `.supergraph/sdd/<plan-basename>/`:
+
+- `ledger.md` records task ownership, dispatch decisions, conflict rulings, review rounds, and circuit-breaker outcomes.
+- `task-N-brief.md` is the exact task slice sent to an implementer.
+- `task-N-report.md` records RED/GREEN/REFACTOR, changed files, and verification results.
+- `review-<base>..<head>.diff` is the bounded review package for the task range.
+
+The execute helpers `task-brief` and `review-package` must validate their plan/ref inputs before producing artifacts. A missing or invalid plan is a hard failure; never silently select another plan.
+
 ## 6. Architecture Decision Records (ADRs)
 - **ADR-1: [Decision Title]**
   - *Context:* [Why was this decision needed?]

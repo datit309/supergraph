@@ -73,6 +73,10 @@ Run `$TEST_CMD` and `$LINT_CMD`; if reviewer skipped (Micro), run tests alone. *
 | Gaps | Untested hotspots? |
 | TDD | RED/GREEN evidence? |
 
+### 7.1 Durable Review Boundary
+
+Review the generated `review-<base>..<head>.diff` and task report, then **re-review only changed scope** after a fix. Re-read any illegible evidence instead of rerunning unrelated work. Record reviewer verdicts, conflict rulings, and the **circuit-breaker** state in `ledger.md` and the finish report.
+
 ### 8. Act on Feedback
 
 Critical → fix immediately, no exceptions.

@@ -39,6 +39,8 @@ Expected RED: [why it should fail before implementation]
 
 **One behavior per test. Public behavior, not internals. Real code over mocks.**
 
+For a falsifiability checklist, read [`writing-good-tests.md`](writing-good-tests.md) before finalizing a test.
+
 ### 2. 🔴 RED — Write + Verify in One Round
 
 Write one failing test, then run immediately:

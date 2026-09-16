@@ -51,6 +51,15 @@ At iteration start: "🔧 Fix iteration N/3 — running tests..."
 - Failed after 3 → `stuck` + append STUCK log
 - Never mark completed if tests or lint fail
 
+### 5.1 Review/Fix Circuit
+
+Use the durable ledger and review package for every repair cycle:
+
+- For **rounds 1-3**, resume the original implementer with the smallest failing evidence and re-review only changed scope.
+- For **rounds 4-5**, use a fresh stronger implementation pass, then run a scoped independent review.
+- After five rounds, trigger the **circuit-breaker**, stop automatic repair, and record the ruling, unresolved evidence, and next human decision in the finish report and `ledger.md`.
+- A passing test does not erase a review finding; retain the report and update only the affected artifact.
+
 ### 6. Report
 
 ```

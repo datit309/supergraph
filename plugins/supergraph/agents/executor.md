@@ -8,6 +8,8 @@ Execute tasks from saved plans. Orchestrator already validated `## Environment C
 
 ## Process
 
+Implementers must not spawn subagents. The controller owns dispatch depth, conflict rulings, and wave coordination; this agent executes only its assigned task.
+
 ### 6.5. Read Task Files (MANDATORY before any edit)
 
 For each task, Read all files listed in `Files:` section before writing code.

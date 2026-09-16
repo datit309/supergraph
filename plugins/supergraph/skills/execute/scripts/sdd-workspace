@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+  printf 'ERROR: %s\n' "$*" >&2
+  exit 1
+}
+
+[ "$#" -eq 1 ] || fail 'usage: sdd-workspace PLAN_FILE'
+plan_file=$1
+[ -f "$plan_file" ] || fail "plan file not found: $plan_file"
+
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || fail 'must run inside a git repository'
+plan_name=$(basename "$plan_file")
+plan_name=${plan_name%.md}
+[ -n "$plan_name" ] || fail 'plan filename is empty'
+
+artifact_root="$repo_root/.supergraph"
+sdd_root="$artifact_root/sdd"
+workspace="$sdd_root/$plan_name"
+for path in "$artifact_root" "$sdd_root" "$workspace"; do
+  [ -L "$path" ] && fail "refusing symlinked artifact path: $path"
+done
+mkdir -p "$workspace"
+gitignore="$workspace/.gitignore"
+if [ -L "$gitignore" ] || { [ -e "$gitignore" ] && [ ! -f "$gitignore" ]; }; then
+  fail "refusing non-regular artifact file: $gitignore"
+fi
+printf '%s\n' '*' > "$gitignore"
+printf '%s\n' "$workspace"

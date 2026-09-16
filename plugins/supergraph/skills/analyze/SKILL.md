@@ -33,6 +33,16 @@ Use existing domain vocabulary in all analysis — never invent new terms for co
 - Known constraints
 - Open questions
 
+## Ceremony Router
+
+For work that enters analyze, classify the uncertainty before choosing an approach:
+
+- **spike:** the approach or feasibility is unknown. Produce a bounded experiment, define what evidence would invalidate it, and exit with a decision or an explicit escalation.
+- **bounded:** the behavior and boundary are known but implementation choices remain. Compare the smallest viable approaches, identify affected paths, and exit with an approved implementation shape.
+- **architectural:** the change crosses contracts, hubs, bridges, persistence, or multiple platforms. Produce the full graph-informed analysis and required SDD inputs before planning.
+
+Approval required before implementation on every path. The router may skip unnecessary ceremony, but it may not skip approval, RED-before-production TDD, verification, or review. If hidden complexity appears, upgrade one-way from `spike` to `bounded` to `architectural`; never downshift after evidence has expanded the scope.
+
 **1b. Score ambiguity (before grilling):**
 
 | Signal | +1 if... |

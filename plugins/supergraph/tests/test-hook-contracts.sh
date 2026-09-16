@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)
 HOOK_DIR="$ROOT/plugins/supergraph/hooks"
+CODEX_MANIFEST="$ROOT/plugins/supergraph/.codex-plugin/plugin.json"
 SECTION=${1:-all}
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
@@ -13,6 +14,18 @@ contains() {
 
 not_contains() {
   ! contains "$1" "$2"
+}
+
+codex_manifest() {
+  python3 - "$CODEX_MANIFEST" <<'PY'
+import json
+import sys
+
+manifest = json.load(open(sys.argv[1], encoding="utf-8"))
+hooks = manifest.get("hooks")
+assert hooks == {}, f"expected empty hooks object, got {hooks!r}"
+PY
+  printf 'PASS: Codex manifest does not register shell hooks\n'
 }
 
 assert_json() {
@@ -210,6 +223,7 @@ update_docs() {
 }
 
 all() {
+  codex_manifest
   lifecycle
   pre_tool
   remaining
@@ -218,6 +232,7 @@ all() {
 }
 
 case "$SECTION" in
+  codex-manifest) codex_manifest ;;
   lifecycle) lifecycle ;;
   pre-tool) pre_tool ;;
   update-notice) update_notice ;;

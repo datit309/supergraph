@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+  printf 'ERROR: %s\n' "$*" >&2
+  exit 1
+}
+
+case "$#" in
+  3|4) ;;
+  *) fail 'usage: review-package PLAN_FILE BASE_REF HEAD_REF [OUTFILE]' ;;
+esac
+plan_file=$1
+base_ref=$2
+head_ref=$3
+[ -f "$plan_file" ] || fail "plan file not found: $plan_file"
+case "$base_ref$head_ref" in
+  -*|*' '*|*'	'*) fail 'git refs must not start with a dash or contain whitespace' ;;
+esac
+
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || fail 'must run inside a git repository'
+base_commit=$(git -C "$repo_root" rev-parse --verify --quiet "$base_ref^{commit}") || fail "invalid base ref: $base_ref"
+head_commit=$(git -C "$repo_root" rev-parse --verify --quiet "$head_ref^{commit}") || fail "invalid head ref: $head_ref"
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+workspace=$("$script_dir/sdd-workspace" "$plan_file")
+if [ "$#" -eq 4 ]; then
+  output_name=$4
+  case "$output_name" in
+    ''|.|..|/*|../*|*/../*|*/..|*/*) fail 'OUTFILE must be a filename inside the plan workspace' ;;
+  esac
+  output="$workspace/$output_name"
+else
+  output="$workspace/review-${base_commit:0:7}..${head_commit:0:7}.diff"
+fi
+if [ -L "$output" ] || { [ -e "$output" ] && [ ! -f "$output" ]; }; then
+  fail "refusing non-regular output: $output"
+fi
+output_dir=$(dirname "$output")
+mkdir -p "$output_dir"
+temporary=$(mktemp "$output_dir/.review-package.XXXXXX")
+cleanup() { rm -f "$temporary"; }
+trap cleanup EXIT
+
+{
+  printf '%s\n' '# Review package'
+  printf 'Plan: %s\n' "$plan_file"
+  printf 'Base: %s\n' "$base_commit"
+  printf 'Head: %s\n' "$head_commit"
+  printf '\n%s\n' '## Commits'
+  git -C "$repo_root" log --oneline --no-decorate "$base_commit..$head_commit"
+  printf '\n%s\n' '## Stat'
+  git -C "$repo_root" diff --stat "$base_commit..$head_commit"
+  printf '\n%s\n' '## Diff'
+  git -C "$repo_root" diff --no-ext-diff "$base_commit..$head_commit"
+} > "$temporary"
+
+mv "$temporary" "$output"
+trap - EXIT
+printf '%s\n' "$output"

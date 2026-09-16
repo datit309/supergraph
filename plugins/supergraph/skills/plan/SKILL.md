@@ -85,6 +85,10 @@ Checkpoint:
 
 Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by executor)
 
+### SDD Traceability
+
+Every task must include a `Spec:` pointer to the approved SDD. The pointer is the governing design contract for interfaces, artifacts, platform behavior, and failure handling; a task that conflicts with its Spec must stop for a plan update before implementation.
+
 ### Wave Assignment Rules (DAG Parallelism):
 - **Wave 1:** Foundational setup, data schemas, interface contracts, base types (`Dependencies: none`).
 - **Wave 2:** Independent business features, service implementations, API endpoints (depend only on Wave 1). Executed **in parallel** by concurrent subagents.
