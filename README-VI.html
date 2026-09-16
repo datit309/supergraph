@@ -537,7 +537,7 @@
       <div class="card">
         <div class="card-icon green">🔗</div>
         <h3>Codebase Memory MCP</h3>
-        <p>Index codebase cục bộ (>= 0.9.0) để truy vấn blast radius, caller/callee, cluster kiến trúc, cycle, test gap và complexity hotspot.</p>
+        <p>Index codebase cục bộ (>= 0.10.8,&lt;0.11.0) để truy vấn blast radius, caller/callee, cluster kiến trúc, cycle, test gap và complexity hotspot.</p>
       </div>
       <div class="card">
         <div class="card-icon cyan">🧠</div>
@@ -609,7 +609,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform opencode
 
 <span class="comment"># Cài MCP</span>
-<span class="cmd">pip install</span> codebase-memory-mcp==0.9.0
+<span class="cmd">pip install</span> 'codebase-memory-mcp&gt;=0.10.8,&lt;0.11.0'
 
 <span class="comment"># Lần chạy đầu</span>
 /supergraph:scan</code></pre>
@@ -626,7 +626,7 @@ plugins/supergraph/install.sh --platform opencode
     <p><strong>Cách gọi skill:</strong> dùng <code>/skills</code>, rồi chọn <code>scan</code>, <code>plan</code>, <code>tdd</code>, v.v. Không dùng <code>/supergraph:*</code> trong OpenCode.</p>
 
     <h3 style="font-size:15px;margin:28px 0 12px;">Thiết lập Codebase Memory MCP (mọi nền tảng)</h3>
-    <pre><code><span class="cmd">pip install</span> codebase-memory-mcp==0.9.0
+    <pre><code><span class="cmd">pip install</span> 'codebase-memory-mcp&gt;=0.10.8,&lt;0.11.0'
 codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate</code></pre>
 
     <div class="callout">

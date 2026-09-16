@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.15 - 2026-09-16
+
+### Added
+
+- **Three.js 3D skills** — added ten pinned upstream skills for fundamentals, geometry, materials, lighting, textures, animation, loaders, shaders, post-processing, and interaction.
+- **Design skills** — integrated Taste Skill guidance for distinctive frontend design, image-to-code, redesigns, and GPT taste.
+
+### Fixed
+
+- **Codebase Memory compatibility** — migrated the baseline contract to `codebase-memory-mcp >= 0.10.8,<0.11.0` with normalized JSON handling and updated documentation/workflows.
+
 ## 2.2.14 - 2026-09-05
 
 ### Changed

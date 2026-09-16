@@ -14,32 +14,36 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install Codebase Memory
-        run: pip install codebase-memory-mcp==0.9.0
+        run: pip install codebase-memory-mcp==0.10.8
       - name: Index repository
         run: |
+          set -o pipefail
+          normalize_cbm() { python3 plugins/supergraph/scripts/normalize-codebase-memory-json.py; }
           codebase-memory-mcp --version | tee cbm-version.txt
           REPO=$(pwd)
-          codebase-memory-mcp cli index_repository "{\"repo_path\":\"$REPO\",\"name\":\"supergraph-ci\",\"mode\":\"fast\"}" > index.json
+          codebase-memory-mcp cli --json index_repository --repo-path "$REPO" --name supergraph-ci --mode fast | normalize_cbm > index.json
           python3 -c 'import json; d=json.load(open("index.json")); assert d.get("status")=="indexed", d'
-          codebase-memory-mcp cli index_status '{"project":"supergraph-ci"}' > index-status.json
-          python3 -c 'import json; d=json.load(open("index-status.json")); assert d.get("project") or d.get("name"), d'
+          codebase-memory-mcp cli --json index_status --project supergraph-ci | normalize_cbm > index-status.json
+          python3 -c 'import json; d=json.load(open("index-status.json")); assert d.get("project") or d.get("name"), d; assert any(k in d for k in ("nodes","node_count","total_nodes")), d; assert any(k in d for k in ("edges","edge_count","total_edges")), d'
       - name: Load schema before graph queries
         run: |
-          codebase-memory-mcp cli get_graph_schema '{"project":"supergraph-ci"}' > graph-schema.json
+          set -o pipefail
+          codebase-memory-mcp cli --json get_graph_schema --project supergraph-ci | python3 plugins/supergraph/scripts/normalize-codebase-memory-json.py > graph-schema.json
           python3 -c 'import json; d=json.load(open("graph-schema.json")); assert d.get("node_labels") and d.get("edge_types"), d'
       - name: Detect changes and cycles
         env:
           BASE_REF: ${{ github.base_ref }}
         run: |
-          codebase-memory-mcp cli detect_changes "{\"project\":\"supergraph-ci\",\"since\":\"origin/$BASE_REF\"}" > changes.json
-          codebase-memory-mcp cli query_graph '{"project":"supergraph-ci","query":"MATCH (a)-[:CALLS|IMPORTS]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 100000"}' > cycle-edges.json
+          set -o pipefail
+          codebase-memory-mcp cli --json detect_changes --project supergraph-ci --since "origin/$BASE_REF" --format json | python3 plugins/supergraph/scripts/normalize-codebase-memory-json.py > changes.json
+          codebase-memory-mcp cli --json query_graph --project supergraph-ci --query 'MATCH (a)-[:CALLS|IMPORTS]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 100000' | python3 plugins/supergraph/scripts/normalize-codebase-memory-json.py > cycle-edges.json
           python3 - <<'PY'
           import json
           d=json.load(open('changes.json'))
           assert isinstance(d['changed_files'],list)
-          assert isinstance(d['changed_count'],int)
-          assert isinstance(d['impacted_symbols'],list)
-          assert isinstance(d['depth'],int)
+          assert isinstance(d.get('changed_count', d.get('seed_symbols')),int)
+          assert isinstance(d.get('impacted_symbols', d.get('impacted')),list)
+          assert isinstance(d.get('depth', d.get('impacted_total')),int)
           cycle_data=json.load(open('cycle-edges.json'))
           assert not cycle_data.get('next_cursor'), 'cycle pagination is incomplete; rerun query with next_cursor'
           rows=cycle_data['rows']

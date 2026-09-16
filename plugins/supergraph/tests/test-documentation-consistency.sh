@@ -23,7 +23,7 @@ artifacts = [
 workflow = "scan → analyze → plan → TDD → execute → fix → verify → review"
 for path in artifacts:
     text = path.read_text(encoding="utf-8")
-    for marker in ("codebase-memory-mcp", "0.9.0", "Serena", workflow):
+    for marker in ("codebase-memory-mcp", "0.10.8", "Serena", workflow):
         assert marker in text, f"{path} missing {marker!r}"
 
 for path in artifacts[:1] + [artifacts[-1]] + [artifacts[5]]:

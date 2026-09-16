@@ -1,6 +1,6 @@
 # Codebase Memory graph contract
 
-Supergraph requires `codebase-memory-mcp >= 0.9.0`. Every graph call is scoped by
+Supergraph requires `codebase-memory-mcp >= 0.10.8,<0.11.0`. Every graph call is scoped by
 the stable `CBM_PROJECT` recorded in `.supergraph-env`; indexing always uses the
 absolute repository path and `CBM_INDEX_MODE` (`moderate` locally, `fast` in CI).
 

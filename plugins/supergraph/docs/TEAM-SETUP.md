@@ -10,7 +10,7 @@
 
 **Step 2 — In terminal:**
 ```bash
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 codebase-memory-mcp --version
 codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
 uv tool install -p 3.13 serena-agent  # requires uv: brew install uv
@@ -28,7 +28,7 @@ Every non-trivial change follows the evidence-gated workflow:
 
 `scan → analyze → plan → TDD → execute → fix → verify → review`
 
-Codebase Memory MCP (`>=0.9.0`) indexes the repository locally under `CBM_PROJECT`. The skills use that graph for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed-symbol impact. Serena is optional and adds LSP references and diagnostics.
+Codebase Memory MCP (`>=0.10.8,<0.11.0`) indexes the repository locally under `CBM_PROJECT`. The skills use that graph for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed-symbol impact. Serena is optional and adds LSP references and diagnostics.
 
 On Windows, `hooks/run-hook.cmd` dynamically resolves Git Bash from `CLAUDE_CODE_GIT_BASH_PATH`, system Git, user-level Git, or `where git.exe`. If Git Bash is unavailable it prints `supergraph: Git Bash not found — hooks skipped` and exits `0`, so hooks remain non-blocking while skills and MCP continue to work.
 
@@ -111,10 +111,10 @@ jobs:
           python-version: '3.12'
 
       - name: Install Codebase Memory
-        run: pip install codebase-memory-mcp==0.9.0
+        run: pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
       - name: Build graph
-        run: codebase-memory-mcp cli index_repository '{"repo_path":".","name":"supergraph-ci","mode":"fast"}'
+        run: codebase-memory-mcp cli --json index_repository --repo-path . --name supergraph-ci --mode fast | python3 plugins/supergraph/scripts/normalize-codebase-memory-json.py
 
       - name: Detect changes
         run: |
@@ -124,8 +124,8 @@ jobs:
 
       - name: Run graph analysis
         run: |
-          codebase-memory-mcp cli detect_changes '{"project":"supergraph-ci","since":"origin/${{ github.base_ref }}"}'
-          codebase-memory-mcp cli index_status '{"project":"supergraph-ci"}'
+          codebase-memory-mcp cli --json detect_changes --project supergraph-ci --since "origin/${{ github.base_ref }}" --format json | python3 plugins/supergraph/scripts/normalize-codebase-memory-json.py
+          codebase-memory-mcp cli --json index_status --project supergraph-ci | python3 plugins/supergraph/scripts/normalize-codebase-memory-json.py
 
       - name: Check for cycles
         run: |

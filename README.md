@@ -15,7 +15,7 @@ Supergraph is a workflow system for AI coding agents, not just a collection of p
 
 `scan → analyze → plan → TDD → execute → fix → verify → review`
 
-The graph layer is powered by [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.9.0`). It indexes the repository locally under a stable project identity, then provides evidence for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed symbols. [Serena](https://github.com/oraios/serena) is optional and adds LSP-level references and diagnostics.
+The graph layer is powered by [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). It indexes the repository locally under a stable project identity, then provides evidence for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed symbols. [Serena](https://github.com/oraios/serena) is optional and adds LSP-level references and diagnostics.
 
 The workflow is evidence-gated: no production change without a verified RED test, no plan execution without an approved plan, and no completion claim without fresh verification and independent review. Hooks provide session reminders, plan guards, failure hints, and asynchronous graph freshness through Codebase Memory auto-watch.
 
@@ -62,7 +62,7 @@ Antigravity hook environment variables and event names are best-effort until ver
 | ------------------------------------------------------------------- | -------- | --------------------------------------------- |
 | Claude Code, Antigravity CLI, Codex CLI, or OpenCode                 | ✅ Yes   | See your platform docs                        |
 | Python 3.10+                                                        | ✅ Yes   | `brew install python` / `apt install python3` |
-| [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) | ✅ Yes | `pip install codebase-memory-mcp==0.9.0` |
+| [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) | ✅ Yes | `pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'` |
 | [uv](https://docs.astral.sh/uv/)                                    | Optional | `brew install uv`                             |
 | [Serena MCP](https://github.com/oraios/serena)                      | Optional | See [Serena Setup](#serena-setup)             |
 | Git                                                                 | ✅ Yes   | Already installed on most systems             |
@@ -130,7 +130,7 @@ git clone https://github.com/datit309/supergraph.git
 /plugin install supergraph
 
 # MCP setup
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # First run
 /supergraph:scan
@@ -149,7 +149,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform antigravity
 
 # MCP setup
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # First run
 /supergraph:scan
@@ -170,7 +170,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform codex
 
 # MCP setup
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # First run
 /supergraph:scan
@@ -191,7 +191,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform opencode
 
 # MCP setup
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # First run
 /supergraph:scan
@@ -217,10 +217,10 @@ OpenCode uses `OPENCODE.md` for project instructions. Skills and MCP work out of
 
 ## MCP Setup
 
-### Codebase Memory MCP >= 0.9.0 (required)
+### Codebase Memory MCP >= 0.10.8,<0.11.0 (required)
 
 ```bash
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 codebase-memory-mcp --version
 codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
 ```
@@ -481,7 +481,7 @@ Auto-detected from config files at session start:
 ### 2. Install MCP dependencies
 
 ```bash
-pip install codebase-memory-mcp==0.9.0         # required
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0' # required
 uv tool install -p 3.13 serena-agent           # optional — see Serena Setup above
 ```
 

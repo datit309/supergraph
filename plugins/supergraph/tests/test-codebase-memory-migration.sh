@@ -12,10 +12,28 @@ LEGACY_PATTERN="$LEGACY_EXEC|$LEGACY_UNDERSCORE|mcp__$LEGACY_EXEC|mcp__$LEGACY_U
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 contains() { grep -Fq -- "$2" "$1" || fail "$1 missing marker: $2"; }
 
+version_supported() {
+  python3 - "$1" <<'PY'
+import re,sys
+value=sys.argv[1].strip()
+match=re.fullmatch(r"codebase-memory-mcp\s+(\d+)\.(\d+)\.(\d+)", value)
+if not match:
+    raise SystemExit(1)
+major,minor,patch=map(int, match.groups())
+raise SystemExit(0 if (major,minor,patch) >= (0,10,8) and (major,minor,patch) < (0,11,0) else 1)
+PY
+}
+
+normalize_json() {
+  python3 "$ROOT/plugins/supergraph/scripts/normalize-codebase-memory-json.py"
+}
+
 contract() {
   local f="$ROOT/plugins/supergraph/references/codebase-memory-contract.md"
+  local normalizer="$ROOT/plugins/supergraph/scripts/normalize-codebase-memory-json.py"
   test -f "$f" || fail "graph contract absent"
-  for marker in '>= 0.9.0' CBM_PROJECT index_repository index_status get_graph_schema pagination degraded unavailable cycles hubs bridges test-gaps complexity dependencies cross-boundary; do
+  test -f "$normalizer" || fail "Codebase Memory JSON normalizer absent"
+  for marker in '>= 0.10.8' CBM_PROJECT index_repository index_status get_graph_schema pagination degraded unavailable cycles hubs bridges test-gaps complexity dependencies cross-boundary; do
     contains "$f" "$marker"
   done
 }
@@ -29,24 +47,19 @@ cbm() {
   local tool=$1 args=$2 output args_file
   args_file="$TMP/${tool}.args.json"
   printf '%s' "$args" >"$args_file"
-  if ! output=$(codebase-memory-mcp cli "$tool" --args-file "$args_file" 2>"$TMP/cbm.err"); then
+  if ! output=$(codebase-memory-mcp cli --json "$tool" --args-file "$args_file" 2>"$TMP/cbm.err"); then
     cat "$TMP/cbm.err" >&2
     fail "Codebase Memory tool failed: $tool"
   fi
-  # CBM 0.9.0 may emit the same JSON response twice when invoked through
-  # --args-file. Decode the first complete object and normalize the stream
-  # before downstream assertions parse it.
-  printf '%s' "$output" | python3 -c '
-import json,sys
-raw=sys.stdin.read()
-value,_=json.JSONDecoder().raw_decode(raw.lstrip())
-print(json.dumps(value,separators=(",",":")))
-'
+  printf '%s' "$output" | normalize_json
 }
 
 recipes() {
-  test "$(codebase-memory-mcp --version 2>/dev/null)" = 'codebase-memory-mcp 0.9.0' \
-    || fail 'codebase-memory-mcp 0.9.0 required'
+  local version
+  version=$(codebase-memory-mcp --version 2>/dev/null || true)
+  if ! version_supported "$version"; then
+    fail "codebase-memory-mcp >= 0.10.8,<0.11.0 required (found: ${version:-unknown})"
+  fi
   TMP=$(mktemp -d); trap 'rm -rf "$TMP"' RETURN
   cp -R "$ROOT/plugins/supergraph/tests/fixtures/codebase-memory" "$TMP/repo"
   git -C "$TMP/repo" init -q
@@ -66,8 +79,24 @@ recipes() {
   printf '%s' "$status" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d.get("project"); assert any(k in d for k in ("nodes","node_count","total_nodes")); assert any(k in d for k in ("edges","edge_count","total_edges"))'
   schema=$(cbm get_graph_schema "{\"project\":\"$project\"}")
   printf '%s' "$schema" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert isinstance(d,dict) and d'
-  changes=$(cbm detect_changes "{\"project\":\"$project\",\"since\":\"HEAD~1\"}")
-  printf '%s' "$changes" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert isinstance(d.get("changed_files"),list); assert isinstance(d.get("changed_count"),int); assert isinstance(d.get("impacted_symbols"),list); assert isinstance(d.get("depth"),int)'
+  changes=$(cbm detect_changes "{\"project\":\"$project\",\"since\":\"HEAD~1\",\"format\":\"json\"}")
+  printf '%s' "$changes" | python3 -c '
+import json,sys
+d=json.load(sys.stdin)
+assert isinstance(d.get("changed_files"),list), d
+if "changed_count" in d:
+    assert isinstance(d["changed_count"],int), d
+else:
+    assert isinstance(d.get("seed_symbols"),int), d
+impacted=d.get("impacted_symbols",d.get("impacted"))
+assert isinstance(impacted,list), d
+if "depth" in d:
+    assert isinstance(d["depth"],int), d
+else:
+    assert isinstance(d.get("impacted_total"),int), d
+    assert isinstance(d.get("impacted_shown"),int), d
+    assert isinstance(d.get("truncated"),bool), d
+'
 
   while IFS='|' read -r name query; do
     [[ -n $name ]] || continue
@@ -131,13 +160,36 @@ findings=[(a,b) for a,b in rows if a and b and a != b]
     fi
   done <<'RECIPES'
 cycles|MATCH (a)-[:CALLS|IMPORTS]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 100000
-hubs|MATCH (n)<-[r]-() WITH n, count(r) AS degree WHERE degree >= 10 RETURN n, degree ORDER BY degree DESC LIMIT 100
+hubs|MATCH (n)<-[r]-() WITH n, count(r) AS degree WHERE degree >= 10 RETURN n.qualified_name, degree ORDER BY degree DESC LIMIT 100
 bridges|MATCH (a)-[r]->(b) RETURN a.file_path, b.file_path LIMIT 100000
 test-gaps|MATCH (n) RETURN n.qualified_name, n.is_test LIMIT 100000
 complexity|MATCH (n) RETURN n.qualified_name, n.complexity, n.cognitive LIMIT 100000
-dependencies|MATCH (a)-[r:CALLS|IMPORTS|DEPENDS_ON]->(b) RETURN a, r, b LIMIT 200
+dependencies|MATCH (a)-[r:CALLS|IMPORTS|DEPENDS_ON]->(b) RETURN a.qualified_name, b.qualified_name LIMIT 200
 cross-boundary|MATCH (a)-[r]->(b) RETURN a.module, b.module LIMIT 100000
 RECIPES
+}
+
+cli_contract() {
+  local actual
+  for actual in \
+    'codebase-memory-mcp 0.10.7' \
+    'codebase-memory-mcp 0.11.0' \
+    'codebase-memory-mcp invalid' \
+    ''; do
+    if version_supported "$actual"; then
+      fail "unsupported Codebase Memory version accepted: ${actual:-empty}"
+    fi
+  done
+  version_supported 'codebase-memory-mcp 0.10.8' || fail 'supported 0.10.8 rejected'
+  version_supported 'codebase-memory-mcp 0.10.9' || fail 'supported 0.10.9 rejected'
+
+  printf '%s' '{"status":"direct"}' | normalize_json | grep -Fq '"status":"direct"' || fail 'direct JSON not normalized'
+  printf '%s' '{"structuredContent":{"status":"envelope"},"isError":false}' | normalize_json | grep -Fq '"status":"envelope"' || fail 'structuredContent not unwrapped'
+  printf '%s' '{"status":"first"}{"status":"duplicate"}' | normalize_json | grep -Fq '"status":"first"' || fail 'duplicate JSON stream not normalized'
+  printf '%s' '{"content":[{"type":"text","text":"rows: 1  (cols: a b)\n  x y\ntotal: 1\n"}],"isError":false}' | normalize_json | grep -Fq '"rows":[["x","y"]]' || fail 'text query rows not normalized'
+  if printf '%s' 'rows: 1' | normalize_json >/dev/null 2>&1; then
+    fail 'malformed human-readable output accepted'
+  fi
 }
 
 legacy() {
@@ -223,7 +275,12 @@ hooks() {
 
 ci() {
   local f="$ROOT/plugins/supergraph/.github/workflows/graph-review.yml"
-  for marker in 'codebase-memory-mcp==0.9.0' supergraph-ci index_repository index_status get_graph_schema detect_changes query_graph changed_count impacted_symbols depth 'Cycle count' next_cursor 'exit 1'; do contains "$f" "$marker"; done
+  for marker in 'codebase-memory-mcp==0.10.8' supergraph-ci index_repository index_status get_graph_schema detect_changes query_graph changed_count impacted_symbols depth 'Cycle count' next_cursor 'exit 1' --json format json; do contains "$f" "$marker"; done
+  grep -Eq 'cli --json index_repository .*\| normalize_cbm' "$f" || fail 'CI index_repository is not normalized'
+  grep -Eq 'cli --json index_status .*\| normalize_cbm' "$f" || fail 'CI index_status is not normalized'
+  grep -Eq 'cli --json get_graph_schema .*normalize-codebase-memory-json.py' "$f" || fail 'CI schema is not normalized'
+  grep -Eq 'cli --json detect_changes .*format.*json.*normalize-codebase-memory-json.py' "$f" || fail 'CI detect_changes is not normalized'
+  grep -Eq 'cli --json query_graph .*normalize-codebase-memory-json.py' "$f" || fail 'CI query_graph is not normalized'
   ! grep -Eq "$LEGACY_EXEC|risk_level|risk_summary|\| true" "$f" || fail 'CI contains legacy/nonexistent/swallowed checks'
 }
 
@@ -246,12 +303,12 @@ flutter() {
 docs_en() {
   local files=("$ROOT/README.md" "$ROOT/PRIVACY.md" "$ROOT/plugins/supergraph/docs/TEAM-SETUP.md" "$ROOT/plugins/supergraph/.github/pull_request_template.md" "$ROOT/.gitignore") f
   for f in "${files[@]}"; do grep -Eqi 'codebase.memory' "$f" || fail "$f missing Codebase Memory"; ! grep -Eq "$LEGACY_EXEC|\\$LEGACY_CACHE" "$f" || fail "$f contains legacy docs"; done
-  for marker in '0.9.0' '~/.cache/codebase-memory-mcp' '.codebase-memory/graph.db.zst' index_repository; do grep -Rq "$marker" "${files[@]}" || fail "English docs missing $marker"; done
+  for marker in '0.10.8' '~/.cache/codebase-memory-mcp' '.codebase-memory/graph.db.zst' index_repository; do grep -Rq "$marker" "${files[@]}" || fail "English docs missing $marker"; done
 }
 
 docs_vi() {
   local files=("$ROOT/README-VI.md" "$ROOT/README-VI.html") f
-  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; contains "$f" 0.9.0; contains "$f" '~/.cache/codebase-memory-mcp'; contains "$f" '.codebase-memory/graph.db.zst'; ! grep -Eq "$LEGACY_EXEC|\\$LEGACY_CACHE" "$f" || fail "$f contains legacy docs"; done
+  for f in "${files[@]}"; do contains "$f" codebase-memory-mcp; contains "$f" 0.10.8; contains "$f" '~/.cache/codebase-memory-mcp'; contains "$f" '.codebase-memory/graph.db.zst'; ! grep -Eq "$LEGACY_EXEC|\\$LEGACY_CACHE" "$f" || fail "$f contains legacy docs"; done
 }
 
 changelog() {
@@ -262,6 +319,7 @@ changelog() {
 case "${SECTION:-all}" in
   contract) contract ;;
   recipes) recipes ;;
+  cli-contract) cli_contract ;;
   claude) claude ;;
   codex-opencode) codex_opencode ;;
   scan) scan ;;
@@ -280,7 +338,7 @@ case "${SECTION:-all}" in
   changelog) changelog ;;
   legacy) legacy ;;
   all)
-    contract; recipes; claude; codex_opencode; scan; analyze_plan; architecture
+    contract; cli_contract; recipes; claude; codex_opencode; scan; analyze_plan; architecture
     execute_fix; verify_review; database_integration; diagnose_web; hooks; ci
     gemini_metadata; flutter; docs_en; docs_vi; changelog; legacy
     ;;

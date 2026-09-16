@@ -15,7 +15,7 @@ Supergraph là một hệ thống workflow cho AI coding agent, không chỉ là
 
 `scan → analyze → plan → TDD → execute → fix → verify → review`
 
-Lớp graph dùng [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.9.0`). Plugin index codebase cục bộ theo một `CBM_PROJECT` ổn định, rồi dùng dữ liệu đó để kiểm tra blast radius, caller/callee, cluster kiến trúc, dependency cycle, test gap, complexity hotspot và symbol bị ảnh hưởng. [Serena](https://github.com/oraios/serena) là tuỳ chọn, bổ sung tham chiếu và diagnostics ở mức LSP.
+Lớp graph dùng [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). Plugin index codebase cục bộ theo một `CBM_PROJECT` ổn định, rồi dùng dữ liệu đó để kiểm tra blast radius, caller/callee, cluster kiến trúc, dependency cycle, test gap, complexity hotspot và symbol bị ảnh hưởng. [Serena](https://github.com/oraios/serena) là tuỳ chọn, bổ sung tham chiếu và diagnostics ở mức LSP.
 
 Workflow có các evidence gate rõ ràng: không sửa production nếu chưa có test RED thất bại, không execute nếu plan chưa được duyệt, và không claim hoàn tất nếu chưa verify fresh + review độc lập. Hook cung cấp nhắc session, plan guard, gợi ý khi test lỗi, và để Codebase Memory auto-watch cập nhật graph bất đồng bộ.
 
@@ -62,7 +62,7 @@ Biến môi trường hook và tên event của Antigravity hiện là best-effo
 | ------------------------------------------------------------------- | -------- | --------------------------------------------- |
 | Claude Code, Antigravity CLI, Codex CLI, hoặc OpenCode              | ✅ Có    | Xem tài liệu nền tảng bạn dùng                |
 | Python 3.10+                                                        | ✅ Có    | `brew install python` / `apt install python3` |
-| [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) | ✅ Có | `pip install codebase-memory-mcp==0.9.0` |
+| [codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) | ✅ Có | `pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'` |
 | [uv](https://docs.astral.sh/uv/)                                    | Tuỳ chọn | `brew install uv`                             |
 | [Serena MCP](https://github.com/oraios/serena)                      | Tuỳ chọn | Xem [Cài đặt Serena](#cài-đặt-serena)         |
 | Git                                                                 | ✅ Có    | Thường đã có sẵn                              |
@@ -130,7 +130,7 @@ git clone https://github.com/datit309/supergraph.git
 /plugin install supergraph
 
 # Cài MCP
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # Lần chạy đầu
 /supergraph:scan
@@ -149,7 +149,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform antigravity
 
 # Cài MCP
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # Lần chạy đầu
 /supergraph:scan
@@ -170,7 +170,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform codex
 
 # Cài MCP
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # Lần chạy đầu
 /supergraph:scan
@@ -191,7 +191,7 @@ cd supergraph
 plugins/supergraph/install.sh --platform opencode
 
 # Cài MCP
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 
 # Lần chạy đầu
 /supergraph:scan
@@ -217,10 +217,10 @@ OpenCode dùng `OPENCODE.md` cho project instructions. Skills và MCP chạy nga
 
 ## Cài đặt MCP
 
-### Codebase Memory MCP >= 0.9.0 (bắt buộc)
+### Codebase Memory MCP >= 0.10.8,<0.11.0 (bắt buộc)
 
 ```bash
-pip install codebase-memory-mcp==0.9.0
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0'
 codebase-memory-mcp --version
 codebase-memory-mcp cli index_repository --repo-path "$(pwd)" --name supergraph --mode moderate
 ```
@@ -481,7 +481,7 @@ Tự detect từ config file lúc bắt đầu session:
 ### 2. Cài MCP dependencies
 
 ```bash
-pip install codebase-memory-mcp==0.9.0   # bắt buộc
+pip install 'codebase-memory-mcp>=0.10.8,<0.11.0' # bắt buộc
 uv tool install -p 3.13 serena-agent           # tuỳ chọn — xem Cài đặt Serena ở trên
 ```
 
