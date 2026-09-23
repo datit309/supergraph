@@ -96,6 +96,8 @@ curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform codex
 # OpenCode
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+# DeepSeek Harness (DSH)
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
 # All platforms at once
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform all
 ```
@@ -212,6 +214,25 @@ The installer symlinks each skill folder into `~/.config/opencode/skills/<name>`
 OpenCode uses `OPENCODE.md` for project instructions. Skills and MCP work out of the box. Hooks (SessionStart, caveman, etc.) are not available on OpenCode — the platform uses a JS/TS plugin model instead of bash hooks.
 
 **Invoking skills on OpenCode:** use `/skills`, then choose `scan`, `plan`, `tdd`, etc. Do not use `/supergraph:*` in OpenCode.
+
+### Option 5 — DeepSeek Harness (DSH)
+
+```bash
+git clone https://github.com/datit309/supergraph.git
+cd supergraph
+
+# Symlink skills to ~/.dsh/skills + configure MCP in ~/.dsh/cordis.patch.yml
+plugins/supergraph/install.sh --platform dsh
+
+# Or via one-liner:
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
+```
+
+The installer links Supergraph skills into `~/.dsh/skills/` (and `~/.agents/skills/`), which are automatically discovered by `@deepseek-ai/dsh-skill-filesystem`. It also configures `codebase-memory` and `serena` MCP servers via `@deepseek-ai/dsh-mcp-client` in `~/.dsh/cordis.patch.yml`.
+
+DeepSeek Harness reads `AGENTS.md` natively for project instructions.
+
+**Invoking skills on DSH:** Use the `skill` tool e.g. `skill(name="scan")` or `/supergraph:scan`.
 
 ---
 

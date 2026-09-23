@@ -1,0 +1,19 @@
+# Supergraph MCP configuration for DeepSeek Harness (DSH)
+# Configures Codebase Memory MCP and Serena LSP MCP servers via @deepseek-ai/dsh-mcp-client
+- insert:
+    - id: mcp-codebase-memory
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: codebase-memory
+        transport: stdio
+        command: codebase-memory-mcp
+        args: []
+        cwd: !!js process.cwd()
+    - id: mcp-serena
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: serena
+        transport: stdio
+        command: serena
+        args: ['start-mcp-server', '--context=codex', '--project-from-cwd']
+        cwd: !!js process.cwd()

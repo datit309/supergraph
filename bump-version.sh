@@ -6,6 +6,7 @@ PLUGIN_JSON="$PLUGIN_DIR/.claude-plugin/plugin.json"
 MARKET_JSON="$PLUGIN_DIR/.claude-plugin/marketplace.json"
 ANTIGRAVITY_JSON="$PLUGIN_DIR/plugin.json"
 CODEX_JSON="$PLUGIN_DIR/.codex-plugin/plugin.json"
+DSH_JSON="$PLUGIN_DIR/.dsh-plugin/plugin.json"
 
 bump_json_version() {
   python3 - "$1" "$2" <<'EOF'
@@ -37,5 +38,6 @@ bump_json_version "$PLUGIN_JSON" "$new_version"
 bump_json_version "$MARKET_JSON" "$new_version"
 bump_json_version "$ANTIGRAVITY_JSON" "$new_version"
 bump_json_version "$CODEX_JSON" "$new_version"
+bump_json_version "$DSH_JSON" "$new_version"
 
 echo "✅ $current → $new_version"

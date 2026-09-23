@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("claude", "antigravity", "codex", "opencode")]
+    [ValidateSet("claude", "antigravity", "codex", "opencode", "hermes", "dsh", "all")]
     [string]$Platform,
     [switch]$DryRun,
     [switch]$Help
@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2.0
 
 function Show-Usage {
-    Write-Output "Usage: install.ps1 [-Platform claude|antigravity|codex|opencode] [-DryRun] [-Help]"
+    Write-Output "Usage: install.ps1 [-Platform claude|antigravity|codex|opencode|hermes|dsh|all] [-DryRun] [-Help]"
     Write-Output "Clones or safely updates Supergraph, then installs the selected platform plugin."
 }
 

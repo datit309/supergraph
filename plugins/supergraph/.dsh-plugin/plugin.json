@@ -1,0 +1,17 @@
+{
+  "name": "supergraph-dsh",
+  "version": "2.2.15",
+  "description": "Supergraph workflow and MCP integration for DeepSeek Harness (DSH)",
+  "author": {
+    "name": "datit309",
+    "email": "trantandat0919@gmail.com"
+  },
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "skills": "../skills",
+  "homepage": "https://github.com/datit309/supergraph"
+}

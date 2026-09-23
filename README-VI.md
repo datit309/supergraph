@@ -96,6 +96,8 @@ curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform codex
 # OpenCode
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+# DeepSeek Harness (DSH)
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
 # Tất cả nền tảng cùng lúc
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform all
 ```
@@ -212,6 +214,25 @@ Installer symlink từng skill vào `~/.config/opencode/skills/<name>` (global),
 OpenCode dùng `OPENCODE.md` cho project instructions. Skills và MCP chạy ngay. Hooks (SessionStart, caveman, v.v.) không có trên OpenCode — nền tảng này dùng mô hình plugin JS/TS.
 
 **Cách gọi skill trên OpenCode:** dùng `/skills`, rồi chọn `scan`, `plan`, `tdd`, v.v. Không dùng `/supergraph:*` trong OpenCode.
+
+### Cách 5 — DeepSeek Harness (DSH)
+
+```bash
+git clone https://github.com/datit309/supergraph.git
+cd supergraph
+
+# Symlink skills vào ~/.dsh/skills + cấu hình MCP trong ~/.dsh/cordis.patch.yml
+plugins/supergraph/install.sh --platform dsh
+
+# Hoặc cài qua lệnh 1 dòng:
+curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
+```
+
+Installer tự động liên kết các skill của Supergraph vào `~/.dsh/skills/` (và `~/.agents/skills/`), được `@deepseek-ai/dsh-skill-filesystem` tự động nhận diện theo thời gian thực. Installer cũng cấu hình MCP server `codebase-memory` và `serena` qua `@deepseek-ai/dsh-mcp-client` trong `~/.dsh/cordis.patch.yml`.
+
+DeepSeek Harness tự động đọc hướng dẫn dự án từ `AGENTS.md`.
+
+**Cách gọi skill trên DSH:** Sử dụng công cụ `skill` ví dụ `skill(name="scan")` hoặc `/supergraph:scan`.
 
 ---
 
