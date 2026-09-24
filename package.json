@@ -1,0 +1,40 @@
+{
+  "name": "supergraph",
+  "version": "2.2.15",
+  "description": "Supergraph workflow, skills, and MCP tools for DeepSeek Harness (DSH)",
+  "type": "module",
+  "main": "./plugins/supergraph/index.js",
+  "exports": {
+    ".": "./plugins/supergraph/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "plugins/supergraph",
+    "AGENTS.md"
+  ],
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./plugins/supergraph/cordis.patch.yml"
+    }
+  },
+  "keywords": [
+    "supergraph",
+    "dsh",
+    "deepseek-harness",
+    "codebase-memory",
+    "serena",
+    "workflow",
+    "tdd"
+  ],
+  "author": {
+    "name": "datit309",
+    "email": "trantandat0919@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/datit309/supergraph",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datit309/supergraph.git"
+  }
+}

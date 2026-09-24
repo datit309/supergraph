@@ -1,7 +1,7 @@
 # Supergraph plugin bundle for DeepSeek Harness (DSH)
 - insert:
     - id: supergraph
-      name: '../index.js'
+      name: './index.js'
     - id: mcp-codebase-memory
       name: '@deepseek-ai/dsh-mcp-client'
       config:
