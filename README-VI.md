@@ -255,7 +255,9 @@ plugins/supergraph/install.sh --platform dsh
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
 ```
 
-**Cách gọi skill trên DSH:** Sử dụng công cụ `skill` ví dụ `skill(name="scan")` hoặc `/supergraph:scan`.
+**Cách gọi skill trên DSH:** Skill trên DSH được đăng ký dưới dạng tên gốc kebab-case chuẩn DSH (`/^[a-z0-9]+(?:-[a-z0-9]+)*$/`).
+- Lệnh gõ slash: `/scan`, `/plan`, `/tdd`, `/verify`, `/review`, v.v. (Không dùng tiền tố `/supergraph:*` trên DSH).
+- Gọi qua công cụ `skill`: `skill(name="scan")`, `skill(name="plan")`, v.v.
 
 ---
 

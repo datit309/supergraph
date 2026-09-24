@@ -255,7 +255,9 @@ plugins/supergraph/install.sh --platform dsh
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
 ```
 
-**Invoking skills on DSH:** Use the `skill` tool e.g. `skill(name="scan")` or `/supergraph:scan`.
+**Invoking skills on DSH:** Skills are registered with bare kebab-case names according to DSH standards (`/^[a-z0-9]+(?:-[a-z0-9]+)*$/`).
+- Slash commands: `/scan`, `/plan`, `/tdd`, `/verify`, `/review`, etc. Do **not** use `/supergraph:*` in DSH.
+- Tool call: `skill(name="scan")`, `skill(name="plan")`, etc.
 
 ---
 

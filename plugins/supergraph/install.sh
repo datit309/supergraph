@@ -61,7 +61,7 @@ next_steps() {
     codex) printf 'Next: run codex and confirm plugin skills loaded\n' ;;
     opencode) printf 'Next: restart OpenCode and run /scan (skills via /skills, hooks active via plugins/supergraph.ts)\n' ;;
     hermes) printf 'Next: run /skills or use skill_view(name="supergraph:scan")\n' ;;
-    dsh) printf 'Next: run dsh (dsh web or dsh) and use skills e.g. /supergraph:scan or skill(name="scan")\n' ;;
+    dsh) printf 'Next: run dsh (dsh web or dsh) and use skills e.g. /scan or skill(name="scan")\n' ;;
     all) printf 'Next: run /supergraph:scan on each platform\n' ;;
   esac
 }

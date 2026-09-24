@@ -7,30 +7,32 @@
 
 ## Skills
 
-This project uses supergraph skills with `/supergraph:` prefix to avoid conflicts with built-in commands.
+This project uses supergraph skills:
+- **Claude Code & Codex**: invoke with `/supergraph:` prefix (e.g. `/supergraph:scan`, `/supergraph:plan`).
+- **DeepSeek Harness (DSH) & OpenCode**: invoke bare skill names without prefix (e.g. `/scan`, `/plan`, `/tdd`, `/verify`, or via tool `skill(name="scan")` on DSH). DSH skill names follow `/^[a-z0-9]+(?:-[a-z0-9]+)*$/` and do not use colons.
 Agent MUST read and follow the relevant skill before each phase.
 
-| Skill | When to read |
-| --- | --- |
-| `/supergraph:scan` | Start of every session |
-| `/supergraph:analyze` | Ambiguous scope, touching hub/bridge |
-| `/supergraph:sdd` | System/Software design, data contracts, API schemas, multi-platform matrix |
-| `/supergraph:plan` | Before writing any code |
-| `/supergraph:tdd` | When implementing any feature or fix |
-| `/supergraph:execute` | When executing saved plans |
-| `/supergraph:fix` | After all coding is complete |
-| `/supergraph:integration` | After unit tests pass |
-| `/supergraph:verify` | Before claiming done/ready or committing |
-| `/supergraph:review` | Before merging or when review is needed |
-| `/supergraph:diagnose` | Bug exists and cause is unknown |
-| `/supergraph:serena` | Before complex refactors, cross-file symbol analysis, or type diagnostics |
-| `/supergraph:zoom-out` | Lost in unfamiliar code, need re-orientation |
-| `/supergraph:architecture` | Pre-refactor, onboarding, architectural planning |
-| `/supergraph:prd` | Requirements came from conversation, not a formal spec |
-| `/supergraph:triage` | Processing issue backlog, preparing work for automation |
-| `/supergraph:prototype` | Approach is uncertain before planning |
-| `/supergraph:handoff` | Context window exhausted or switching sessions |
-| `/supergraph:caveman` | Long session or token budget — activate compression |
+| Skill (Claude/Codex) | Skill (DSH/OpenCode) | When to read |
+| --- | --- | --- |
+| `/supergraph:scan` | `/scan` | Start of every session |
+| `/supergraph:analyze` | `/analyze` | Ambiguous scope, touching hub/bridge |
+| `/supergraph:sdd` | `/sdd` | System/Software design, data contracts, API schemas, multi-platform matrix |
+| `/supergraph:plan` | `/plan` | Before writing any code |
+| `/supergraph:tdd` | `/tdd` | When implementing any feature or fix |
+| `/supergraph:execute` | `/execute` | When executing saved plans |
+| `/supergraph:fix` | `/fix` | After all coding is complete |
+| `/supergraph:integration` | `/integration` | After unit tests pass |
+| `/supergraph:verify` | `/verify` | Before claiming done/ready or committing |
+| `/supergraph:review` | `/review` | Before merging or when review is needed |
+| `/supergraph:diagnose` | `/diagnose` | Bug exists and cause is unknown |
+| `/supergraph:serena` | `/serena` | Before complex refactors, cross-file symbol analysis, or type diagnostics |
+| `/supergraph:zoom-out` | `/zoom-out` | Lost in unfamiliar code, need re-orientation |
+| `/supergraph:architecture` | `/architecture` | Pre-refactor, onboarding, architectural planning |
+| `/supergraph:prd` | `/prd` | Requirements came from conversation, not a formal spec |
+| `/supergraph:triage` | `/triage` | Processing issue backlog, preparing work for automation |
+| `/supergraph:prototype` | `/prototype` | Approach is uncertain before planning |
+| `/supergraph:handoff` | `/handoff` | Context window exhausted or switching sessions |
+| `/supergraph:caveman` | `/caveman` | Long session or token budget — activate compression |
 
 
 ---
