@@ -258,6 +258,7 @@ curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.
 **Cách gọi skill trên DSH:** Skill trên DSH được đăng ký dưới dạng tên gốc kebab-case chuẩn DSH (`/^[a-z0-9]+(?:-[a-z0-9]+)*$/`).
 - Lệnh gõ slash: `/scan`, `/plan`, `/tdd`, `/verify`, `/review`, v.v. (Không dùng tiền tố `/supergraph:*` trên DSH).
 - Gọi qua công cụ `skill`: `skill(name="scan")`, `skill(name="plan")`, v.v.
+- **Agent Preset**: Đi kèm sẵn Agent Preset `Supergraph Engineer` tối ưu token, graph-first và strict tool log pruner. Chọn trực tiếp từ menu preset của DSH Web.
 
 ---
 

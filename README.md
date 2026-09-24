@@ -258,6 +258,7 @@ curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.
 **Invoking skills on DSH:** Skills are registered with bare kebab-case names according to DSH standards (`/^[a-z0-9]+(?:-[a-z0-9]+)*$/`).
 - Slash commands: `/scan`, `/plan`, `/tdd`, `/verify`, `/review`, etc. Do **not** use `/supergraph:*` in DSH.
 - Tool call: `skill(name="scan")`, `skill(name="plan")`, etc.
+- **Agent Preset**: Bundles dedicated `Supergraph Engineer` Agent Preset with graph-first navigation, TDD rules, and strict tool-result log pruning. Select directly from DSH Web preset menu.
 
 ---
 

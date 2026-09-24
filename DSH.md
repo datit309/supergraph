@@ -50,4 +50,13 @@ Supergraph installs as a native Cordis Bundle via `dsh.bundle.patch` (`plugins/s
 - `supergraph-skills`: Mounts all 38 skills directly via `@deepseek-ai/dsh-skill-filesystem`.
 - `mcp-codebase-memory`: Connects Codebase Memory MCP via `@deepseek-ai/dsh-mcp-client`.
 - `mcp-serena`: Connects Serena MCP via `@deepseek-ai/dsh-mcp-client`.
+- `preset-supergraph`: Declares the native `Supergraph Engineer` Agent Preset via `@deepseek-ai/dsh-agent-preset`, configured with token-optimized persona, graph-first workflow priority, plan mode, and strict tool-result pruning (`@deepseek-ai/dsh-compaction-tool-result-pruner`).
 - Workflow rules are natively loaded from `AGENTS.md` by `@deepseek-ai/dsh-agent-instructions`.
+
+## Agent Preset: Supergraph Engineer
+
+Supergraph bundles a dedicated Agent Preset selectable in DSH Web GUI:
+- **Preset ID**: `supergraph`
+- **Name**: `Supergraph Engineer`
+- **Focus**: Graph-first navigation (Codebase Memory + Serena), mandatory TDD, Plan Mode, subagent delegation, and strict log pruning to minimize token consumption.
+- **Selection**: Select `Supergraph Engineer` from the preset dropdown in DSH Web session header, or configure it as default in Settings.
