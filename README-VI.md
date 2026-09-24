@@ -115,6 +115,7 @@ Claude Code: /plugin marketplace update supergraph
 Codex: codex plugin marketplace upgrade supergraph
 Antigravity: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform antigravity
 OpenCode: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+DSH: dsh plugin --profile web update supergraph
 ```
 
 Đặt `SUPERGRAPH_UPDATE_CHECK=false` để tắt kiểm tra. OpenCode hiện chưa cung cấp hook SessionStart, nên có lệnh update ở đây nhưng chưa thể tự động hiện thông báo.
@@ -217,6 +218,32 @@ OpenCode dùng `OPENCODE.md` cho project instructions. Skills và MCP chạy nga
 
 ### Cách 5 — DeepSeek Harness (DSH)
 
+Supergraph hỗ trợ tích hợp chuẩn **Cordis Plugin & Bundle** cho DeepSeek Harness:
+
+#### Lựa chọn A: Cài dạng Plugin Bundle (Khuyến nghị)
+
+Qua DSH Plugin Manager CLI:
+
+```bash
+# Thêm Supergraph bundle vào profile web (hoặc profile đang dùng như headless):
+dsh plugin --profile web add github:datit309/supergraph
+
+# Hoặc cài từ local checkout:
+dsh plugin --profile web add /path/to/supergraph
+```
+
+Hoặc qua **DSH Web GUI** (`http://127.0.0.1:3080`):
+1. Mở **Settings** → **Plugins** (hoặc mở thanh Plugins ở sidebar).
+2. Tại ô **Install Bundle**, nhập `github:datit309/supergraph` (hoặc đường dẫn local).
+3. Bấm **Install**. Plugin sẽ tự động kích hoạt kèm hot-reload (HMR) mà không cần restart.
+
+Plugin Bundle tự động:
+- Đăng ký 38 skills qua `ctx.skills.registerProvider()`.
+- Cấu hình 2 MCP server (`codebase-memory` và `serena`) qua `@deepseek-ai/dsh-mcp-client`.
+- Nạp quy tắc workflow từ `AGENTS.md` vào `ctx.systemPrompt`.
+
+#### Lựa chọn B: Cài dạng Symlink CLI qua Installer
+
 ```bash
 git clone https://github.com/datit309/supergraph.git
 cd supergraph
@@ -227,10 +254,6 @@ plugins/supergraph/install.sh --platform dsh
 # Hoặc cài qua lệnh 1 dòng:
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
 ```
-
-Installer tự động liên kết các skill của Supergraph vào `~/.dsh/skills/` (và `~/.agents/skills/`), được `@deepseek-ai/dsh-skill-filesystem` tự động nhận diện theo thời gian thực. Installer cũng cấu hình MCP server `codebase-memory` và `serena` qua `@deepseek-ai/dsh-mcp-client` trong `~/.dsh/cordis.patch.yml`.
-
-DeepSeek Harness tự động đọc hướng dẫn dự án từ `AGENTS.md`.
 
 **Cách gọi skill trên DSH:** Sử dụng công cụ `skill` ví dụ `skill(name="scan")` hoặc `/supergraph:scan`.
 

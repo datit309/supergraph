@@ -115,6 +115,7 @@ Claude Code: /plugin marketplace update supergraph
 Codex: codex plugin marketplace upgrade supergraph
 Antigravity: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform antigravity
 OpenCode: curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform opencode
+DSH: dsh plugin --profile web update supergraph
 ```
 
 Set `SUPERGRAPH_UPDATE_CHECK=false` to disable the check. OpenCode does not currently expose a SessionStart hook, so its update command is available here but its notification is not automatic.
@@ -217,6 +218,32 @@ OpenCode uses `OPENCODE.md` for project instructions. Skills and MCP work out of
 
 ### Option 5 — DeepSeek Harness (DSH)
 
+Supergraph supports standard **Cordis Plugin & Bundle** integration for DeepSeek Harness:
+
+#### Option A: Install as a Plugin Bundle (Recommended)
+
+Via DSH Plugin Manager CLI:
+
+```bash
+# Add Supergraph bundle to your active profile (e.g. web, headless):
+dsh plugin --profile web add github:datit309/supergraph
+
+# Or from a local checkout:
+dsh plugin --profile web add /path/to/supergraph
+```
+
+Or via the **DSH Web GUI** (`http://127.0.0.1:3080`):
+1. Open **Settings** → **Plugins** (or open the Plugins drawer in the sidebar).
+2. Under **Install Bundle**, enter `github:datit309/supergraph` (or your local path).
+3. Click **Install**. The plugin activates immediately via HMR without requiring a restart.
+
+The Plugin Bundle automatically:
+- Registers all 38 skills via `ctx.skills.registerProvider()`.
+- Configures `codebase-memory` and `serena` MCP servers via `@deepseek-ai/dsh-mcp-client`.
+- Injects workflow rules from `AGENTS.md` into `ctx.systemPrompt`.
+
+#### Option B: Install via Symlink CLI Script
+
 ```bash
 git clone https://github.com/datit309/supergraph.git
 cd supergraph
@@ -227,10 +254,6 @@ plugins/supergraph/install.sh --platform dsh
 # Or via one-liner:
 curl -fsSL https://raw.githubusercontent.com/datit309/supergraph/master/install.sh | sh -s -- --platform dsh
 ```
-
-The installer links Supergraph skills into `~/.dsh/skills/` (and `~/.agents/skills/`), which are automatically discovered by `@deepseek-ai/dsh-skill-filesystem`. It also configures `codebase-memory` and `serena` MCP servers via `@deepseek-ai/dsh-mcp-client` in `~/.dsh/cordis.patch.yml`.
-
-DeepSeek Harness reads `AGENTS.md` natively for project instructions.
 
 **Invoking skills on DSH:** Use the `skill` tool e.g. `skill(name="scan")` or `/supergraph:scan`.
 
