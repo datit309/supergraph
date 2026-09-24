@@ -1,7 +1,20 @@
 # Supergraph plugin bundle for DeepSeek Harness (DSH)
 - insert:
-    - id: supergraph
-      name: './index.js'
+    - id: supergraph-skills
+      name: '@deepseek-ai/dsh-skill-filesystem'
+      config:
+        providerName: supergraph
+        includeDefaultRoots: false
+        bundledSkillDir: !!js >-
+          (() => {
+            const path = process.getBuiltinModule('node:path');
+            const req = process.getBuiltinModule('node:module').createRequire(baseUrl);
+            try {
+              return path.join(path.dirname(req.resolve('supergraph/package.json')), 'plugins/supergraph/skills');
+            } catch {
+              return path.join(path.dirname(req.resolve('./package.json')), 'skills');
+            }
+          })()
     - id: mcp-codebase-memory
       name: '@deepseek-ai/dsh-mcp-client'
       config:
