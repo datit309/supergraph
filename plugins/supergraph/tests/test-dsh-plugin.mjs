@@ -15,24 +15,35 @@ assert.strictEqual(pkg.name, 'supergraph')
 assert.strictEqual(pkg.dsh?.manifestVersion, 1)
 assert.strictEqual(pkg.dsh?.bundle?.patch, './cordis.patch.yml')
 
-// 3. Verify mock DSH context registration
+// 3. Verify mock DSH context registration with Cordis-like strict get()
 let registeredProvider = null
+let sectionAdded = false
 const mockCtx = {
+  get(name) {
+    if (name === 'systemPrompt') {
+      return {
+        section(sec) {
+          assert.strictEqual(sec.name, 'supergraph:workflow')
+          sectionAdded = true
+        }
+      }
+    }
+    if (name === 'skills') {
+      return this.skills
+    }
+    return undefined
+  },
   skills: {
     registerProvider(fn) {
       registeredProvider = fn({ signal: new AbortController().signal, invalidate() {} })
     }
   },
-  systemPrompt: {
-    section(sec) {
-      assert.strictEqual(sec.name, 'supergraph:workflow')
-    }
-  }
 }
 
 apply(mockCtx)
 assert.ok(registeredProvider, 'Provider must be registered on ctx.skills')
 assert.strictEqual(registeredProvider.name, 'supergraph')
+assert.ok(sectionAdded, 'supergraph:workflow section must be registered')
 
 // 4. Verify skill listing
 const candidates = await registeredProvider.list()

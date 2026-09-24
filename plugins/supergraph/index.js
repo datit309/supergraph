@@ -31,8 +31,9 @@ export function apply(ctx) {
   const root = fileURLToPath(new URL('.', import.meta.url))
   const skillsDir = path.join(root, 'skills')
 
-  if (ctx.skills && fs.existsSync(skillsDir)) {
-    ctx.skills.registerProvider(() => ({
+  const skillsService = ctx.get('skills') ?? ctx.skills
+  if (skillsService && fs.existsSync(skillsDir)) {
+    skillsService.registerProvider(() => ({
       name: 'supergraph',
       async list() {
         const entries = fs.readdirSync(skillsDir, { withFileTypes: true })
@@ -77,12 +78,14 @@ export function apply(ctx) {
     }))
   }
 
-  if (ctx.systemPrompt) {
+  const systemPrompt = ctx.get('systemPrompt')
+  if (systemPrompt) {
     const agentsPath = path.join(root, 'AGENTS.md')
     if (fs.existsSync(agentsPath)) {
-      ctx.systemPrompt.section({
+      systemPrompt.section({
         name: 'supergraph:workflow',
         order: 850,
+        interpolate: false,
         text: () => fs.readFileSync(agentsPath, 'utf8'),
       })
     }
