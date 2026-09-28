@@ -415,6 +415,7 @@ All skills use the `/supergraph:` prefix to avoid conflicts with built-in comman
 | `/supergraph:serena`                   | LSP setup, tool reference, symbol navigation                                     | Complex refactors, cross-file analysis |
 | `/supergraph:database-migrations`      | Schema changes, rollbacks, zero-downtime patterns                                | Any DB migration work                  |
 | `/supergraph:flutter-ui`               | Build Flutter UI from Figma MCP or image — scans design tokens, never hard-codes | Flutter UI from Figma or screenshot    |
+| `/supergraph:flutter-screenshots`      | Automate App Store & Google Play screenshots with native resolutions and no alpha | Flutter store screenshot generation    |
 | `/supergraph:flutter-dart-code-review` | 15-section Flutter/Dart review checklist                                         | Flutter/Dart code review               |
 | `/supergraph:frontend-design`          | Production-grade UI — no generic AI aesthetics                                   | Web UI components and layouts          |
 | `/supergraph:webapp-testing`           | Playwright-based web application testing                                         | E2E web testing                        |
@@ -660,6 +661,7 @@ plugins/supergraph/
 │   ├── serena/                 # Serena LSP integration
 │   ├── database-migrations/    # DB migration patterns
 │   ├── flutter-ui/             # Flutter UI from Figma/image
+│   ├── flutter-screenshots/    # Store screenshot automation
 │   ├── flutter-dart-code-review/ # Flutter/Dart review checklist
 │   ├── frontend-design/        # Production-grade UI
 │   └── webapp-testing/         # Playwright web testing

@@ -415,6 +415,7 @@ Tất cả skill dùng prefix `/supergraph:` để tránh xung đột với lệ
 | `/supergraph:serena`                   | Setup LSP, tham chiếu tool, điều hướng symbol                                      | Refactor phức tạp, phân tích đa file     |
 | `/supergraph:database-migrations`      | Schema changes, rollback, zero-downtime                                            | Bất kỳ công việc DB migration            |
 | `/supergraph:flutter-ui`               | Dựng Flutter UI từ Figma MCP hoặc ảnh — scan design token, không hard-code giá trị | Dựng UI Flutter từ Figma hoặc screenshot |
+| `/supergraph:flutter-screenshots`      | Tự động chụp screenshot chuẩn App Store & Google Play (native độ phân giải, bỏ alpha) | Tạo ảnh chụp ứng dụng nộp Store          |
 | `/supergraph:flutter-dart-code-review` | Checklist review Flutter/Dart 15 mục                                               | Code review Flutter/Dart                 |
 | `/supergraph:frontend-design`          | UI production-grade — không có aesthetics AI generic                               | Component và layout web UI               |
 | `/supergraph:webapp-testing`           | Web testing dùng Playwright                                                        | E2E web testing                          |
@@ -660,6 +661,7 @@ plugins/supergraph/
 │   ├── serena/                 # LSP integration
 │   ├── database-migrations/    # DB migration patterns
 │   ├── flutter-ui/             # Dựng Flutter UI từ Figma/ảnh
+│   ├── flutter-screenshots/    # Tự động chụp screenshot nộp Store
 │   ├── flutter-dart-code-review/ # Checklist review Flutter/Dart
 │   ├── frontend-design/        # UI production-grade
 │   └── webapp-testing/         # Playwright web testing
