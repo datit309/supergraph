@@ -23,6 +23,7 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | `/supergraph:execute` | `/execute` | When executing saved plans |
 | `/supergraph:fix` | `/fix` | After all coding is complete |
 | `/supergraph:integration` | `/integration` | After unit tests pass |
+| `/supergraph:playwright-tester` | `/playwright-tester` | Comprehensive Web E2E testing, QA/QC matrix & failure simulation |
 | `/supergraph:verify` | `/verify` | Before claiming done/ready or committing |
 | `/supergraph:review` | `/review` | Before merging or when review is needed |
 | `/supergraph:diagnose` | `/diagnose` | Bug exists and cause is unknown |
@@ -56,8 +57,8 @@ Use the correct test/lint commands for the detected language.
 |---|---|---|
 | **Explore** | Codebase exploration, architectural research, tracing flows (no code changes) | `/explore` (or `/zoom-out` → `/explore`) — zero code/test mutation |
 | **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` (skip analyze/plan) |
-| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
-| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → sdd → plan → ...`) |
+| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:playwright-tester` (if web) → `/supergraph:verify` |
+| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → sdd → plan → tdd → fix → playwright-tester → verify → review`) |
 
 **When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
 
@@ -103,10 +104,10 @@ After ALL coding, read `/supergraph:fix` and execute it.
         break
     if iteration >= 3: STOP, ask user
 
-### Step 6: Integration (optional)
+### Step 6: Integration & E2E (MANDATORY for Web)
 
 Read `/supergraph:integration` and execute it.
-Run integration/e2e tests if configured.
+For Web / UI features: ALWAYS automatically execute `/supergraph:playwright-tester` to generate the QA matrix and run Playwright E2E tests (Happy, Sad, Boundary, Network 500 fault injection, RBAC) before claiming verification.
 
 ### Step 7: Verify
 
@@ -134,6 +135,7 @@ All checks pass before merge.
 10. ALWAYS save plan to file for long-running/team work
 11. ALWAYS respond in the user's language — announcements, summaries, and all user-facing text must match the language the user wrote in (e.g. if user writes in Vietnamese, respond and announce in Vietnamese; if English, use English). The hardcoded announce strings in skill files are templates only — translate them before output.
 12. USE Serena MCP tools when available — `get_diagnostics_for_file` for type errors, `find_referencing_symbols`/`find_implementations` for impact analysis, `replace_symbol_body`/`rename_symbol` for targeted edits (prefer over raw text edits)
+13. ALWAYS auto-trigger `/supergraph:playwright-tester` for Web/Frontend tasks after `/fix` to test business flows, failure cases, and system resilience — never wait for the user to request E2E testing manually.
 
 ---
 

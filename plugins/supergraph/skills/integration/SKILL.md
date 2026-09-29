@@ -53,8 +53,9 @@ Max 3 retries. On failure:
 
 Trace failure to source module, fix, re-run.
 
-### 5. Run E2E (if configured)
-Max 2 retries (e2e is inherently flaky). Flaky tests: annotate with `@flaky` / `test.slow()` / `@pytest.mark.flaky` per framework — do not block merge on known-flaky tests.
+### 5. Run E2E & Web QA Automation
+- **Web/Frontend Projects**: ALWAYS automatically invoke `/supergraph:playwright-tester` to generate or verify QA matrix coverage (Happy path, Sad path, Boundary, Network 500 error injection, Auth/RBAC) before proceeding.
+- **CLI/Command Runner**: Run `npx playwright test`. Max 2 retries (e2e is inherently flaky). Flaky tests: annotate with `@flaky` / `test.slow()` / `@pytest.mark.flaky` per framework — do not block merge on known-flaky tests.
 
 ### 6. Graph Validation
 For `CBM_PROJECT` via `codebase-memory-mcp` (see `references/codebase-memory-contract.md`) — `search_graph`/`trace_path` + recipes `dependencies/cross-boundary/test-gaps`; fall back to Serena/filesystem if empty.
