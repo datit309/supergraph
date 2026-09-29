@@ -87,7 +87,7 @@ Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by e
 
 ### Architecture & Spec Contracts (Embedded or Referenced)
 
-For complex multi-module or schema changes, embed key contracts, schemas, and design constraints directly in the `## Architecture & Contracts` section of this plan (or reference an approved SDD if one was explicitly created). Avoid creating separate SDD files unless specifically requested by the user.
+For complex multi-module or schema changes, embed key contracts, schemas, and design constraints directly in the `## Architecture & Contracts` section of this plan (or reference an approved SDD via `Spec: path/to/sdd.md` if one was explicitly created). Avoid creating separate SDD files unless specifically requested by the user.
 
 ### Wave Assignment Rules (DAG Parallelism):
 - **Wave 1:** Foundational setup, data schemas, interface contracts, base types (`Dependencies: none`).
