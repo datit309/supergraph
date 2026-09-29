@@ -85,9 +85,9 @@ Checkpoint:
 
 Task status values: `pending`, `in_progress`, `completed`, `stuck` (managed by executor)
 
-### SDD Traceability
+### Architecture & Spec Contracts (Embedded or Referenced)
 
-Every task must include a `Spec:` pointer to the approved SDD. The pointer is the governing design contract for interfaces, artifacts, platform behavior, and failure handling; a task that conflicts with its Spec must stop for a plan update before implementation.
+For complex multi-module or schema changes, embed key contracts, schemas, and design constraints directly in the `## Architecture & Contracts` section of this plan (or reference an approved SDD if one was explicitly created). Avoid creating separate SDD files unless specifically requested by the user.
 
 ### Wave Assignment Rules (DAG Parallelism):
 - **Wave 1:** Foundational setup, data schemas, interface contracts, base types (`Dependencies: none`).

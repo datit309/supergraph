@@ -17,8 +17,8 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | `/supergraph:scan` | `/scan` | Start of every session |
 | `/supergraph:explore` | `/explore` | Codebase exploration, architectural research, tracing flows |
 | `/supergraph:analyze` | `/analyze` | Ambiguous scope, touching hub/bridge |
-| `/supergraph:sdd` | `/sdd` | System/Software design, data contracts, API schemas, multi-platform matrix |
-| `/supergraph:plan` | `/plan` | Before writing any code |
+| `/supergraph:sdd` | `/sdd` | Standalone design document (only when explicitly requested by user) |
+| `/supergraph:plan` | `/plan` | Before writing any code (single source of truth for design + tasks) |
 | `/supergraph:tdd` | `/tdd` | When implementing any feature or fix |
 | `/supergraph:execute` | `/execute` | When executing saved plans |
 | `/supergraph:fix` | `/fix` | After all coding is complete |
@@ -58,7 +58,7 @@ Use the correct test/lint commands for the detected language.
 | **Explore** | Codebase exploration, architectural research, tracing flows (no code changes) | `/explore` (or `/zoom-out` → `/explore`) — zero code/test mutation |
 | **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` (skip analyze/plan) |
 | **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:playwright-tester` (if web) → `/supergraph:verify` |
-| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → sdd → plan → tdd → fix → playwright-tester → verify → review`) |
+| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → plan [with embedded contracts] → tdd → fix → playwright-tester → verify → review`) |
 
 **When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
 
@@ -71,28 +71,26 @@ Use the correct test/lint commands for the detected language.
 Read `/supergraph:scan` and execute it.
 NEVER start full-pipeline work without graph context.
 
-### Step 1: Analyze
+### Step 1: Analyze & Architecture
 
 Read `/supergraph:analyze` and execute it.
 Frame problem, check graph risk (hub/bridge/cross-boundary), propose approaches, get approval.
+Do NOT create a separate SDD file — architecture and data contracts are embedded directly into the plan.
+(Invoke `/supergraph:sdd` only if the user explicitly asks for a standalone formal SDD).
 
-### Step 2: SDD (Software Design Document)
-
-Read `/supergraph:sdd` and execute it.
-Define architecture diagrams, data/interface contracts, platform matrix, failure modes, ADRs. Get approval before planning.
-
-### Step 3: Plan
+### Step 2: Plan (Single Source of Truth)
 
 Read `/supergraph:plan` and execute it.
+Embed architectural contracts, API schemas, and invariants directly in `## Architecture & Contracts` at the top of the plan file.
 blast_radius → identify affected files. Tasks 2-5 min each. User approval.
 Save plan to `docs/supergraph/plans/` for resume capability.
 
-### Step 4: Execute TDD
+### Step 3: Execute TDD
 
 Read `/supergraph:tdd` and execute it.
 Each task: RED → GREEN → REFACTOR. No exceptions.
 
-### Step 5: Auto-Fix Loop
+### Step 4: Auto-Fix Loop
 
 After ALL coding, read `/supergraph:fix` and execute it.
 
@@ -104,17 +102,17 @@ After ALL coding, read `/supergraph:fix` and execute it.
         break
     if iteration >= 3: STOP, ask user
 
-### Step 6: Integration & E2E (MANDATORY for Web)
+### Step 5: Integration & E2E (MANDATORY for Web)
 
 Read `/supergraph:integration` and execute it.
 For Web / UI features: ALWAYS automatically execute `/supergraph:playwright-tester` to generate the QA matrix and run Playwright E2E tests (Happy, Sad, Boundary, Network 500 fault injection, RBAC) before claiming verification.
 
-### Step 7: Verify
+### Step 6: Verify
 
 Read `/supergraph:verify` and execute it.
 NO completion claims without fresh verification evidence.
 
-### Step 8: Final Review
+### Step 7: Final Review
 
 Read `/supergraph:review` and execute it.
 All checks pass before merge.
