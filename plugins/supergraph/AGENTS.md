@@ -15,6 +15,7 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | Skill (Claude/Codex) | Skill (DSH/OpenCode) | When to read |
 | --- | --- | --- |
 | `/supergraph:scan` | `/scan` | Start of every session |
+| `/supergraph:explore` | `/explore` | Codebase exploration, architectural research, tracing flows |
 | `/supergraph:analyze` | `/analyze` | Ambiguous scope, touching hub/bridge |
 | `/supergraph:sdd` | `/sdd` | System/Software design, data contracts, API schemas, multi-platform matrix |
 | `/supergraph:plan` | `/plan` | Before writing any code |
@@ -53,6 +54,7 @@ Use the correct test/lint commands for the detected language.
 
 | Tier | Condition | Path |
 |---|---|---|
+| **Explore** | Codebase exploration, architectural research, tracing flows (no code changes) | `/explore` (or `/zoom-out` → `/explore`) — zero code/test mutation |
 | **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` (skip analyze/plan) |
 | **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:verify` |
 | **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → sdd → plan → ...`) |
@@ -122,11 +124,11 @@ All checks pass before merge.
 
 1. NEVER code without a plan
 2. NEVER implement without a failing test
-3. NEVER read entire codebase — use blast_radius
+3. Target code reading with graph tools (`search_graph`, `trace_path`) and Serena symbol lookups instead of blindly dumping directories; in exploration and research phases, reading relevant source files directly is explicitly encouraged.
 4. NEVER modify hub nodes without user approval
 5. NEVER skip the auto-fix loop
 6. NEVER commit if tests fail or review has CRITICAL
-7. ALWAYS use graph MCP tools before assuming relationships
+7. ALWAYS use graph MCP tools (`search_graph`, `trace_path`, `query_graph`, `detect_changes`) before assuming relationships
 8. ALWAYS detect language and use correct commands
 9. ALWAYS read the relevant skill file before executing each phase
 10. ALWAYS save plan to file for long-running/team work
@@ -150,31 +152,29 @@ All checks pass before merge.
 
 ## MCP Tools
 
-| Tool                     | Purpose                   |
-| ------------------------ | ------------------------- |
-| `get_stats`              | Repo overview             |
-| `index_directory`        | Index codebase            |
-| `index_incremental`      | Fast reindex              |
-| `blast_radius`           | Find affected files       |
-| `blast_radius_visualize` | Visual impact             |
-| `find_dependencies`      | What does X depend on?    |
-| `find_dependents`        | What breaks if X changes? |
-| `find_transitive_deps`   | Deep chains               |
-| `find_communities`       | Module boundaries         |
-| `find_hub_nodes`         | Central risky files       |
-| `find_bridge_nodes`      | Cross-module coupling     |
-| `find_cycles`            | Circular deps             |
-| `find_symbol`            | Locate symbol             |
-| `find_callers`           | Who calls X?              |
-| `find_callees`           | What does X call?         |
-| `find_similar`           | Pattern match             |
-| `surprise_score`         | Unexpected deps           |
-| `find_tests_for`         | Tests for file            |
-| `find_untested_files`    | Coverage gaps             |
+| Tool                     | Purpose                                              |
+| ------------------------ | ---------------------------------------------------- |
+| `search_graph`           | Search symbols, nodes, references, and relationships |
+| `trace_path`             | Trace callers, callees, dependencies, and dataflow   |
+| `query_graph`            | Run Cypher queries on the code graph (recipes)       |
+| `get_architecture`       | Overview of layers, boundaries, clusters, hotspots   |
+| `detect_changes`         | Git impact and risk analysis for modified files      |
+| `get_code_snippet`       | Extract exact source snippets from indexed nodes     |
+| `get_graph_schema`       | Inspect graph schema, node types, and relationship   |
+| `search_code`            | Text and pattern search across indexed source code   |
+| `index_status`           | Check project indexing status, freshness, and health |
+| `index_repository`       | Trigger full/moderate/fast indexing of a repo path   |
+| `check_index_coverage`   | Verify which files are included or excluded in index |
+| `list_projects`          | List all indexed project names and root paths        |
+| `delete_project`         | Remove a project from the knowledge graph            |
+| `manage_adr`             | Record and inspect Architecture Decision Records     |
+| `ingest_traces`          | Ingest runtime trace data into knowledge graph       |
 | **Serena tools** (via `mcp__serena__*`) | |
-| `serena.find_referencing_symbols` | Find all callers/usages of a symbol       |
-| `serena.find_implementations`     | All implementations of interface/abstract |
-| `serena.get_diagnostics_for_file` | IDE-level type errors for a file          |
-| `serena.rename_symbol`            | Safe codebase-wide symbol rename          |
-| `serena.replace_symbol_body`      | Targeted function body replacement        |
-| `serena.get_symbols_overview`     | Project structure map                     |
+| `serena.activate_project`         | Activate project by path or name before lookup  |
+| `serena.get_symbols_overview`     | Project structure and top-level symbol map      |
+| `serena.find_symbol`              | Locate symbol definition across codebase        |
+| `serena.find_referencing_symbols` | Find all callers and usages of a symbol         |
+| `serena.find_implementations`     | All implementations of interface/abstract class |
+| `serena.get_diagnostics_for_file` | IDE-level type errors for a file                |
+| `serena.rename_symbol`            | Safe codebase-wide symbol rename                |
+| `serena.replace_symbol_body`      | Targeted function body replacement              |

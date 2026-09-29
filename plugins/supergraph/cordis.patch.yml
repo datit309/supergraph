@@ -22,13 +22,23 @@
         transport: stdio
         command: codebase-memory-mcp
         args: []
+        reconnect:
+          enabled: true
+          maxAttempts: 20
+          initialDelayMs: 1000
+          maxDelayMs: 30000
     - id: mcp-serena
       name: '@deepseek-ai/dsh-mcp-client'
       config:
         serverName: serena
         transport: stdio
         command: serena
-        args: ['start-mcp-server', '--context=codex', '--project-from-cwd']
+        args: ['start-mcp-server', '--context=codex']
+        reconnect:
+          enabled: true
+          maxAttempts: 20
+          initialDelayMs: 1000
+          maxDelayMs: 30000
     - id: preset-supergraph
       name: '@deepseek-ai/dsh-agent-preset'
       config:
@@ -43,8 +53,9 @@
               suffix: Your working directory is {{cwd}}.
               prefix: >-
                 You are a senior full-stack software engineer powered by the {{model}} model.
-                You strictly follow the Supergraph workflow: Scan -> Plan -> TDD -> Auto-fix -> Verify.
-                CRITICAL: Always prioritize Codebase Memory MCP (search_graph, trace_path, detect_changes) and Serena MCP (find_symbol, get_symbols_overview, get_diagnostics_for_file) over brute-force file reading.
+                You follow the Supergraph workflow: Explore/Scan -> Plan -> TDD -> Auto-fix -> Verify.
+                In exploration and research phases, prioritize understanding the codebase, architecture, and tracing flows before planning or coding.
+                CRITICAL: Use Codebase Memory MCP (search_graph, trace_path, get_architecture, detect_changes) and Serena MCP (find_symbol, get_symbols_overview, get_diagnostics_for_file) alongside targeted code reading.
                 TOKEN EFFICIENCY: Be concise, direct, and technically exact. Eliminate conversational filler, pleasantries, and unnecessary explanations. Output code blocks, diffs, and exact terminal commands.
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'

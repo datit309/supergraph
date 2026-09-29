@@ -26,6 +26,7 @@ Do **not** use the `/supergraph:*` prefix in DSH.
 | Need | DSH Command / Tool |
 |---|---|
 | Start session / load graph | `/scan` or `skill(name="scan")` |
+| Deep codebase exploration & research | `/explore` or `skill(name="explore")` |
 | Ambiguous scope / risk analysis | `/analyze` or `skill(name="analyze")` |
 | Software design & contracts | `/sdd` or `skill(name="sdd")` |
 | Create implementation plan | `/plan` or `skill(name="plan")` |

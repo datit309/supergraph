@@ -47,9 +47,10 @@ recovery command (`codebase-memory-mcp cli index_repository --repo-path
 
 ## 3. Reverify Serena
 
-Always call Serena initial instructions and activate project when available, then
-load a top-level symbols overview. Set `SERENA_ACTIVE=true` only after success;
-otherwise set it false and report Serena unavailable.
+Always call Serena initial instructions and activate project with the absolute repository path:
+`mcp__serena__activate_project(project=<absolute repo path>)`.
+Then load a top-level symbols overview (`mcp__serena__get_symbols_overview`).
+Set `SERENA_ACTIVE=true` only after success; otherwise set it false and report Serena unavailable.
 
 ## 4. Write `.supergraph-env`
 
