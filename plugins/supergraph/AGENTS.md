@@ -24,6 +24,7 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | `/supergraph:fix` | `/fix` | After all coding is complete |
 | `/supergraph:integration` | `/integration` | After unit tests pass |
 | `/supergraph:playwright-tester` | `/playwright-tester` | Comprehensive Web E2E testing, QA/QC matrix & failure simulation |
+| `/supergraph:vibesec` | `/vibesec` | Security audit, vulnerability prevention (IDOR, XSS, CSRF, SSRF, SQLi, Auth/JWT) |
 | `/supergraph:verify` | `/verify` | Before claiming done/ready or committing |
 | `/supergraph:review` | `/review` | Before merging or when review is needed |
 | `/supergraph:diagnose` | `/diagnose` | Bug exists and cause is unknown |

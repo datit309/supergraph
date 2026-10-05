@@ -35,6 +35,7 @@ Do **not** use the `/supergraph:*` prefix in DSH.
 | Auto-fix tests/lint/graph issues | `/fix` or `skill(name="fix")` |
 | Integration/e2e checks | `/integration` or `skill(name="integration")` |
 | Web E2E Testing & QA/QC Matrix | `/playwright-tester` or `skill(name="playwright-tester")` |
+| Security audit & vulnerability prevention | `/vibesec` or `skill(name="vibesec")` |
 | Evidence gate before done | `/verify` or `skill(name="verify")` |
 | Final independent review | `/review` or `skill(name="review")` |
 | Unknown bug cause | `/diagnose` or `skill(name="diagnose")` |
