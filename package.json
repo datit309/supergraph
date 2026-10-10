@@ -8,6 +8,12 @@
     ".": "./plugins/supergraph/index.js",
     "./package.json": "./package.json"
   },
+  "bin": {
+    "sg-team-mcp": "./plugins/supergraph/bin/sg-team-mcp.js"
+  },
+  "scripts": {
+    "test": "node --test plugins/supergraph/tests/*.mjs"
+  },
   "files": [
     "plugins/supergraph",
     "AGENTS.md"

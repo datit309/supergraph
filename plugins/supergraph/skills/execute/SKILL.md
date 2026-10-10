@@ -1,7 +1,7 @@
 ---
 name: execute
 description: Dispatch and execute implementation plans with TDD and checkpoints. Use when plan is ready. Parallel by default for independent tasks.
-mcp: codebase-memory-mcp
+mcp: codebase-memory-mcp, supergraph-team
 ---
 
 # /supergraph:execute
@@ -69,6 +69,23 @@ Wave 1 (Base/Schema) ──> Wave 2 (Independent Features: PARALLEL) ──> Wav
 
 Shared executor instructions (see `serena/SKILL.md:Setup`): per task RED→GREEN→REFACTOR→Lint→Format, `get_diagnostics_for_file` after GREEN, prefer `replace_symbol_body`/`rename_symbol` over raw edits. Commit once per task. Max 3 retries.
 
+#### Supergraph Native Team Engine (sg_task_* MCP Tools):
+When `supergraph-team` MCP tools are available:
+1. **Initialize Mission:** Call `sg_team_init(objective, base_branch)`.
+2. **Register Tasks:** Call `sg_task_create` for each plan task specifying `id`, `title`, `wave`, `dependencies`, and `write_scopes`.
+3. **Dispatch Workers in Wave:**
+   - Lead checks ready tasks with `sg_task_list(wave=N)`.
+   - Dispatches workers (subagent / teammate).
+   - Worker claims task: `sg_task_claim(task_id, worker_id)` → receives isolated worktree directory (`.supergraph/worktrees/task-<id>`).
+   - Worker implements TDD inside worktree directory:
+     - Worker enforces RED: `sg_task_record_red(task_id, test_output)`.
+     - Worker writes minimal GREEN code.
+     - Worker submits: `sg_task_submit(task_id, test_cmd)`.
+4. **Merge & Sync:**
+   - Lead/Orchestrator runs verification gate: `sg_task_verify_merge(task_id, test_cmd, commit_msg)`.
+   - Engine automatically verifies test exit code 0, merges branch into base repo, and cleans up worktree.
+
+#### Fallback / Native Subagent Runners (without MCP):
 For each Wave:
 1. **Prepare Wave Scope:** Identify tasks belonging to current Wave.
 2. **Sequential (1 task):** Dispatch `Agent(subagent_type="supergraph:executor")` — run baseline tests first, execute task respecting dependencies, report task done/stuck + files changed.

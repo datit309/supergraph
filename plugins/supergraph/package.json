@@ -8,11 +8,19 @@
     ".": "./index.js",
     "./package.json": "./package.json"
   },
+  "bin": {
+    "sg-team-mcp": "./bin/sg-team-mcp.js"
+  },
+  "scripts": {
+    "test": "node --test tests/*.mjs"
+  },
   "files": [
     "index.js",
     "cordis.patch.yml",
     "skills",
     "references",
+    "team",
+    "bin",
     "AGENTS.md"
   ],
   "dsh": {
