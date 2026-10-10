@@ -179,3 +179,13 @@ All checks pass before merge.
 | `serena.get_diagnostics_for_file` | IDE-level type errors for a file                |
 | `serena.rename_symbol`            | Safe codebase-wide symbol rename                |
 | `serena.replace_symbol_body`      | Targeted function body replacement              |
+| **Team tools** (via `supergraph-team` / `sg_*`) | |
+| `sg_team_init`                    | Initialize team mission and base git branch     |
+| `sg_task_create`                  | Register DAG task with wave & dependencies      |
+| `sg_task_list`                    | List tasks and dependency readiness             |
+| `sg_task_claim`                   | Claim task & spawn isolated git worktree        |
+| `sg_task_record_red`              | Enforce TDD RED test failure record             |
+| `sg_task_submit`                  | Submit GREEN phase with automated test run      |
+| `sg_task_verify_merge`            | Test verification gate & merge into base repo   |
+| `sg_worktree_cleanup`             | Clean up worktree and branch                    |
+| `sg_team_status`                  | Mission progress overview and DAG status        |

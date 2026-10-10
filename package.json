@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "2.2.15",
+  "version": "2.3.0",
   "description": "Supergraph workflow, skills, and MCP tools for DeepSeek Harness (DSH)",
   "type": "module",
   "main": "./plugins/supergraph/index.js",

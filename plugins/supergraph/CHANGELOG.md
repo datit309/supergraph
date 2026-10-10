@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.3.0 - 2026-10-10
+
+### Added
+
+- **Supergraph Agent Team Engine (`supergraph-team`)** — Native host-agnostic multi-agent orchestration engine with standard MCP Stdio interface and Git worktree isolation.
+  - **Git Worktree Isolation**: Spawns independent worktrees (`.supergraph/worktrees/task-<id>`) per worker, guaranteeing 0 file conflicts and 0 git index lock collisions during concurrent execution.
+  - **Wave DAG Task Scheduling**: State machine enforcing dependency chains (`pending` → `claimed` → `red_tested` → `green` → `merged`) where Wave N+1 tasks only unlock when Wave N dependencies are verified and merged.
+  - **TDD Enforcement Gate**: Enforces RED test evidence before green implementation; automated test runner blocks merge unless exit code is 0.
+  - **Standard MCP Stdio Tools**: `sg_team_init`, `sg_task_create`, `sg_task_list`, `sg_task_claim`, `sg_task_record_red`, `sg_task_submit`, `sg_task_verify_merge`, `sg_worktree_cleanup`, `sg_team_status`.
+  - **Multi-Platform Integration**: Compatible out-of-the-box across DSH (`cordis.patch.yml`), Claude Code (`.mcp.json`), Antigravity/Gemini (`mcp_config.json`), OpenCode, and Codex.
+
 ## 2.2.15 - 2026-09-16
 
 ### Added

@@ -293,6 +293,14 @@ Kiểm tra: chạy `/mcp` trong Claude Code và xác nhận `serena` xuất hi�
 
 Tất cả skill Supergraph tự dùng Serena khi có sẵn.
 
+### Supergraph Team MCP (Tích hợp sẵn)
+
+Supergraph tích hợp sẵn engine điều phối Multi-Agent độc lập (`supergraph-team`) với cơ chế cách ly Git worktree và lập lịch Wave DAG:
+- **Cách ly Git Worktree**: Các worker chạy song song trên các thư mục riêng `.supergraph/worktrees/task-<id>`, triệt tiêu 100% xung đột ghi đè file và tránh nghẽn git index lock.
+- **Wave DAG & Cổng TDD cứng**: Bắt buộc ghi nhận bằng chứng test RED trước khi code GREEN; các task ở Wave N+1 chỉ mở khi các dependency ở Wave N đã được test và merge sạch sẽ.
+- **Hỗ trợ đa nền tảng**: Tự động cấu hình và cắm chạy ngay trên Claude Code, DeepSeek Harness (DSH), Antigravity, OpenCode và Codex.
+- **Tools**: `sg_team_init`, `sg_task_create`, `sg_task_list`, `sg_task_claim`, `sg_task_record_red`, `sg_task_submit`, `sg_task_verify_merge`, `sg_worktree_cleanup`, `sg_team_status`.
+
 ---
 
 ## Bắt đầu nhanh

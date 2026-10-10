@@ -26,7 +26,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write|Edit|write|edit",
         "hooks": [
           {
             "type": "command",
@@ -35,7 +35,7 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|bash",
         "hooks": [
           {
             "type": "command",
@@ -46,7 +46,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write|Edit|write|edit",
         "hooks": [
           {
             "type": "command",
@@ -55,7 +55,7 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|bash",
         "hooks": [
           {
             "type": "command",
