@@ -299,7 +299,8 @@ Supergraph includes a native, host-agnostic multi-agent orchestration engine (`s
 - **Git Worktree Isolation**: Workers execute concurrently in independent `.supergraph/worktrees/task-<id>` directories with 0 file collisions and 0 git index lock issues.
 - **Wave DAG & TDD Enforcement Gate**: Enforces RED test evidence before GREEN implementation; tasks in Wave N+1 only unlock after Wave N dependencies pass and merge cleanly.
 - **Cross-Platform MCP**: Bundled and auto-configured across Claude Code, DeepSeek Harness (DSH), Antigravity, OpenCode, and Codex.
-- **Tools**: `sg_team_init`, `sg_task_create`, `sg_task_list`, `sg_task_claim`, `sg_task_record_red`, `sg_task_submit`, `sg_task_verify_merge`, `sg_worktree_cleanup`, `sg_team_status`.
+- **Tools**: `sg_team_init`, `sg_task_create`, `sg_task_list`, `sg_task_claim`, `sg_task_record_red`, `sg_task_submit`, `sg_task_verify_merge`, `sg_worktree_cleanup`, `sg_team_status`, `sg_team_ui`.
+- **Live Dashboard**: Auto-opens at `http://127.0.0.1:3333` on mission init (`sg-team-ui.js`).
 
 ---
 

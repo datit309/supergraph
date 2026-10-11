@@ -39,6 +39,7 @@ test('TeamMcpServer - protocol handling & tools lifecycle', async (t) => {
   })
   const tools = listRes.result.tools
   assert.ok(tools.some(t => t.name === 'sg_team_init'))
+  assert.ok(tools.some(t => t.name === 'sg_team_ui'))
   assert.ok(tools.some(t => t.name === 'sg_task_claim'))
   assert.ok(tools.some(t => t.name === 'sg_task_verify_merge'))
 

@@ -189,3 +189,4 @@ All checks pass before merge.
 | `sg_task_verify_merge`            | Test verification gate & merge into base repo   |
 | `sg_worktree_cleanup`             | Clean up worktree and branch                    |
 | `sg_team_status`                  | Mission progress overview and DAG status        |
+| `sg_team_ui`                      | Launch and open Live Dashboard UI in browser    |

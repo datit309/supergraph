@@ -71,7 +71,7 @@ Shared executor instructions (see `serena/SKILL.md:Setup`): per task RED→GREEN
 
 #### Supergraph Native Team Engine (sg_task_* MCP Tools):
 When `supergraph-team` MCP tools are available:
-1. **Initialize Mission:** Call `sg_team_init(objective, base_branch)`.
+1. **Initialize Mission:** Call `sg_team_init(objective, base_branch)`. Supergraph auto-launches Live Dashboard UI at `http://127.0.0.1:3333` and opens your browser (or call `sg_team_ui` anytime).
 2. **Register Tasks:** Call `sg_task_create` for each plan task specifying `id`, `title`, `wave`, `dependencies`, and `write_scopes`.
 3. **Dispatch Workers in Wave:**
    - Lead checks ready tasks with `sg_task_list(wave=N)`.

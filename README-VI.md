@@ -299,7 +299,8 @@ Supergraph tích hợp sẵn engine điều phối Multi-Agent độc lập (`su
 - **Cách ly Git Worktree**: Các worker chạy song song trên các thư mục riêng `.supergraph/worktrees/task-<id>`, triệt tiêu 100% xung đột ghi đè file và tránh nghẽn git index lock.
 - **Wave DAG & Cổng TDD cứng**: Bắt buộc ghi nhận bằng chứng test RED trước khi code GREEN; các task ở Wave N+1 chỉ mở khi các dependency ở Wave N đã được test và merge sạch sẽ.
 - **Hỗ trợ đa nền tảng**: Tự động cấu hình và cắm chạy ngay trên Claude Code, DeepSeek Harness (DSH), Antigravity, OpenCode và Codex.
-- **Tools**: `sg_team_init`, `sg_task_create`, `sg_task_list`, `sg_task_claim`, `sg_task_record_red`, `sg_task_submit`, `sg_task_verify_merge`, `sg_worktree_cleanup`, `sg_team_status`.
+- **Tools**: `sg_team_init`, `sg_task_create`, `sg_task_list`, `sg_task_claim`, `sg_task_record_red`, `sg_task_submit`, `sg_task_verify_merge`, `sg_worktree_cleanup`, `sg_team_status`, `sg_team_ui`.
+- **Live Dashboard**: Tự động mở tại `http://127.0.0.1:3333` khi khởi tạo mission (`sg-team-ui.js`).
 
 ---
 

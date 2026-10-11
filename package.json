@@ -9,7 +9,9 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "sg-team-mcp": "./plugins/supergraph/bin/sg-team-mcp.js"
+    "sg-team-mcp": "./plugins/supergraph/bin/sg-team-mcp.js",
+    "sg-team-ui": "./plugins/supergraph/bin/sg-team-ui.js",
+    "sg-team-status": "./plugins/supergraph/bin/sg-team-status.js"
   },
   "scripts": {
     "test": "node --test plugins/supergraph/tests/*.mjs"

@@ -1,4 +1,8 @@
 import readline from 'node:readline'
+import fs from 'node:fs'
+import path from 'node:path'
+import { spawn, exec } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { TeamEngine } from './engine.js'
 import { WorktreeManager } from './worktree.js'
 
@@ -125,8 +129,44 @@ export class TeamMcpServer {
           type: 'object',
           properties: {}
         }
+      },
+      {
+        name: 'sg_team_ui',
+        description: 'Launch and open the Supergraph Agent Team Live Dashboard UI in browser (http://127.0.0.1:3333).',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            open_browser: { type: 'boolean', description: 'Whether to open browser automatically (default: true)' }
+          }
+        }
       }
     ]
+  }
+
+  ensureTeamUi(openBrowser = true) {
+    const url = 'http://127.0.0.1:3333'
+    const scriptPath = path.resolve(this.repoRoot, 'plugins/supergraph/bin/sg-team-ui.js')
+    const currentDir = path.dirname(fileURLToPath(import.meta.url))
+    const fallbackPath = path.resolve(currentDir, '../bin/sg-team-ui.js')
+    const uiScript = fs.existsSync(scriptPath) ? scriptPath : fallbackPath
+
+    const openCmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open'
+
+    try {
+      if (fs.existsSync(uiScript)) {
+        const child = spawn(process.execPath, [uiScript, ...(openBrowser ? [] : ['--no-open'])], {
+          detached: true,
+          stdio: 'ignore',
+          cwd: this.repoRoot
+        })
+        child.unref()
+      } else if (openBrowser) {
+        exec(`${openCmd} ${url}`, () => {})
+      }
+      return { status: 'running', url }
+    } catch (e) {
+      return { status: 'error', error: e.message, url }
+    }
   }
 
   async executeTool(name, args = {}) {
@@ -136,8 +176,20 @@ export class TeamMcpServer {
           objective: args.objective,
           baseBranch: args.base_branch || 'HEAD'
         })
+        const ui = this.ensureTeamUi(true)
         return {
-          content: [{ type: 'text', text: JSON.stringify(mission, null, 2) }],
+          content: [{
+            type: 'text',
+            text: JSON.stringify({ ...mission, ui_dashboard: ui.url, ui_status: ui.status }, null, 2)
+          }],
+          isError: false
+        }
+      }
+
+      case 'sg_team_ui': {
+        const ui = this.ensureTeamUi(args.open_browser !== false)
+        return {
+          content: [{ type: 'text', text: JSON.stringify(ui, null, 2) }],
           isError: false
         }
       }

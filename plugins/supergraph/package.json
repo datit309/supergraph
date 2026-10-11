@@ -9,7 +9,9 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "sg-team-mcp": "./bin/sg-team-mcp.js"
+    "sg-team-mcp": "./bin/sg-team-mcp.js",
+    "sg-team-ui": "./bin/sg-team-ui.js",
+    "sg-team-status": "./bin/sg-team-status.js"
   },
   "scripts": {
     "test": "node --test tests/*.mjs"
