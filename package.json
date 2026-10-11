@@ -6,6 +6,7 @@
   "main": "./plugins/supergraph/index.js",
   "exports": {
     ".": "./plugins/supergraph/index.js",
+    "./client": "./plugins/supergraph/client.js",
     "./package.json": "./package.json"
   },
   "bin": {
@@ -24,6 +25,15 @@
     "manifestVersion": 1,
     "bundle": {
       "patch": "./plugins/supergraph/cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-ui-session",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
     }
   },
   "keywords": [

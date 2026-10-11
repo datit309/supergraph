@@ -132,18 +132,18 @@ export class TeamMcpServer {
       },
       {
         name: 'sg_team_ui',
-        description: 'Launch and open the Supergraph Agent Team Live Dashboard UI in browser (http://127.0.0.1:3333).',
+        description: 'Ensure Supergraph Agent Team Live Dashboard is running for DSH Right Sidebar (http://127.0.0.1:3080).',
         inputSchema: {
           type: 'object',
           properties: {
-            open_browser: { type: 'boolean', description: 'Whether to open browser automatically (default: true)' }
+            open_browser: { type: 'boolean', description: 'Whether to also open in external browser tab (default: false)' }
           }
         }
       }
     ]
   }
 
-  ensureTeamUi(openBrowser = true) {
+  ensureTeamUi(openBrowser = false) {
     const url = 'http://127.0.0.1:3333'
     const scriptPath = path.resolve(this.repoRoot, 'plugins/supergraph/bin/sg-team-ui.js')
     const currentDir = path.dirname(fileURLToPath(import.meta.url))
@@ -154,7 +154,7 @@ export class TeamMcpServer {
 
     try {
       if (fs.existsSync(uiScript)) {
-        const child = spawn(process.execPath, [uiScript, ...(openBrowser ? [] : ['--no-open'])], {
+        const child = spawn(process.execPath, [uiScript, ...(openBrowser ? ['--open'] : [])], {
           detached: true,
           stdio: 'ignore',
           cwd: this.repoRoot
@@ -163,9 +163,9 @@ export class TeamMcpServer {
       } else if (openBrowser) {
         exec(`${openCmd} ${url}`, () => {})
       }
-      return { status: 'running', url }
+      return { status: 'running', location: 'DSH Right Sidebar (Team Monitor)', standalone_url: url }
     } catch (e) {
-      return { status: 'error', error: e.message, url }
+      return { status: 'error', error: e.message }
     }
   }
 
@@ -176,18 +176,22 @@ export class TeamMcpServer {
           objective: args.objective,
           baseBranch: args.base_branch || 'HEAD'
         })
-        const ui = this.ensureTeamUi(true)
+        const ui = this.ensureTeamUi(false)
         return {
           content: [{
             type: 'text',
-            text: JSON.stringify({ ...mission, ui_dashboard: ui.url, ui_status: ui.status }, null, 2)
+            text: JSON.stringify({
+              ...mission,
+              ui_dashboard: 'DSH Right Sidebar (Team Monitor)',
+              ui_status: ui.status
+            }, null, 2)
           }],
           isError: false
         }
       }
 
       case 'sg_team_ui': {
-        const ui = this.ensureTeamUi(args.open_browser !== false)
+        const ui = this.ensureTeamUi(args.open_browser === true)
         return {
           content: [{ type: 'text', text: JSON.stringify(ui, null, 2) }],
           isError: false

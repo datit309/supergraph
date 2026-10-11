@@ -14,6 +14,8 @@ const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.ur
 assert.strictEqual(pkg.name, 'supergraph')
 assert.strictEqual(pkg.dsh?.manifestVersion, 1)
 assert.strictEqual(pkg.dsh?.bundle?.patch, './cordis.patch.yml')
+assert.strictEqual(pkg.exports?.['./client'], './client.js')
+assert.strictEqual(pkg.dsh?.client?.platform, 'web')
 
 // 3. Verify mock DSH context registration with Cordis-like strict get()
 let registeredProvider = null

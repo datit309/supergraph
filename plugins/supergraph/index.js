@@ -90,4 +90,41 @@ export function apply(ctx) {
       })
     }
   }
+
+  // Register API route for DSH Web GUI sidebar
+  const registerRoute = (webServer) => {
+    if (!webServer || typeof webServer.register !== 'function') return
+    webServer.register({
+      kind: 'exact',
+      path: '/api/supergraph/team/state',
+      handler: (_req, res) => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        })
+        const candidates = [
+          path.join(process.cwd(), '.supergraph', 'team', 'state.json'),
+          path.join(root, '../../.supergraph', 'team', 'state.json')
+        ]
+        for (const candidate of candidates) {
+          if (fs.existsSync(candidate)) {
+            try {
+              const raw = fs.readFileSync(candidate, 'utf8')
+              res.end(raw)
+              return
+            } catch {}
+          }
+        }
+        res.end(JSON.stringify({ mission: null, tasks: [] }))
+      }
+    })
+  }
+
+  if (typeof ctx.inject === 'function') {
+    ctx.inject(['webServer'], (scope) => {
+      registerRoute(scope.webServer)
+    })
+  } else if (ctx.webServer) {
+    registerRoute(ctx.webServer)
+  }
 }
