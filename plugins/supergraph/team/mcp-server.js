@@ -50,7 +50,7 @@ export class TeamMcpServer {
               description: 'File or directory patterns this task is permitted to mutate'
             }
           },
-          required: ['id', 'title']
+          required: ['id']
         }
       },
       {
@@ -209,7 +209,7 @@ export class TeamMcpServer {
       case 'sg_task_create': {
         const task = this.engine.createTask({
           id: args.id,
-          title: args.title,
+          title: args.title || args.id,
           description: args.description || '',
           wave: args.wave || 1,
           dependencies: args.dependencies || [],

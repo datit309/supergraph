@@ -20,7 +20,7 @@ match=re.fullmatch(r"codebase-memory-mcp\s+(\d+)\.(\d+)\.(\d+)", value)
 if not match:
     raise SystemExit(1)
 major,minor,patch=map(int, match.groups())
-raise SystemExit(0 if (major,minor,patch) >= (0,10,8) and (major,minor,patch) < (0,11,0) else 1)
+raise SystemExit(0 if (major,minor,patch) >= (0,10,8) and (major,minor,patch) < (0,12,0) else 1)
 PY
 }
 
@@ -58,7 +58,7 @@ recipes() {
   local version
   version=$(codebase-memory-mcp --version 2>/dev/null || true)
   if ! version_supported "$version"; then
-    fail "codebase-memory-mcp >= 0.10.8,<0.11.0 required (found: ${version:-unknown})"
+    fail "codebase-memory-mcp >= 0.10.8,<0.12.0 required (found: ${version:-unknown})"
   fi
   TMP=$(mktemp -d); trap 'rm -rf "$TMP"' RETURN
   cp -R "$ROOT/plugins/supergraph/tests/fixtures/codebase-memory" "$TMP/repo"
@@ -173,7 +173,7 @@ cli_contract() {
   local actual
   for actual in \
     'codebase-memory-mcp 0.10.7' \
-    'codebase-memory-mcp 0.11.0' \
+    'codebase-memory-mcp 0.12.0' \
     'codebase-memory-mcp invalid' \
     ''; do
     if version_supported "$actual"; then
@@ -182,6 +182,7 @@ cli_contract() {
   done
   version_supported 'codebase-memory-mcp 0.10.8' || fail 'supported 0.10.8 rejected'
   version_supported 'codebase-memory-mcp 0.10.9' || fail 'supported 0.10.9 rejected'
+  version_supported 'codebase-memory-mcp 0.11.0' || fail 'supported 0.11.0 rejected'
 
   printf '%s' '{"status":"direct"}' | normalize_json | grep -Fq '"status":"direct"' || fail 'direct JSON not normalized'
   printf '%s' '{"structuredContent":{"status":"envelope"},"isError":false}' | normalize_json | grep -Fq '"status":"envelope"' || fail 'structuredContent not unwrapped'

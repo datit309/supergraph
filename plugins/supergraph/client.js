@@ -31,7 +31,8 @@ window.__ModuleLoader__.load({
       const params = new URLSearchParams();
       if (sessionId) params.set('sessionId', sessionId);
       if (cwd) params.set('cwd', cwd);
-      const src = `http://127.0.0.1:3333/?${params.toString()}`;
+      const host = (typeof window !== 'undefined' && window.location?.hostname) ? window.location.hostname : '127.0.0.1';
+      const src = `http://${host}:3333/?${params.toString()}`;
 
       return h('div', {
         style: {
