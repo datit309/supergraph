@@ -168,3 +168,34 @@ test('WorktreeManager - concurrent parallel worktrees with zero conflict', async
   assert.ok(fs.existsSync(path.join(tmpRepo, 'src', 'a', 'index.js')))
   assert.ok(fs.existsSync(path.join(tmpRepo, 'src', 'b', 'index.js')))
 })
+
+test('TeamEngine - per-session state isolation', async (t) => {
+  const tmpRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'sg-team-session-'))
+  t.after(() => {
+    fs.rmSync(tmpRepo, { recursive: true, force: true })
+  })
+
+  const engine1 = new TeamEngine(tmpRepo, 'session-alpha')
+  const engine2 = new TeamEngine(tmpRepo, 'session-beta')
+
+  // Initially both empty
+  assert.equal(engine1.getMission(), null)
+  assert.equal(engine2.getMission(), null)
+
+  // Init mission in session-alpha
+  const m1 = engine1.initMission({ objective: 'Mission Alpha', baseBranch: 'main' })
+  assert.equal(m1.sessionId, 'session-alpha')
+  assert.equal(engine1.getMission()?.objective, 'Mission Alpha')
+
+  // session-beta must NOT see session-alpha's mission!
+  assert.equal(engine2.getMission(), null)
+
+  // Verify session file exists
+  assert.ok(fs.existsSync(path.join(tmpRepo, '.supergraph', 'team', 'sessions', 'session-alpha.json')))
+
+  // Init mission in session-beta
+  const m2 = engine2.initMission({ objective: 'Mission Beta', baseBranch: 'main' })
+  assert.equal(m2.sessionId, 'session-beta')
+  assert.equal(engine2.getMission()?.objective, 'Mission Beta')
+  assert.equal(engine1.getMission()?.objective, 'Mission Alpha')
+})

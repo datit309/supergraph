@@ -3,13 +3,28 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 
 export class TeamEngine {
-  constructor(repoRoot) {
+  constructor(repoRoot, sessionId = null) {
     this.repoRoot = repoRoot
+    this.sessionId = sessionId || process.env.DSH_SESSION_ID || null
     this.stateDir = path.join(this.repoRoot, '.supergraph', 'team')
+    this.sessionsDir = path.join(this.stateDir, 'sessions')
     this.statePath = path.join(this.stateDir, 'state.json')
   }
 
-  _loadState() {
+  _getSessionStatePath(sid) {
+    const s = sid || this.sessionId
+    if (!s) return null
+    return path.join(this.sessionsDir, `${s}.json`)
+  }
+
+  _loadState(sid) {
+    const sessionPath = this._getSessionStatePath(sid)
+    if (sessionPath && fs.existsSync(sessionPath)) {
+      try {
+        const raw = fs.readFileSync(sessionPath, 'utf8')
+        return JSON.parse(raw)
+      } catch {}
+    }
     if (!fs.existsSync(this.statePath)) {
       return {
         mission: null,
@@ -18,7 +33,15 @@ export class TeamEngine {
     }
     try {
       const raw = fs.readFileSync(this.statePath, 'utf8')
-      return JSON.parse(raw)
+      const parsed = JSON.parse(raw)
+      const targetSid = sid || this.sessionId
+      if (targetSid && parsed?.mission?.sessionId && parsed.mission.sessionId !== targetSid) {
+        return {
+          mission: null,
+          tasks: []
+        }
+      }
+      return parsed
     } catch {
       return {
         mission: null,
@@ -27,19 +50,34 @@ export class TeamEngine {
     }
   }
 
-  _saveState(state) {
+  _saveState(state, sid) {
     if (!fs.existsSync(this.stateDir)) {
       fs.mkdirSync(this.stateDir, { recursive: true })
+    }
+    const targetSid = sid || this.sessionId
+    const sessionPath = this._getSessionStatePath(targetSid)
+    if (sessionPath) {
+      if (!fs.existsSync(this.sessionsDir)) {
+        fs.mkdirSync(this.sessionsDir, { recursive: true })
+      }
+      const tmp = `${sessionPath}.${crypto.randomBytes(4).toString('hex')}.tmp`
+      fs.writeFileSync(tmp, JSON.stringify(state, null, 2), 'utf8')
+      fs.renameSync(tmp, sessionPath)
     }
     const tmp = `${this.statePath}.${crypto.randomBytes(4).toString('hex')}.tmp`
     fs.writeFileSync(tmp, JSON.stringify(state, null, 2), 'utf8')
     fs.renameSync(tmp, this.statePath)
   }
 
-  initMission({ objective, baseBranch = 'HEAD' }) {
+  initMission({ objective, baseBranch = 'HEAD', sessionId = null }) {
+    const targetSid = sessionId || this.sessionId || process.env.DSH_SESSION_ID || null
+    if (targetSid) {
+      this.sessionId = targetSid
+    }
     const id = `mission-${Date.now().toString(36)}-${crypto.randomBytes(3).toString('hex')}`
     const mission = {
       id,
+      sessionId: targetSid,
       objective,
       baseBranch,
       createdAt: Date.now(),
@@ -49,7 +87,7 @@ export class TeamEngine {
       mission,
       tasks: []
     }
-    this._saveState(state)
+    this._saveState(state, targetSid)
     return mission
   }
 

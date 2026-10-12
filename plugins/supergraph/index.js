@@ -97,25 +97,69 @@ export function apply(ctx) {
     webServer.register({
       kind: 'exact',
       path: '/api/supergraph/team/state',
-      handler: (_req, res) => {
+      handler: (req, res) => {
         res.writeHead(200, {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         })
-        const candidates = [
-          path.join(process.cwd(), '.supergraph', 'team', 'state.json'),
-          path.join(root, '../../.supergraph', 'team', 'state.json')
-        ]
-        for (const candidate of candidates) {
-          if (fs.existsSync(candidate)) {
+
+        const url = new URL(req.url, 'http://127.0.0.1:3080')
+        const sessionId = url.searchParams.get('sessionId')
+        const cwd = url.searchParams.get('cwd')
+
+        const candidateRoots = []
+        if (cwd) candidateRoots.push(cwd)
+
+        const workspaceRegistry = ctx.get('workspaceRegistry') ?? ctx.workspaceRegistry
+        if (workspaceRegistry && typeof workspaceRegistry.list === 'function') {
+          try {
+            for (const ws of workspaceRegistry.list()) {
+              const wsPath = ws?.record?.path || ws?.path
+              if (wsPath && !candidateRoots.includes(wsPath)) {
+                candidateRoots.push(wsPath)
+              }
+            }
+          } catch {}
+        }
+        if (!candidateRoots.includes(process.cwd())) candidateRoots.push(process.cwd())
+        const defaultRoot = path.resolve(root, '../..')
+        if (!candidateRoots.includes(defaultRoot)) candidateRoots.push(defaultRoot)
+
+        for (const baseRoot of candidateRoots) {
+          const teamDir = path.join(baseRoot, '.supergraph', 'team')
+
+          // 1. Check session-specific state file if sessionId is present
+          if (sessionId) {
+            const sessionPath = path.join(teamDir, 'sessions', `${sessionId}.json`)
+            if (fs.existsSync(sessionPath)) {
+              try {
+                res.end(fs.readFileSync(sessionPath, 'utf8'))
+                return
+              } catch {}
+            }
+          }
+
+          // 2. Check general state.json
+          const statePath = path.join(teamDir, 'state.json')
+          if (fs.existsSync(statePath)) {
             try {
-              const raw = fs.readFileSync(candidate, 'utf8')
-              res.end(raw)
-              return
+              const raw = fs.readFileSync(statePath, 'utf8')
+              const parsed = JSON.parse(raw)
+              // Only return if session matches or if no sessionId was requested
+              if (sessionId) {
+                if (parsed?.mission?.sessionId === sessionId) {
+                  res.end(raw)
+                  return
+                }
+              } else {
+                res.end(raw)
+                return
+              }
             } catch {}
           }
         }
-        res.end(JSON.stringify({ mission: null, tasks: [] }))
+
+        res.end(JSON.stringify({ mission: null, tasks: [], sessionId: sessionId || null }))
       }
     })
   }

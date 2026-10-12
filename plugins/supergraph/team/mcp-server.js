@@ -7,9 +7,10 @@ import { TeamEngine } from './engine.js'
 import { WorktreeManager } from './worktree.js'
 
 export class TeamMcpServer {
-  constructor(repoRoot = process.cwd()) {
+  constructor(repoRoot = process.cwd(), sessionId = null) {
     this.repoRoot = repoRoot
-    this.engine = new TeamEngine(this.repoRoot)
+    this.sessionId = sessionId || process.env.DSH_SESSION_ID || null
+    this.engine = new TeamEngine(this.repoRoot, this.sessionId)
     this.wt = new WorktreeManager(this.repoRoot)
   }
 
@@ -22,7 +23,8 @@ export class TeamMcpServer {
           type: 'object',
           properties: {
             objective: { type: 'string', description: 'Overall mission objective' },
-            base_branch: { type: 'string', description: 'Base git branch (default: HEAD or main)' }
+            base_branch: { type: 'string', description: 'Base git branch (default: HEAD or main)' },
+            session_id: { type: 'string', description: 'Optional DSH session ID' }
           },
           required: ['objective']
         }
@@ -172,9 +174,15 @@ export class TeamMcpServer {
   async executeTool(name, args = {}) {
     switch (name) {
       case 'sg_team_init': {
+        const sid = args.session_id || this.sessionId || process.env.DSH_SESSION_ID || null
+        if (sid) {
+          this.sessionId = sid
+          this.engine.sessionId = sid
+        }
         const mission = this.engine.initMission({
           objective: args.objective,
-          baseBranch: args.base_branch || 'HEAD'
+          baseBranch: args.base_branch || 'HEAD',
+          sessionId: sid
         })
         const ui = this.ensureTeamUi(false)
         return {

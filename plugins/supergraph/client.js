@@ -212,30 +212,40 @@ window.__ModuleLoader__.load({
       );
     }
 
-    function SupergraphTeamPane() {
+    function SupergraphTeamPane(props) {
+      const sessionId = props?.sessionId ||
+        (typeof globalCtx?.sidebarRight?.mounted?.getSnapshot === 'function' ? globalCtx.sidebarRight.mounted.getSnapshot() : null);
+      const cwd = props?.useSessions && sessionId ? props.useSessions(s => s.byId[sessionId]?.cwd) : null;
       const [data, setData] = React.useState(null);
       const [loading, setLoading] = React.useState(true);
 
       const fetchData = React.useCallback(async () => {
+        if (!sessionId) {
+          setData(null);
+          setLoading(false);
+          return;
+        }
         try {
-          let res = await fetch('/api/supergraph/team/state').catch(() => null);
-          if (!res || !res.ok) {
-            res = await fetch('http://127.0.0.1:3333/api/state').catch(() => null);
-          }
+          const params = new URLSearchParams();
+          params.set('sessionId', sessionId);
+          if (cwd) params.set('cwd', cwd);
+          const res = await fetch(`/api/supergraph/team/state?${params.toString()}`).catch(() => null);
           if (res && res.ok) {
             const json = await res.json();
             setData(json);
+          } else {
+            setData({ mission: null, tasks: [], sessionId });
           }
         } catch (e) {
           console.warn('[supergraph-team] fetch state error:', e);
         } finally {
           setLoading(false);
         }
-      }, []);
+      }, [sessionId, cwd]);
 
       React.useEffect(() => {
         fetchData();
-        const timer = setInterval(fetchData, 1500);
+        const timer = setInterval(fetchData, 2000);
         return () => clearInterval(timer);
       }, [fetchData]);
 
@@ -254,13 +264,27 @@ window.__ModuleLoader__.load({
             h('div', { className: 'sgt-title-row' },
               h('div', { className: 'sgt-title' },
                 h('span', null, '⚡ Supergraph Team Monitor')
-              )
+              ),
+              h('button', {
+                type: 'button',
+                onClick: fetchData,
+                style: {
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#94a3b8',
+                  fontSize: '11px'
+                }
+              }, '🔄')
             )
           ),
           h('div', { className: 'sgt-empty' },
-            h('div', { style: { fontSize: '24px', marginBottom: '8px' } }, '🚀'),
-            h('div', { style: { fontWeight: 600, marginBottom: '4px' } }, 'Chưa có mission nào'),
-            h('div', null, 'Khởi tạo mission bằng tool sg_team_init hoặc lệnh /execute trong chat.')
+            h('div', { style: { fontSize: '24px', marginBottom: '8px' } }, '🌱'),
+            h('div', { style: { fontWeight: 600, marginBottom: '4px' } }, 'Phiên làm việc này chưa có Team Mission'),
+            h('div', { style: { fontSize: '11px', color: '#94a3b8', marginBottom: '10px' } },
+              sessionId ? `Session: ${sessionId.slice(0, 8)}...` : 'Chưa chọn session'
+            ),
+            h('div', null, 'Khởi tạo bằng lệnh /execute hoặc tool sg_team_init trong hội thoại này.')
           )
         );
       }
@@ -393,7 +417,7 @@ window.__ModuleLoader__.load({
     }
 
     return {
-      inject: ['sidebarRight', 'sidebarRightTabs', 'slots'],
+      inject: ['sidebarRight', 'sidebarRightTabs', 'slots', 'sessions'],
       apply(ctx) {
         globalCtx = ctx;
 
@@ -440,21 +464,19 @@ window.__ModuleLoader__.load({
           }, HeaderTeamButton));
         }, 'supergraph-team: header action slot');
 
-        // Auto-open and expand helper
+        // Auto-open and expand helper scoped to target session
         function autoOpenAndExpand(sid) {
-          if (!ctx.sidebarRight) return;
-          const targetSid = sid || (typeof ctx.sidebarRight.mounted?.getSnapshot === 'function' ? ctx.sidebarRight.mounted.getSnapshot() : null);
-          if (!targetSid) return;
+          if (!ctx.sidebarRight || !sid) return;
           try {
             if (typeof ctx.sidebarRight.openTabIn === 'function') {
-              ctx.sidebarRight.openTabIn(targetSid, TAB_KIND);
+              ctx.sidebarRight.openTabIn(sid, TAB_KIND);
             } else if (typeof ctx.sidebarRight.openTab === 'function') {
               ctx.sidebarRight.openTab(TAB_KIND);
             }
             if (typeof ctx.sidebarRight.actionsFor === 'function') {
-              const acts = ctx.sidebarRight.actionsFor(targetSid);
+              const acts = ctx.sidebarRight.actionsFor(sid);
               if (acts && typeof acts.setExpanded === 'function') {
-                acts.setExpanded(targetSid, true);
+                acts.setExpanded(sid, true);
               }
             }
           } catch (e) {
@@ -462,50 +484,100 @@ window.__ModuleLoader__.load({
           }
         }
 
-        // 5. Watcher to auto-open sidebar when mission is active
-        let lastAutoOpenedMissionId = null;
-        async function checkAndAutoOpen(sid) {
-          try {
-            let res = await fetch('/api/supergraph/team/state').catch(() => null);
-            if (!res || !res.ok) {
-              res = await fetch('http://127.0.0.1:3333/api/state').catch(() => null);
+        // 5. Track per-session tool executions: ONLY auto-open for the session calling team tools
+        const boundSessions = new Set();
+        const autoOpenedSessions = new Set();
+
+        function checkToolCall(sid, toolName) {
+          if (!toolName || !sid) return;
+          if (toolName === 'sg_team_init' || toolName.startsWith('sg_task_') || toolName.includes('supergraph-team')) {
+            if (!autoOpenedSessions.has(sid)) {
+              autoOpenedSessions.add(sid);
+              autoOpenAndExpand(sid);
             }
-            if (res && res.ok) {
-              const json = await res.json();
-              if (json && json.mission && json.mission.id) {
-                if (lastAutoOpenedMissionId !== json.mission.id) {
-                  lastAutoOpenedMissionId = json.mission.id;
-                  autoOpenAndExpand(sid);
+          }
+        }
+
+        function bindSession(sid) {
+          if (!sid || boundSessions.has(sid)) return;
+          boundSessions.add(sid);
+          try {
+            const binding = ctx.sessions?.binding(sid);
+            if (binding && binding.eventSource && typeof binding.eventSource.subscribe === 'function') {
+              // Initial scan of historical entries for this specific session
+              const initialSnapshot = binding.eventSource.getSnapshot();
+              if (initialSnapshot && Array.isArray(initialSnapshot.entries)) {
+                for (const entry of initialSnapshot.entries) {
+                  if (entry?.type === 'event' && entry.event?.type === 'tool/call') {
+                    checkToolCall(sid, entry.event.data?.name);
+                  }
                 }
               }
+
+              // Listen to real-time events for this specific session
+              binding.eventSource.subscribe(() => {
+                const snapshot = binding.eventSource.getSnapshot();
+                if (!snapshot) return;
+                const change = snapshot.change;
+                if (change && Array.isArray(change.entries)) {
+                  for (const entry of change.entries) {
+                    if (entry?.type === 'event' && entry.event?.type === 'tool/call') {
+                      checkToolCall(sid, entry.event.data?.name);
+                    }
+                  }
+                } else if (change && change.entry?.type === 'event' && change.entry.event?.type === 'tool/call') {
+                  checkToolCall(sid, change.entry.event.data?.name);
+                }
+              });
             }
+          } catch (e) {
+            console.warn('[supergraph-team] Failed to bind session:', sid, e);
+          }
+        }
+
+        function syncSessions() {
+          try {
+            const list = ctx.sessions?.list?.getSnapshot();
+            if (list && list.byId) {
+              for (const id in list.byId) {
+                bindSession(id);
+              }
+            }
+            const currentMounted = ctx.sidebarRight?.mounted?.getSnapshot();
+            if (currentMounted) bindSession(currentMounted);
           } catch {}
         }
 
-        // On mount
-        if (ctx.sidebarRight && ctx.sidebarRight.mounted) {
+        // On session change
+        if (ctx.sessions?.list) {
           ctx.effect(() => {
-            const unsub = ctx.sidebarRight.mounted.subscribe(() => {
-              const sid = ctx.sidebarRight.mounted.getSnapshot();
-              if (sid) checkAndAutoOpen(sid);
+            const unsub = ctx.sessions.list.subscribe(() => {
+              syncSessions();
             });
-            const initialSid = ctx.sidebarRight.mounted.getSnapshot();
-            if (initialSid) checkAndAutoOpen(initialSid);
+            syncSessions();
             return () => {
               if (unsub) unsub();
             };
-          }, 'supergraph-team: auto-open on mount');
+          }, 'supergraph-team: session list sync');
         }
 
-        // Polling loop to auto-open when a mission starts
-        const pollInterval = setInterval(() => {
-          const sid = ctx.sidebarRight?.mounted?.getSnapshot();
-          if (sid) checkAndAutoOpen(sid);
-        }, 2000);
+        if (ctx.sidebarRight?.mounted) {
+          ctx.effect(() => {
+            const unsub = ctx.sidebarRight.mounted.subscribe(() => {
+              const sid = ctx.sidebarRight.mounted.getSnapshot();
+              if (sid) bindSession(sid);
+            });
+            const current = ctx.sidebarRight.mounted.getSnapshot();
+            if (current) bindSession(current);
+            return () => {
+              if (unsub) unsub();
+            };
+          }, 'supergraph-team: mounted session sync');
+        }
 
-        // Window event listener
-        window.addEventListener('supergraph:team:open', () => {
-          autoOpenAndExpand();
+        window.addEventListener('supergraph:team:open', (e) => {
+          const sid = e?.detail?.sessionId || ctx.sidebarRight?.mounted?.getSnapshot();
+          if (sid) autoOpenAndExpand(sid);
         });
       }
     };
