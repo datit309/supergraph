@@ -31,7 +31,7 @@ window.__ModuleLoader__.load({
       const params = new URLSearchParams();
       if (sessionId) params.set('sessionId', sessionId);
       if (cwd) params.set('cwd', cwd);
-      const src = `/api/supergraph/team/ui?${params.toString()}`;
+      const src = `http://127.0.0.1:3333/?${params.toString()}`;
 
       return h('div', {
         style: {

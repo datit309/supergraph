@@ -744,15 +744,14 @@ export function getTeamUiHtml() {
 
     async function updateDashboard() {
       try {
-        let stateUrl = "/api/state";
-        if (currentSessionId) {
-          stateUrl = "/api/supergraph/team/state?sessionId=" + encodeURIComponent(currentSessionId) + (currentCwd ? "&cwd=" + encodeURIComponent(currentCwd) : "");
-        } else if (window.location.pathname.startsWith("/api/supergraph")) {
-          stateUrl = "/api/supergraph/team/state";
-        }
-        let res = await fetch(stateUrl).catch(() => null);
+        const queryParams = new URLSearchParams();
+        if (currentSessionId) queryParams.set("sessionId", currentSessionId);
+        if (currentCwd) queryParams.set("cwd", currentCwd);
+        const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
+
+        let res = await fetch("/api/state" + qs).catch(() => null);
         if (!res || !res.ok) {
-          res = await fetch("/api/state").catch(() => null);
+          res = await fetch("/api/supergraph/team/state" + qs).catch(() => null);
         }
         if (!res || !res.ok) return;
         const data = await res.json();
@@ -763,9 +762,10 @@ export function getTeamUiHtml() {
           document.getElementById('kpi-row').style.display = 'none';
           document.getElementById('toolbar').style.display = 'none';
           document.getElementById('content-dag').style.display = 'none';
-          document.getElementById('btn-init-demo').style.display = 'inline-flex';
+          document.getElementById('btn-init-demo').style.display = currentSessionId ? 'none' : 'inline-flex';
           document.getElementById('btn-reset').style.display = 'none';
-          document.getElementById('mission-text').textContent = 'Chưa có mission nào đang chạy.';
+          const sessionHint = currentSessionId ? (' &bull; Session: <code>' + escapeHtml(currentSessionId.slice(0, 8)) + '...</code>') : '';
+          document.getElementById('mission-text').innerHTML = 'Phiên làm việc này chưa có Team Mission' + sessionHint + '.';
           return;
         }
 

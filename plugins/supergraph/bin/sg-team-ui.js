@@ -9,67 +9,84 @@ import { getTeamUiHtml } from '../team/ui-html.js'
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3333
 const repoRoot = process.cwd()
-const engine = new TeamEngine(repoRoot)
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/api/state') {
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
-    const state = engine._loadState()
+  const url = new URL(req.url, `http://127.0.0.1:${PORT}`)
+  const pathname = url.pathname
+  const sessionId = url.searchParams.get('sessionId')
+  const cwd = url.searchParams.get('cwd') || repoRoot
+  const engine = new TeamEngine(cwd, sessionId)
+
+  if (pathname === '/api/state' || pathname === '/api/supergraph/team/state') {
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    })
+    let state = engine._loadState(sessionId)
+    if (sessionId && state.mission && state.mission.sessionId !== sessionId) {
+      state = { mission: null, tasks: [], sessionId }
+    }
     res.end(JSON.stringify(state))
     return
   }
 
-  if (req.url === '/api/init-demo' && req.method === 'POST') {
-    engine.initMission({
+  if (pathname === '/api/init-demo' && req.method === 'POST') {
+    const demoEngine = new TeamEngine(cwd, sessionId)
+    demoEngine.initMission({
       objective: 'Tái cấu trúc Kiến trúc Multi-Agent & Git Worktree Isolation',
-      baseBranch: 'main'
+      baseBranch: 'main',
+      sessionId: sessionId || null
     })
-    engine.createTask({
+    demoEngine.createTask({
       id: 'task-1-schema',
       title: 'Thiết kế Data Contract & Schema định nghĩa DAG Wave',
       wave: 1,
       dependencies: [],
       writeScopes: ['packages/core/src/schema.ts']
     })
-    engine.createTask({
+    demoEngine.createTask({
       id: 'task-2-engine',
       title: 'Xây dựng TeamEngine core & State Machine',
       wave: 1,
       dependencies: [],
       writeScopes: ['packages/core/src/engine.ts']
     })
-    engine.markMerged({ taskId: 'task-1-schema' })
-    engine.claimTask({ taskId: 'task-2-engine', workerId: 'agent-beta' })
-    engine.recordRed({ taskId: 'task-2-engine', testOutput: 'FAIL: Task state machine transition invalid' })
-    engine.recordGreen({
+    demoEngine.markMerged({ taskId: 'task-1-schema' })
+    demoEngine.claimTask({ taskId: 'task-2-engine', workerId: 'agent-beta' })
+    demoEngine.recordRed({ taskId: 'task-2-engine', testOutput: 'FAIL: Task state machine transition invalid' })
+    demoEngine.recordGreen({
       taskId: 'task-2-engine',
       testOutput: 'PASS: 12 tests passed',
       diff: 'diff --git a/engine.ts b/engine.ts\n+ state machine tests green'
     })
-    engine.markMerged({ taskId: 'task-2-engine' })
+    demoEngine.markMerged({ taskId: 'task-2-engine' })
 
-    engine.claimTask({ taskId: 'task-3-worktree', workerId: 'agent-gamma' })
-    engine.recordRed({ taskId: 'task-3-worktree', testOutput: 'FAIL: git worktree add failed with exit code 1\n  fatal: invalid reference: HEAD' })
+    demoEngine.claimTask({ taskId: 'task-3-worktree', workerId: 'agent-gamma' })
+    demoEngine.recordRed({ taskId: 'task-3-worktree', testOutput: 'FAIL: git worktree add failed with exit code 1\n  fatal: invalid reference: HEAD' })
 
-    engine.claimTask({ taskId: 'task-4-mcp', workerId: 'agent-delta' })
+    demoEngine.claimTask({ taskId: 'task-4-mcp', workerId: 'agent-delta' })
 
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
     res.end(JSON.stringify({ success: true }))
     return
   }
 
-  if (req.url === '/api/reset' && req.method === 'POST') {
-    engine.initMission({ objective: '', baseBranch: 'HEAD' })
-    const state = engine._loadState()
+  if (pathname === '/api/reset' && req.method === 'POST') {
+    const resetEngine = new TeamEngine(cwd, sessionId)
+    resetEngine.initMission({ objective: '', baseBranch: 'HEAD', sessionId: sessionId || null })
+    const state = resetEngine._loadState(sessionId)
     state.mission = null
     state.tasks = []
-    engine._saveState(state)
+    resetEngine._saveState(state, sessionId)
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
     res.end(JSON.stringify({ success: true }))
     return
   }
 
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+  res.writeHead(200, {
+    'Content-Type': 'text/html; charset=utf-8',
+    'Access-Control-Allow-Origin': '*'
+  })
   res.end(getTeamUiHtml())
 })
 
