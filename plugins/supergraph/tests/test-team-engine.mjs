@@ -199,3 +199,33 @@ test('TeamEngine - per-session state isolation', async (t) => {
   assert.equal(engine2.getMission()?.objective, 'Mission Beta')
   assert.equal(engine1.getMission()?.objective, 'Mission Alpha')
 })
+
+test('WorktreeManager - merge lock synchronizes concurrent merges', async (t) => {
+  const tmpRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'sg-wt-lock-'))
+  t.after(() => {
+    fs.rmSync(tmpRepo, { recursive: true, force: true })
+  })
+
+  execSync('git init -b main', { cwd: tmpRepo })
+  execSync('git config user.email "test@example.com"', { cwd: tmpRepo })
+  execSync('git config user.name "Tester"', { cwd: tmpRepo })
+  fs.writeFileSync(path.join(tmpRepo, 'README.md'), '# Main Repo\n')
+  execSync('git add . && git commit -m "initial commit"', { cwd: tmpRepo })
+
+  const wtManager = new WorktreeManager(tmpRepo)
+  assert.equal(typeof wtManager._acquireMergeLock, 'function', 'WorktreeManager must provide _acquireMergeLock')
+
+  // Spawn 2 parallel worktrees
+  const wt1 = wtManager.createWorktree('lock-1', 'main')
+  const wt2 = wtManager.createWorktree('lock-2', 'main')
+  fs.writeFileSync(path.join(wt1.worktreeDir, 'file1.txt'), 'file 1')
+  fs.writeFileSync(path.join(wt2.worktreeDir, 'file2.txt'), 'file 2')
+
+  // Merge both with lock
+  const res1 = wtManager.mergeWorktree('lock-1', 'main')
+  const res2 = wtManager.mergeWorktree('lock-2', 'main')
+  assert.equal(res1.success, true)
+  assert.equal(res2.success, true)
+  assert.ok(fs.existsSync(path.join(tmpRepo, 'file1.txt')))
+  assert.ok(fs.existsSync(path.join(tmpRepo, 'file2.txt')))
+})

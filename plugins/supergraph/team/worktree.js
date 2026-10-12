@@ -76,51 +76,89 @@ export class WorktreeManager {
     }
   }
 
-  mergeWorktree(taskId, targetBranch = 'HEAD', commitMsg = '') {
-    const branch = `sg-task-${taskId}`
-    const worktreeDir = path.join(this.worktreeParent, `task-${taskId}`)
-
-    if (!fs.existsSync(worktreeDir)) {
-      throw new Error(`Worktree not found for task ${taskId}`)
+  _acquireMergeLock(timeoutMs = 15000) {
+    if (!fs.existsSync(this.worktreeParent)) {
+      fs.mkdirSync(this.worktreeParent, { recursive: true })
     }
-
-    // 1. Commit any uncommitted changes inside the worktree
-    try {
-      const status = execSync('git status --porcelain', { cwd: worktreeDir, encoding: 'utf8' }).trim()
-      if (status) {
-        execSync('git add -A', { cwd: worktreeDir, stdio: 'pipe' })
-        const msg = commitMsg || `feat(${taskId}): complete task changes`
-        execSync(`git commit -m "${msg.replace(/"/g, '\\"')}"`, { cwd: worktreeDir, stdio: 'pipe' })
-      }
-    } catch (err) {
-      throw new Error(`Failed to commit in worktree: ${err.message}`)
-    }
-
-    // 2. In base repo, ensure target branch is checked out if specified and not HEAD
-    if (targetBranch && targetBranch !== 'HEAD') {
+    const lockDir = path.join(this.worktreeParent, 'merge.lock')
+    const start = Date.now()
+    while (Date.now() - start < timeoutMs) {
       try {
-        const current = execSync('git rev-parse --abbrev-ref HEAD', { cwd: this.repoRoot, encoding: 'utf8' }).trim()
-        if (current !== targetBranch) {
-          execSync(`git checkout "${targetBranch}"`, { cwd: this.repoRoot, stdio: 'pipe' })
+        fs.mkdirSync(lockDir)
+        return () => {
+          try {
+            fs.rmdirSync(lockDir)
+          } catch {}
         }
       } catch (err) {
-        throw new Error(`Failed to checkout target branch ${targetBranch}: ${err.message}`)
+        if (err.code === 'EEXIST') {
+          try {
+            const stat = fs.statSync(lockDir)
+            if (Date.now() - stat.mtimeMs > 30000) {
+              fs.rmdirSync(lockDir)
+              continue
+            }
+          } catch {}
+          const sleepUntil = Date.now() + 50
+          while (Date.now() < sleepUntil) {}
+        } else {
+          throw err
+        }
       }
     }
+    throw new Error('Timed out waiting for merge lock on base repository')
+  }
 
-    // 3. Merge task branch
+  mergeWorktree(taskId, targetBranch = 'HEAD', commitMsg = '') {
+    const releaseLock = this._acquireMergeLock()
     try {
-      execSync(`git merge "${branch}" --no-edit`, { cwd: this.repoRoot, stdio: 'pipe' })
-    } catch (err) {
-      throw new Error(`Failed to merge branch ${branch}: ${err.message}`)
-    }
+      const branch = `sg-task-${taskId}`
+      const worktreeDir = path.join(this.worktreeParent, `task-${taskId}`)
 
-    // 4. Remove worktree and branch
-    this.removeWorktree(taskId)
+      if (!fs.existsSync(worktreeDir)) {
+        throw new Error(`Worktree not found for task ${taskId}`)
+      }
 
-    return {
-      success: true,
-      branch
+      // 1. Commit any uncommitted changes inside the worktree
+      try {
+        const status = execSync('git status --porcelain', { cwd: worktreeDir, encoding: 'utf8' }).trim()
+        if (status) {
+          execSync('git add -A', { cwd: worktreeDir, stdio: 'pipe' })
+          const msg = commitMsg || `feat(${taskId}): complete task changes`
+          execSync(`git commit -m "${msg.replace(/"/g, '\\"')}"`, { cwd: worktreeDir, stdio: 'pipe' })
+        }
+      } catch (err) {
+        throw new Error(`Failed to commit in worktree: ${err.message}`)
+      }
+
+      // 2. In base repo, ensure target branch is checked out if specified and not HEAD
+      if (targetBranch && targetBranch !== 'HEAD') {
+        try {
+          const current = execSync('git rev-parse --abbrev-ref HEAD', { cwd: this.repoRoot, encoding: 'utf8' }).trim()
+          if (current !== targetBranch) {
+            execSync(`git checkout "${targetBranch}"`, { cwd: this.repoRoot, stdio: 'pipe' })
+          }
+        } catch (err) {
+          throw new Error(`Failed to checkout target branch ${targetBranch}: ${err.message}`)
+        }
+      }
+
+      // 3. Merge task branch
+      try {
+        execSync(`git merge "${branch}" --no-edit`, { cwd: this.repoRoot, stdio: 'pipe' })
+      } catch (err) {
+        throw new Error(`Failed to merge branch ${branch}: ${err.message}`)
+      }
+
+      // 4. Remove worktree and branch
+      this.removeWorktree(taskId)
+
+      return {
+        success: true,
+        branch
+      }
+    } finally {
+      releaseLock()
     }
   }
 
