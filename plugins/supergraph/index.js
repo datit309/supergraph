@@ -9,6 +9,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { getTeamUiHtml } from './team/ui-html.js'
 
 export const name = 'supergraph'
 export const inject = ['skills']
@@ -94,6 +95,21 @@ export function apply(ctx) {
   // Register API route for DSH Web GUI sidebar
   const registerRoute = (webServer) => {
     if (!webServer || typeof webServer.register !== 'function') return
+
+    // 1. Standalone Supergraph Team UI HTML
+    webServer.register({
+      kind: 'exact',
+      path: '/api/supergraph/team/ui',
+      handler: (_req, res) => {
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Access-Control-Allow-Origin': '*'
+        })
+        res.end(getTeamUiHtml())
+      }
+    })
+
+    // 2. Session-scoped Team State JSON
     webServer.register({
       kind: 'exact',
       path: '/api/supergraph/team/state',
