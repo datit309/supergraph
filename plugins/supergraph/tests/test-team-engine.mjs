@@ -229,3 +229,61 @@ test('WorktreeManager - merge lock synchronizes concurrent merges', async (t) =>
   assert.ok(fs.existsSync(path.join(tmpRepo, 'file1.txt')))
   assert.ok(fs.existsSync(path.join(tmpRepo, 'file2.txt')))
 })
+
+test('WorktreeManager - dependency symlinks, writeScopes validation, sync with target and safe abort', async (t) => {
+  const tmpRepo = fs.mkdtempSync(path.join(os.tmpdir(), 'sg-wt-advanced-'))
+  t.after(() => {
+    fs.rmSync(tmpRepo, { recursive: true, force: true })
+  })
+
+  execSync('git init -b main', { cwd: tmpRepo })
+  execSync('git config user.email "test@example.com"', { cwd: tmpRepo })
+  execSync('git config user.name "Tester"', { cwd: tmpRepo })
+
+  // Setup repo with fake node_modules and .env
+  fs.mkdirSync(path.join(tmpRepo, 'node_modules', 'dummy-pkg'), { recursive: true })
+  fs.writeFileSync(path.join(tmpRepo, 'node_modules', 'dummy-pkg', 'index.js'), 'module.exports = 42;')
+  fs.writeFileSync(path.join(tmpRepo, '.env'), 'SECRET_KEY=123456\n')
+  fs.writeFileSync(path.join(tmpRepo, 'README.md'), '# Base Repo\n')
+  execSync('git add README.md && git commit -m "initial commit"', { cwd: tmpRepo })
+
+  const wtManager = new WorktreeManager(tmpRepo)
+
+  // 1. Check dependency linking on worktree creation
+  const wt = wtManager.createWorktree('scope-test', 'main')
+  assert.ok(fs.existsSync(path.join(wt.worktreeDir, 'node_modules', 'dummy-pkg', 'index.js')), 'node_modules symlinked')
+  assert.ok(fs.existsSync(path.join(wt.worktreeDir, '.env')), '.env copied')
+
+  // 2. Test writeScopes validation
+  // Allowed scopes: ['src/allowed/*']
+  fs.mkdirSync(path.join(wt.worktreeDir, 'src', 'allowed'), { recursive: true })
+  fs.writeFileSync(path.join(wt.worktreeDir, 'src', 'allowed', 'app.js'), 'export const ok = true;')
+
+  const validCheck = wtManager.validateWriteScopes('scope-test', ['src/allowed/*'])
+  assert.equal(validCheck.valid, true)
+  assert.equal(validCheck.violations.length, 0)
+
+  // Add violation file
+  fs.writeFileSync(path.join(wt.worktreeDir, 'violation.js'), 'export const bad = true;')
+  const invalidCheck = wtManager.validateWriteScopes('scope-test', ['src/allowed/*'])
+  assert.equal(invalidCheck.valid, false)
+  assert.ok(invalidCheck.violations.includes('violation.js'))
+
+  // Remove violation file
+  fs.rmSync(path.join(wt.worktreeDir, 'violation.js'))
+
+  // 3. Test syncWithTarget
+  // Update main branch with new commit
+  fs.writeFileSync(path.join(tmpRepo, 'upstream.txt'), 'upstream content\n')
+  execSync('git add upstream.txt && git commit -m "feat: upstream update"', { cwd: tmpRepo })
+
+  // Worktree syncs with latest main
+  const syncRes = wtManager.syncWithTarget('scope-test', 'main')
+  assert.equal(syncRes.success, true)
+  assert.ok(fs.existsSync(path.join(wt.worktreeDir, 'upstream.txt')), 'upstream content merged into worktree')
+
+  // 4. Merge worktree into main cleanly
+  const mergeRes = wtManager.mergeWorktree('scope-test', 'main', 'feat: scoped feature')
+  assert.equal(mergeRes.success, true)
+  assert.ok(fs.existsSync(path.join(tmpRepo, 'src', 'allowed', 'app.js')))
+})

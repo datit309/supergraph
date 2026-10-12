@@ -275,6 +275,24 @@ export class TeamMcpServer {
       }
 
       case 'sg_task_submit': {
+        const taskObj = this.engine.getTask(args.task_id)
+        const mission = this.engine.getMission()
+        const baseBranch = mission?.baseBranch || 'HEAD'
+
+        // 1. Validate write scopes
+        if (taskObj && taskObj.writeScopes && taskObj.writeScopes.length > 0) {
+          const scopeCheck = this.wt.validateWriteScopes(args.task_id, taskObj.writeScopes, baseBranch)
+          if (!scopeCheck.valid) {
+            return {
+              content: [{
+                type: 'text',
+                text: `[WRITE_SCOPES_VIOLATION] Task '${args.task_id}' modified files outside allowed scopes (${taskObj.writeScopes.join(', ')}):\n${scopeCheck.violations.map(f => '  - ' + f).join('\n')}`
+              }],
+              isError: true
+            }
+          }
+        }
+
         let testLog = ''
         if (args.test_cmd) {
           const testRes = this.wt.runTest(args.task_id, args.test_cmd)
@@ -304,6 +322,38 @@ export class TeamMcpServer {
       }
 
       case 'sg_task_verify_merge': {
+        const taskObj = this.engine.getTask(args.task_id)
+        const mission = this.engine.getMission()
+        const targetBranch = mission?.baseBranch || 'HEAD'
+
+        // 1. Validate write scopes
+        if (taskObj && taskObj.writeScopes && taskObj.writeScopes.length > 0) {
+          const scopeCheck = this.wt.validateWriteScopes(args.task_id, taskObj.writeScopes, targetBranch)
+          if (!scopeCheck.valid) {
+            return {
+              content: [{
+                type: 'text',
+                text: `[WRITE_SCOPES_VIOLATION] Cannot merge: Task '${args.task_id}' modified files outside allowed scopes (${taskObj.writeScopes.join(', ')}):\n${scopeCheck.violations.map(f => '  - ' + f).join('\n')}`
+              }],
+              isError: true
+            }
+          }
+        }
+
+        // 2. Integration sync with target branch before running tests
+        try {
+          this.wt.syncWithTarget(args.task_id, targetBranch)
+        } catch (err) {
+          return {
+            content: [{
+              type: 'text',
+              text: `[INTEGRATION_SYNC_FAILED] Failed to sync worktree with base '${targetBranch}' before merge:\n${err.message}`
+            }],
+            isError: true
+          }
+        }
+
+        // 3. Verification test on integrated code
         if (args.test_cmd) {
           const testRes = this.wt.runTest(args.task_id, args.test_cmd)
           if (!testRes.passed) {
@@ -317,20 +367,30 @@ export class TeamMcpServer {
           }
         }
 
-        const mission = this.engine.getMission()
-        const targetBranch = mission?.baseBranch || 'HEAD'
-        const mergeRes = this.wt.mergeWorktree(args.task_id, targetBranch, args.commit_msg)
-        const task = this.engine.markMerged({ taskId: args.task_id })
+        // 4. Merge into base repository with merge lock and abort fallback
+        try {
+          const mergeRes = this.wt.mergeWorktree(args.task_id, targetBranch, args.commit_msg)
+          const task = this.engine.markMerged({ taskId: args.task_id })
 
-        return {
-          content: [{
-            type: 'text',
-            text: JSON.stringify({
-              task,
-              merge: mergeRes
-            }, null, 2)
-          }],
-          isError: false
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                task,
+                merge: mergeRes,
+                success: true
+              }, null, 2)
+            }],
+            isError: false
+          }
+        } catch (err) {
+          return {
+            content: [{
+              type: 'text',
+              text: `Merge failed: ${err.message}`
+            }],
+            isError: true
+          }
         }
       }
 

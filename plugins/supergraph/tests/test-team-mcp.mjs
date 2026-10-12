@@ -159,6 +159,30 @@ test('TeamMcpServer - protocol handling & tools lifecycle', async (t) => {
 
   // File should now be in main branch
   assert.ok(fs.existsSync(path.join(tmpRepo, 'jwt.js')))
+
+  // 9. Test write_scopes violation enforcement
+  await server.executeTool('sg_task_create', {
+    id: 'scoped-task',
+    title: 'Scoped Task',
+    wave: 3,
+    write_scopes: ['allowed/*']
+  })
+  const claimScoped = await server.executeTool('sg_task_claim', {
+    task_id: 'scoped-task',
+    worker_id: 'worker-strict'
+  })
+  const claimScopedData = JSON.parse(claimScoped.content[0].text)
+
+  // Write illegal file outside allowed/
+  fs.writeFileSync(path.join(claimScopedData.worktreeDir, 'forbidden.js'), 'bad')
+  const submitForbidden = await server.executeTool('sg_task_submit', {
+    task_id: 'scoped-task'
+  })
+  assert.equal(submitForbidden.isError, true)
+  assert.ok(submitForbidden.content[0].text.includes('[WRITE_SCOPES_VIOLATION]'))
+
+  // Cleanup
+  await server.executeTool('sg_worktree_cleanup', { task_id: 'scoped-task' })
 })
 
 test('TeamMcpServer - stdio binary integration', async (t) => {

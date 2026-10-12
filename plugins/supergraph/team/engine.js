@@ -176,7 +176,8 @@ export class TeamEngine {
     return task
   }
 
-  markMerged({ taskId }) {
+  markMerged(arg) {
+    const taskId = typeof arg === 'object' && arg !== null ? arg.taskId : arg
     const state = this._loadState()
     const task = state.tasks.find(t => t.id === taskId)
     if (!task) throw new Error(`Task not found: ${taskId}`)
