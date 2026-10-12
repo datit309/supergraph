@@ -10,11 +10,34 @@ import { getTeamUiHtml } from '../team/ui-html.js'
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3333
 const repoRoot = process.cwd()
 
+function findStateRoot(startDir) {
+  let curr = path.resolve(startDir || process.cwd())
+  while (curr && curr !== path.dirname(curr)) {
+    if (fs.existsSync(path.join(curr, '.supergraph', 'team', 'state.json'))) {
+      return curr
+    }
+    curr = path.dirname(curr)
+  }
+  const candidates = [
+    process.env.DSH_WORKSPACE,
+    '/Users/trantandat/GIC/Freelancer',
+    '/Users/trantandat/GIC/deepseek-harness',
+    process.cwd()
+  ].filter(Boolean)
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(c, '.supergraph', 'team', 'state.json'))) {
+      return c
+    }
+  }
+  return startDir || process.cwd()
+}
+
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`)
   const pathname = url.pathname
-  const sessionId = url.searchParams.get('sessionId')
-  const cwd = url.searchParams.get('cwd') || repoRoot
+  const sessionId = url.searchParams.get('sessionId') || null
+  const queryCwd = url.searchParams.get('cwd')
+  const cwd = queryCwd || findStateRoot(repoRoot)
   const engine = new TeamEngine(cwd, sessionId)
 
   if (pathname === '/api/state' || pathname === '/api/supergraph/team/state') {
@@ -23,8 +46,9 @@ const server = http.createServer((req, res) => {
       'Access-Control-Allow-Origin': '*'
     })
     let state = engine._loadState(sessionId)
-    if (sessionId && state.mission && state.mission.sessionId !== sessionId) {
-      state = { mission: null, tasks: [], sessionId }
+    if (!state || !state.mission) {
+      // Fallback to shared/repo mission if session has no isolated mission
+      state = engine._loadState(null)
     }
     res.end(JSON.stringify(state))
     return

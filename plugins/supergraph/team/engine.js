@@ -3,9 +3,9 @@ import path from 'node:path'
 import crypto from 'node:crypto'
 
 export class TeamEngine {
-  constructor(repoRoot, sessionId = null) {
-    this.repoRoot = repoRoot
-    this.sessionId = sessionId || process.env.DSH_SESSION_ID || null
+  constructor(repoRoot = process.cwd(), sessionId = null) {
+    this.repoRoot = repoRoot || process.cwd()
+    this.sessionId = sessionId !== undefined ? sessionId : (process.env.DSH_SESSION_ID || null)
     this.stateDir = path.join(this.repoRoot, '.supergraph', 'team')
     this.sessionsDir = path.join(this.stateDir, 'sessions')
     this.statePath = path.join(this.stateDir, 'state.json')
@@ -34,7 +34,7 @@ export class TeamEngine {
     try {
       const raw = fs.readFileSync(this.statePath, 'utf8')
       const parsed = JSON.parse(raw)
-      const targetSid = sid || this.sessionId
+      const targetSid = sid !== undefined ? sid : this.sessionId
       if (targetSid && parsed?.mission?.sessionId && parsed.mission.sessionId !== targetSid) {
         return {
           mission: null,

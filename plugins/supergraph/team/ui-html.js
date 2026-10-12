@@ -901,7 +901,7 @@ export function getTeamUiHtml() {
             depsHtml += '</div>';
           }
 
-          html += '<div class="task-card" onclick="openTaskModal(\\'' + t.id + '\\')">' +
+          html += '<div class="task-card" onclick="openTaskModal(\x27' + escapeHtml(t.id) + '\x27)">' +
             '<div class="task-top">' +
               '<span class="task-id">' + escapeHtml(t.id) + '</span>' +
               '<span class="badge ' + badgeClass + '">' + statusText + '</span>' +
