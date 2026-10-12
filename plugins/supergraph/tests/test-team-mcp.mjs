@@ -74,6 +74,23 @@ test('TeamMcpServer - protocol handling & tools lifecycle', async (t) => {
   })
   assert.equal(callCreate.result.isError, false)
 
+  // 4b. Call sg_task_create without title (should fallback to id)
+  const callCreateNoTitle = await server.handleMessage({
+    jsonrpc: '2.0',
+    id: 42,
+    method: 'tools/call',
+    params: {
+      name: 'sg_task_create',
+      arguments: {
+        id: 'oauth-refresh',
+        wave: 2
+      }
+    }
+  })
+  assert.equal(callCreateNoTitle.result.isError, false)
+  const createdNoTitle = JSON.parse(callCreateNoTitle.result.content[0].text)
+  assert.equal(createdNoTitle.title, 'oauth-refresh')
+
   // 5. Call sg_task_claim (should spawn worktree)
   const callClaim = await server.handleMessage({
     jsonrpc: '2.0',
