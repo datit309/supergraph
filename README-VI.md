@@ -428,7 +428,7 @@ Tất cả skill dùng prefix `/supergraph:` để tránh xung đột với lệ
 | `/supergraph:flutter-dart-code-review` | Checklist review Flutter/Dart 15 mục                                               | Code review Flutter/Dart                 |
 | `/supergraph:frontend-design`          | UI production-grade — không có aesthetics AI generic                               | Component và layout web UI               |
 | `/supergraph:webapp-testing`           | Web testing dùng Playwright                                                        | E2E web testing                          |
-| `/supergraph:browser-agent`            | Điều khiển browser như người thật & test user flow (Rust agent-browser + CDP)      | Test trải nghiệm thật, vượt anti-bot     |
+| `/supergraph:browser-agent`            | Điều khiển browser như người thật & kiểm thử QA ISTQB (Rust agent-browser + CDP)   | Test trải nghiệm thật, vượt anti-bot, ma trận QA |
 
 ---
 

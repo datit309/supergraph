@@ -194,3 +194,12 @@ All checks pass before merge.
 | `sg_worktree_cleanup`             | Clean up worktree and branch                    |
 | `sg_team_status`                  | Mission progress overview and DAG status        |
 | `sg_team_ui`                      | Launch and open Live Dashboard UI in browser    |
+| **Browser tools** (via `supergraph-browser` / `agent-browser`) | |
+| `agent_browser_open`              | Navigate to URL with anti-bot bypass                |
+| `agent_browser_snapshot`          | Compact token-efficient Accessibility Tree with @ref|
+| `agent_browser_click`             | Click element with human mouse movement trajectory   |
+| `agent_browser_fill`              | Fill form field with randomized human keystrokes    |
+| `agent_browser_press`             | Send physical keyboard event (Enter, Tab, Esc)     |
+| `agent_browser_wait_for_text`     | Wait for condition, element, or simulate user pause |
+| `agent_browser_screenshot`        | Capture visual test evidence without layout shift   |
+| `agent_browser_close`             | Close browser tab / session cleanly                 |
