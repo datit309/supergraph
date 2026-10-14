@@ -4,17 +4,59 @@
 
 export function getTeamUiHtml() {
   return String.raw`<!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Supergraph Agent Team Monitor</title>
   <style>
     :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --card-hover: #f1f5f9;
+      --card-subtle-bg: #f8fafc;
+      --card-subtle-border: #e2e8f0;
+      --nav-bg: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-dim: rgba(2, 132, 199, 0.12);
+      --success: #059669;
+      --success-dim: rgba(5, 150, 105, 0.12);
+      --warning: #d97706;
+      --warning-dim: rgba(217, 119, 6, 0.12);
+      --danger: #dc2626;
+      --danger-dim: rgba(220, 38, 38, 0.12);
+      --purple: #7c3aed;
+      --purple-dim: rgba(124, 58, 237, 0.12);
+      --teal: #0d9488;
+      --teal-dim: rgba(13, 148, 136, 0.12);
+      --header-bg: #ffffff;
+      --header-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      --card-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.05);
+      --card-shadow-hover: 0 8px 20px -4px rgba(0, 0, 0, 0.1);
+      --table-th-bg: #f8fafc;
+      --table-border: #f1f5f9;
+      --table-hover: #f8fafc;
+      --code-bg: #0f172a;
+      --code-text: #f8fafc;
+      --code-border: #334155;
+      --guide-bg: #f8fafc;
+      --guide-text: #0369a1;
+      --modal-bg: #ffffff;
+      --modal-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      --progress-bg: #e2e8f0;
+    }
+
+    [data-theme="dark"] {
       --bg: #090d16;
       --card-bg: #111827;
       --card-border: #1f293d;
       --card-hover: #192337;
+      --card-subtle-bg: rgba(255, 255, 255, 0.02);
+      --card-subtle-border: rgba(255, 255, 255, 0.07);
+      --nav-bg: rgba(17, 24, 39, 0.8);
       --text: #f9fafb;
       --text-muted: #94a3b8;
       --primary: #38bdf8;
@@ -29,6 +71,21 @@ export function getTeamUiHtml() {
       --purple-dim: rgba(168, 85, 247, 0.15);
       --teal: #14b8a6;
       --teal-dim: rgba(20, 184, 166, 0.15);
+      --header-bg: linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(15, 23, 42, 0.9));
+      --header-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      --card-shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.3);
+      --table-th-bg: rgba(0, 0, 0, 0.25);
+      --table-border: rgba(255, 255, 255, 0.04);
+      --table-hover: rgba(255, 255, 255, 0.02);
+      --code-bg: #070a12;
+      --code-text: #e2e8f0;
+      --code-border: rgba(255, 255, 255, 0.08);
+      --guide-bg: rgba(0, 0, 0, 0.3);
+      --guide-text: var(--primary);
+      --modal-bg: #0d121f;
+      --modal-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      --progress-bg: rgba(255, 255, 255, 0.05);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -44,7 +101,7 @@ export function getTeamUiHtml() {
 
     /* Header */
     .header {
-      background: linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(15, 23, 42, 0.9));
+      background: var(--header-bg);
       backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       border-radius: 16px;
@@ -55,7 +112,7 @@ export function getTeamUiHtml() {
       justify-content: space-between;
       align-items: center;
       gap: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--header-shadow);
     }
     .brand-area {
       display: flex;
@@ -75,7 +132,7 @@ export function getTeamUiHtml() {
     .title-area h1 {
       font-size: 20px;
       font-weight: 800;
-      color: #fff;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 10px;
@@ -121,7 +178,7 @@ export function getTeamUiHtml() {
     }
     .btn:hover {
       background: var(--card-hover);
-      border-color: rgba(255, 255, 255, 0.15);
+      border-color: var(--primary);
       transform: translateY(-1px);
     }
     .btn-primary {
@@ -155,9 +212,13 @@ export function getTeamUiHtml() {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      transition: border-color 0.15s ease;
+      box-shadow: var(--card-shadow);
+      transition: border-color 0.15s ease, transform 0.15s ease;
     }
-    .kpi-card:hover { border-color: rgba(255, 255, 255, 0.15); }
+    .kpi-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
     .kpi-num {
       font-size: 24px;
       font-weight: 800;
@@ -184,7 +245,7 @@ export function getTeamUiHtml() {
     .nav-tabs {
       display: flex;
       gap: 6px;
-      background: rgba(17, 24, 39, 0.8);
+      background: var(--nav-bg);
       padding: 4px;
       border-radius: 12px;
       border: 1px solid var(--card-border);
@@ -205,9 +266,9 @@ export function getTeamUiHtml() {
     }
     .tab-btn.active {
       background: var(--primary);
-      color: #0b0f19;
+      color: #ffffff;
       font-weight: 700;
-      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 2px 8px var(--primary-dim);
     }
     .filter-area {
       display: flex;
@@ -253,7 +314,7 @@ export function getTeamUiHtml() {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--card-shadow);
     }
     .wave-header {
       display: flex;
@@ -280,7 +341,7 @@ export function getTeamUiHtml() {
     .wave-progress {
       width: 100%;
       height: 4px;
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--progress-bg);
       border-radius: 999px;
       overflow: hidden;
       margin-top: 6px;
@@ -294,8 +355,8 @@ export function getTeamUiHtml() {
 
     /* Task Card */
     .task-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: var(--card-subtle-bg);
+      border: 1px solid var(--card-subtle-border);
       border-radius: 12px;
       padding: 14px;
       transition: all 0.2s ease;
@@ -305,10 +366,10 @@ export function getTeamUiHtml() {
       gap: 8px;
     }
     .task-card:hover {
-      border-color: rgba(56, 189, 248, 0.4);
-      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--primary);
+      background: var(--card-hover);
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+      box-shadow: var(--card-shadow-hover);
     }
     .task-top {
       display: flex;
@@ -352,7 +413,7 @@ export function getTeamUiHtml() {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--card-border);
       padding-top: 8px;
     }
     .worker-tag {
@@ -371,8 +432,8 @@ export function getTeamUiHtml() {
       font-size: 10px;
       padding: 1px 6px;
       border-radius: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
     }
     .dep-pill.ok { color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
     .dep-pill.wait { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
@@ -383,6 +444,7 @@ export function getTeamUiHtml() {
       border: 1px solid var(--card-border);
       border-radius: 16px;
       overflow: hidden;
+      box-shadow: var(--card-shadow);
     }
     .data-table {
       width: 100%;
@@ -391,7 +453,7 @@ export function getTeamUiHtml() {
       text-align: left;
     }
     .data-table th {
-      background: rgba(0, 0, 0, 0.25);
+      background: var(--table-th-bg);
       color: var(--text-muted);
       font-size: 11px;
       font-weight: 700;
@@ -402,10 +464,10 @@ export function getTeamUiHtml() {
     }
     .data-table td {
       padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--table-border);
     }
     .data-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--table-hover);
     }
 
     /* Empty State Hero */
@@ -417,7 +479,7 @@ export function getTeamUiHtml() {
       text-align: center;
       max-width: 680px;
       margin: 40px auto;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      box-shadow: var(--card-shadow);
     }
     .empty-icon {
       font-size: 48px;
@@ -426,7 +488,7 @@ export function getTeamUiHtml() {
     .empty-title {
       font-size: 20px;
       font-weight: 800;
-      color: #fff;
+      color: var(--text);
       margin-bottom: 8px;
     }
     .empty-desc {
@@ -436,14 +498,14 @@ export function getTeamUiHtml() {
       margin-bottom: 24px;
     }
     .guide-box {
-      background: rgba(0, 0, 0, 0.3);
+      background: var(--guide-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 16px;
       text-align: left;
       font-family: ui-monospace, monospace;
       font-size: 12px;
-      color: var(--primary);
+      color: var(--guide-text);
       margin-bottom: 24px;
       line-height: 1.6;
     }
@@ -462,14 +524,14 @@ export function getTeamUiHtml() {
     }
     .modal-backdrop.open { display: flex; }
     .modal-box {
-      background: #0d121f;
+      background: var(--modal-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
       width: 100%;
       max-width: 780px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: var(--modal-shadow);
       display: flex;
       flex-direction: column;
     }
@@ -479,12 +541,12 @@ export function getTeamUiHtml() {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      background: rgba(255, 255, 255, 0.02);
+      background: var(--card-subtle-bg);
     }
     .modal-title {
       font-size: 16px;
       font-weight: 800;
-      color: #fff;
+      color: var(--text);
     }
     .modal-body {
       padding: 20px 24px;
@@ -493,13 +555,13 @@ export function getTeamUiHtml() {
       gap: 16px;
     }
     .code-block {
-      background: #070a12;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
       border-radius: 10px;
       padding: 12px 16px;
       font-family: ui-monospace, monospace;
       font-size: 12px;
-      color: #e2e8f0;
+      color: var(--code-text);
       overflow-x: auto;
       white-space: pre-wrap;
       max-height: 240px;
@@ -517,7 +579,7 @@ export function getTeamUiHtml() {
       cursor: pointer;
       line-height: 1;
     }
-    .close-btn:hover { color: #fff; }
+    .close-btn:hover { color: var(--text); }
   
     @media (max-width: 680px) {
       body { padding: 12px; font-size: 11px; }
@@ -540,6 +602,7 @@ export function getTeamUiHtml() {
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn" id="theme-toggle" onclick="toggleTheme()" title="Chuyển đổi Chế độ Sáng / Tối">☀️ Sáng</button>
       <button class="btn" onclick="updateDashboard()" title="Tải lại ngay">🔄 Làm mới</button>
       <button class="btn" onclick="copyStateJson()" title="Sao chép toàn bộ state JSON">📋 Copy State</button>
       <button class="btn btn-primary" id="btn-init-demo" onclick="initDemoMission()" style="display: none;">🚀 Khởi tạo Demo Mission</button>
@@ -1060,6 +1123,33 @@ export function getTeamUiHtml() {
         .replace(/'/g, '&#039;');
     }
 
+    function initTheme() {
+      const urlTheme = urlParams.get("theme");
+      const savedTheme = localStorage.getItem("sg_team_theme");
+      const activeTheme = urlTheme || savedTheme || "light";
+      applyTheme(activeTheme);
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        const btn = document.getElementById("theme-toggle");
+        if (btn) btn.innerHTML = "🌙 Tối";
+      } else {
+        document.documentElement.setAttribute("data-theme", "light");
+        const btn = document.getElementById("theme-toggle");
+        if (btn) btn.innerHTML = "☀️ Sáng";
+      }
+      localStorage.setItem("sg_team_theme", theme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      const next = current === "dark" ? "light" : "dark";
+      applyTheme(next);
+    }
+
+    initTheme();
     updateDashboard();
     setInterval(updateDashboard, 1500);
   </script>
