@@ -109,7 +109,7 @@ After ALL coding, read `/supergraph:fix` and execute it.
 ### Step 5: Integration & E2E (MANDATORY for Web)
 
 Read `/supergraph:integration` and execute it.
-For Web / UI features: ALWAYS automatically execute `/supergraph:playwright-tester` to generate the QA matrix and run Playwright E2E tests (Happy, Sad, Boundary, Network 500 fault injection, RBAC) before claiming verification.
+For Web / UI features: ALWAYS automatically execute `/supergraph:browser-agent` to generate the ISTQB QA matrix and run autonomous user-flow tests via native Rust CDP (anti-bot bypass, zero Playwright) before claiming verification.
 
 ### Step 6: Verify
 
@@ -137,8 +137,9 @@ All checks pass before merge.
 10. ALWAYS save plan to file for long-running/team work
 11. ALWAYS respond in the user's language — announcements, summaries, and all user-facing text must match the language the user wrote in (e.g. if user writes in Vietnamese, respond and announce in Vietnamese; if English, use English). The hardcoded announce strings in skill files are templates only — translate them before output.
 12. USE Serena MCP tools when available — `get_diagnostics_for_file` for type errors, `find_referencing_symbols`/`find_implementations` for impact analysis, `replace_symbol_body`/`rename_symbol` for targeted edits (prefer over raw text edits)
-13. ALWAYS auto-trigger `/supergraph:playwright-tester` for Web/Frontend tasks after `/fix` to test business flows, failure cases, and system resilience — never wait for the user to request E2E testing manually.
+13. ALWAYS auto-trigger `/supergraph:browser-agent` for Web/Frontend tasks after `/fix` to test business flows, failure cases, and system resilience (zero Playwright, native CDP) — never wait for the user to request browser testing manually.
 14. ALWAYS use `/supergraph:execute` (never skip to bare `/tdd`) for approved plans. Multi-task and wave plans MUST activate Supergraph Team (`sg_team_init`, `sg_task_create`) to isolate git worktrees and stream live progress to the Live Monitor.
+15. ALWAYS provide Next Action Recommendation at the conclusion of every response: explicitly state the single next logical action/command (e.g. Next: `/plan`, Next: `/execute`, Next: `/fix`, Next: `/verify`, or next specific task ID in DAG) and why.
 
 ---
 

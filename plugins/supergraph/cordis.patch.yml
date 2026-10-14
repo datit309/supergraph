@@ -126,6 +126,7 @@
                 CRITICAL: Always prioritize Codebase Memory MCP (search_graph, trace_path, detect_changes) and Serena MCP (find_symbol, get_symbols_overview, get_diagnostics_for_file) over brute-force file reading.
                 When executing approved plans with multiple tasks or waves, ALWAYS invoke /supergraph:execute and activate Supergraph Team (sg_team_init, sg_task_create) to isolate git worktrees and stream progress to the Live Monitor dashboard (:3333).
                 TOKEN EFFICIENCY: Be concise, direct, and technically exact. Eliminate conversational filler, pleasantries, and unnecessary explanations. Output code blocks, diffs, and exact terminal commands.
+                NEXT ACTION: At the end of every response, always provide an explicit "👉 Tiếp theo nên làm gì:" recommendation with the exact single command/action and why.
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
             config:
