@@ -10,7 +10,6 @@ const proc = spawn(process.execPath, [binPath], {
   stdio: ['pipe', 'pipe', 'pipe'],
   env: {
     ...process.env,
-    SG_BROWSER_HEADLESS: 'true',
   },
 })
 
@@ -31,7 +30,7 @@ send({
   params: {
     protocolVersion: '2024-11-05',
     capabilities: {},
-    clientInfo: { name: 'test-browser', version: '1.0.0' },
+    clientInfo: { name: 'test-agent-browser', version: '1.0.0' },
   },
 })
 
@@ -49,9 +48,9 @@ send({
 await new Promise(r => setTimeout(r, 800))
 proc.kill()
 
-assert.ok(stdout.includes('browser_navigate'), 'browser_navigate tool exists')
-assert.ok(stdout.includes('browser_snapshot'), 'browser_snapshot tool exists')
-assert.ok(stdout.includes('browser_click'), 'browser_click tool exists')
-assert.ok(stdout.includes('browser_type'), 'browser_type tool exists')
+assert.ok(stdout.includes('agent_browser_open'), 'agent_browser_open tool exists')
+assert.ok(stdout.includes('agent_browser_snapshot'), 'agent_browser_snapshot tool exists')
+assert.ok(stdout.includes('agent_browser_click'), 'agent_browser_click tool exists')
+assert.ok(stdout.includes('agent_browser_fill'), 'agent_browser_fill tool exists')
 
-console.log('✔ sg-browser-mcp starts and exposes Playwright browser tools correctly')
+console.log('✔ sg-browser-mcp starts and exposes agent-browser tools correctly')

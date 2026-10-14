@@ -6,46 +6,46 @@ import { existsSync } from 'node:fs'
 
 const req = createRequire(import.meta.url)
 
-let cliPath = null
+let binPath = 'agent-browser'
 try {
-  const pkgJson = req.resolve('@playwright/mcp/package.json')
-  cliPath = join(dirname(pkgJson), 'cli.js')
+  const pkgJson = req.resolve('agent-browser/package.json')
+  const localBin = join(dirname(pkgJson), 'bin/agent-browser')
+  if (existsSync(localBin)) {
+    binPath = localBin
+  }
 } catch {
   try {
-    cliPath = join(dirname(req.resolve('../../package.json')), 'node_modules/@playwright/mcp/cli.js')
+    const rootBin = join(dirname(req.resolve('../../package.json')), 'node_modules/.bin/agent-browser')
+    if (existsSync(rootBin)) {
+      binPath = rootBin
+    }
   } catch {}
 }
 
-const args = []
-if (cliPath && existsSync(cliPath)) {
-  args.push(cliPath)
+const args = ['mcp', '--tools', 'all']
+
+// Human pointer movement by default (bypasses bot detection)
+const inputMode = process.env.SG_BROWSER_INPUT_MODE || 'human'
+args.push('--input-mode', inputMode)
+
+// Anti-automation flag
+args.push('--args', '--disable-blink-features=AutomationControlled')
+
+// Headed mode if configured
+if (process.env.SG_BROWSER_HEADED === 'true') {
+  args.push('--headed')
 }
 
-// Config defaults
-const browser = process.env.SG_BROWSER || 'chrome'
-const headless = process.env.SG_BROWSER_HEADLESS === 'true'
-const cdpEndpoint = process.env.SG_BROWSER_CDP
-const userDataDir = process.env.SG_BROWSER_USER_DATA_DIR
-
-if (cdpEndpoint) {
-  args.push('--cdp-endpoint', cdpEndpoint)
-} else {
-  args.push('--browser', browser)
-  if (headless) {
-    args.push('--headless')
-  }
-  if (userDataDir) {
-    args.push('--user-data-dir', userDataDir)
-  }
+// CDP or Profile attachment
+if (process.env.SG_BROWSER_CDP) {
+  args.push('--cdp', process.env.SG_BROWSER_CDP)
+} else if (process.env.SG_BROWSER_AUTO_CONNECT === 'true') {
+  args.push('--auto-connect')
+} else if (process.env.SG_BROWSER_PROFILE) {
+  args.push('--profile', process.env.SG_BROWSER_PROFILE)
 }
 
-// Additional helpful capabilities
-args.push('--caps', 'vision,devtools')
-
-const cmd = cliPath && existsSync(cliPath) ? process.execPath : 'npx'
-const finalArgs = cliPath && existsSync(cliPath) ? args : ['-y', '@playwright/mcp@0.0.80', ...args]
-
-const child = spawn(cmd, finalArgs, {
+const child = spawn(binPath, args, {
   stdio: ['pipe', 'pipe', 'inherit'],
   env: {
     ...process.env,

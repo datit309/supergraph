@@ -57,6 +57,6 @@
     "url": "https://github.com/datit309/supergraph.git"
   },
   "dependencies": {
-    "@playwright/mcp": "^0.0.80"
+    "agent-browser": "^0.39.1"
   }
 }

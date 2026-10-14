@@ -428,7 +428,7 @@ All skills use the `/supergraph:` prefix to avoid conflicts with built-in comman
 | `/supergraph:flutter-dart-code-review` | 15-section Flutter/Dart review checklist                                         | Flutter/Dart code review               |
 | `/supergraph:frontend-design`          | Production-grade UI — no generic AI aesthetics                                   | Web UI components and layouts          |
 | `/supergraph:webapp-testing`           | Playwright-based web application testing                                         | E2E web testing                        |
-| `/supergraph:browser-agent`            | Autonomous human-like browser control & user-flow testing (Playwright MCP + CDP) | Real user testing, anti-bot bypass     |
+| `/supergraph:browser-agent`            | Autonomous human-like browser control & user-flow testing (Rust agent-browser + CDP) | Real user testing, anti-bot bypass     |
 
 ---
 
