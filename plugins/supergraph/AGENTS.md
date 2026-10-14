@@ -59,7 +59,7 @@ Use the correct test/lint commands for the detected language.
 | **Explore** | Codebase exploration, architectural research, tracing flows (no code changes) | `/explore` (or `/zoom-out` → `/explore`) — zero code/test mutation |
 | **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` (skip analyze/plan) |
 | **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:playwright-tester` (if web) → `/supergraph:verify` |
-| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → plan [with embedded contracts] → tdd → fix → playwright-tester → verify → review`) |
+| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → plan [with embedded contracts] → execute → fix → playwright-tester → verify → review`) |
 
 **When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
 
@@ -86,10 +86,12 @@ Embed architectural contracts, API schemas, and invariants directly in `## Archi
 blast_radius → identify affected files. Tasks 2-5 min each. User approval.
 Save plan to `docs/supergraph/plans/` for resume capability.
 
-### Step 3: Execute TDD
+### Step 3: Execute Plan & Wave DAG (Supergraph Team)
 
-Read `/supergraph:tdd` and execute it.
-Each task: RED → GREEN → REFACTOR. No exceptions.
+Read `/supergraph:execute` and execute it.
+- For multi-task or wave-based plans: ALWAYS initialize Supergraph Team (`sg_team_init`), register tasks (`sg_task_create`), and launch the Live Monitor (`:3333`).
+- For each task in Wave: worker claims task (`sg_task_claim`) with isolated worktree, enforces TDD (`RED` → `GREEN` → `REFACTOR`), and merges via verification gate (`sg_task_verify_merge`).
+- For single trivial tasks (< 20 lines, 1 file): execute `/supergraph:tdd` directly.
 
 ### Step 4: Auto-Fix Loop
 
@@ -135,6 +137,7 @@ All checks pass before merge.
 11. ALWAYS respond in the user's language — announcements, summaries, and all user-facing text must match the language the user wrote in (e.g. if user writes in Vietnamese, respond and announce in Vietnamese; if English, use English). The hardcoded announce strings in skill files are templates only — translate them before output.
 12. USE Serena MCP tools when available — `get_diagnostics_for_file` for type errors, `find_referencing_symbols`/`find_implementations` for impact analysis, `replace_symbol_body`/`rename_symbol` for targeted edits (prefer over raw text edits)
 13. ALWAYS auto-trigger `/supergraph:playwright-tester` for Web/Frontend tasks after `/fix` to test business flows, failure cases, and system resilience — never wait for the user to request E2E testing manually.
+14. ALWAYS use `/supergraph:execute` (never skip to bare `/tdd`) for approved plans. Multi-task and wave plans MUST activate Supergraph Team (`sg_team_init`, `sg_task_create`) to isolate git worktrees and stream live progress to the Live Monitor.
 
 ---
 
