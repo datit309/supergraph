@@ -20,7 +20,8 @@
   },
   "files": [
     "plugins/supergraph",
-    "AGENTS.md"
+    "AGENTS.md",
+    "agents"
   ],
   "dsh": {
     "manifestVersion": 1,
@@ -46,10 +47,7 @@
     "workflow",
     "tdd"
   ],
-  "author": {
-    "name": "datit309",
-    "email": "trantandat0919@gmail.com"
-  },
+  "author": "datit309",
   "license": "MIT",
   "homepage": "https://github.com/datit309/supergraph",
   "repository": {

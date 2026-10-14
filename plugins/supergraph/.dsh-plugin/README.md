@@ -4,9 +4,9 @@ Standard Cordis plugin and bundle integration for DeepSeek Harness (DSH).
 
 ## Features
 
-1. **Cordis Plugin Standard**: Implements `apply(ctx)` with `inject = ['skills']`. Dynamically discovers and registers all 38 Supergraph skills via `ctx.skills.registerProvider()`.
-2. **MCP Integration**: Configures `codebase-memory-mcp` and `serena` MCP servers via `@deepseek-ai/dsh-mcp-client`.
-3. **Workflow Rules**: Injects `AGENTS.md` guidelines via `ctx.systemPrompt.section()`.
+1. **Cordis Plugin Standard**: Implements `apply(ctx)` with `inject = ['skills']`. Dynamically discovers and registers all 43 Supergraph skills via `ctx.skills.registerProvider()`.
+2. **MCP Integration**: Configures `codebase-memory`, `serena`, `supergraph-team`, and `supergraph-browser` (Rust CDP native) MCP servers via `@deepseek-ai/dsh-mcp-client`.
+3. **Workflow Rules & Agents**: Injects `AGENTS.md` guidelines and specialized agents (`plan-writer`, `plan-reviewer`, `executor`, `code-reviewer`) for automated Team DAG execution.
 
 ## Installation
 

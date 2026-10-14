@@ -27,10 +27,6 @@ Each 2-5 min. Exact files, exact code, exact commands. Use format from plan skil
 - `## Task N:` heading at column 0
 - All fields (`Status:`, `Risk:`, etc.) at column 0 under the heading — NO indentation
 - One blank line between tasks, NO blank lines between fields within a task
-- Use exact status values: `pending`, `in_progress`, `completed`, `stuck` Use format from plan skill template:
-- `## Task N:` heading at column 0
-- All fields (`Status:`, `Risk:`, etc.) at column 0 under the heading — NO indentation
-- One blank line between tasks, NO blank lines between fields within a task
 - Use exact status values: `pending`, `in_progress`, `completed`, `stuck`
 
 ### 5. Validate Plan
@@ -88,4 +84,4 @@ Execution must not start until plan review status is `Approved`.
 - NEVER skip codebase scan
 - NEVER save before approval
 - Environment Context mandatory — executor depends on it
-- Use fallback detection if `detect-project.sh` missing (.supergraph-env not yet created) (.supergraph-env not yet created)
+- Use fallback detection if `detect-project.sh` missing (.supergraph-env not yet created)
