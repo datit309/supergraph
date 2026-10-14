@@ -22,6 +22,11 @@
         transport: stdio
         command: codebase-memory-mcp
         args: []
+        reconnect:
+          enabled: true
+          maxAttempts: 20
+          initialDelayMs: 1000
+          maxDelayMs: 30000
     - id: mcp-serena
       name: '@deepseek-ai/dsh-mcp-client'
       config:
@@ -29,6 +34,80 @@
         transport: stdio
         command: serena
         args: ['start-mcp-server', '--context=codex', '--project-from-cwd']
+        reconnect:
+          enabled: true
+          maxAttempts: 20
+          initialDelayMs: 1000
+          maxDelayMs: 30000
+    - id: mcp-supergraph-team
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: supergraph-team
+        transport: stdio
+        command: node
+        args:
+          - !!js >-
+            (() => {
+              const path = process.getBuiltinModule('node:path');
+              const req = process.getBuiltinModule('node:module').createRequire(baseUrl);
+              try {
+                return path.join(path.dirname(req.resolve('supergraph/package.json')), 'plugins/supergraph/bin/sg-team-mcp.js');
+              } catch {
+                return path.join(path.dirname(req.resolve('./package.json')), 'bin/sg-team-mcp.js');
+              }
+            })()
+        reconnect:
+          enabled: true
+          maxAttempts: 20
+          initialDelayMs: 1000
+          maxDelayMs: 30000
+    - id: mcp-supergraph-browser
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: supergraph-browser
+        transport: stdio
+        command: node
+        args:
+          - !!js >-
+            (() => {
+              const path = process.getBuiltinModule('node:path');
+              const req = process.getBuiltinModule('node:module').createRequire(baseUrl);
+              try {
+                return path.join(path.dirname(req.resolve('supergraph/package.json')), 'plugins/supergraph/bin/sg-browser-mcp.js');
+              } catch {
+                return path.join(path.dirname(req.resolve('./package.json')), 'bin/sg-browser-mcp.js');
+              }
+            })()
+        reconnect:
+          enabled: true
+          maxAttempts: 20
+          initialDelayMs: 1000
+          maxDelayMs: 30000
+    - id: supergraph-hooks
+      name: '@deepseek-ai/dsh-hooks-claude-code'
+      config:
+        configPath: !!js >-
+          (() => {
+            const path = process.getBuiltinModule('node:path');
+            const req = process.getBuiltinModule('node:module').createRequire(baseUrl);
+            try {
+              return path.join(path.dirname(req.resolve('supergraph/package.json')), 'plugins/supergraph/hooks/hooks.json');
+            } catch {
+              return path.join(path.dirname(req.resolve('./package.json')), 'hooks/hooks.json');
+            }
+          })()
+        pluginRoot: !!js >-
+          (() => {
+            const path = process.getBuiltinModule('node:path');
+            const req = process.getBuiltinModule('node:module').createRequire(baseUrl);
+            try {
+              return path.join(path.dirname(req.resolve('supergraph/package.json')), 'plugins/supergraph');
+            } catch {
+              return path.dirname(req.resolve('./package.json'));
+            }
+          })()
+    - id: subagent-agy
+      name: '@deepseek-ai/dsh-subagent-agy'
     - id: preset-supergraph
       name: '@deepseek-ai/dsh-agent-preset'
       config:
@@ -43,8 +122,9 @@
               suffix: Your working directory is {{cwd}}.
               prefix: >-
                 You are a senior full-stack software engineer powered by the {{model}} model.
-                You strictly follow the Supergraph workflow: Scan -> Plan -> TDD -> Auto-fix -> Verify.
+                You strictly follow the Supergraph workflow: Scan -> Plan -> Execute (Supergraph Team DAG) -> Auto-fix -> Verify.
                 CRITICAL: Always prioritize Codebase Memory MCP (search_graph, trace_path, detect_changes) and Serena MCP (find_symbol, get_symbols_overview, get_diagnostics_for_file) over brute-force file reading.
+                When executing approved plans with multiple tasks or waves, ALWAYS invoke /supergraph:execute and activate Supergraph Team (sg_team_init, sg_task_create) to isolate git worktrees and stream progress to the Live Monitor dashboard (:3333).
                 TOKEN EFFICIENCY: Be concise, direct, and technically exact. Eliminate conversational filler, pleasantries, and unnecessary explanations. Output code blocks, diffs, and exact terminal commands.
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'
@@ -64,6 +144,10 @@
               sampleOverCapGlobResults: false
           - id: tool-jobs
             name: '@deepseek-ai/dsh-tool-jobs'
+          - id: tool-schedule
+            name: '@deepseek-ai/dsh-tool-schedule'
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
           - id: skill-filesystem
             name: '@deepseek-ai/dsh-skill-filesystem'
           - id: tool-skill
@@ -147,6 +231,14 @@
                 config:
                   provider: claude-code
                   toolName: subagent_claude_code
+                  backgroundMode: one-shot
+                  maxDepth: provider-managed
+              - id: tool-subagent-agy
+                name: '@deepseek-ai/dsh-tool-subagent'
+                disabled: false
+                config:
+                  provider: agy
+                  toolName: subagent_agy
                   backgroundMode: one-shot
                   maxDepth: provider-managed
               - id: workflow-ptc
