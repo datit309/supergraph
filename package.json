@@ -12,7 +12,8 @@
   "bin": {
     "sg-team-mcp": "./plugins/supergraph/bin/sg-team-mcp.js",
     "sg-team-ui": "./plugins/supergraph/bin/sg-team-ui.js",
-    "sg-team-status": "./plugins/supergraph/bin/sg-team-status.js"
+    "sg-team-status": "./plugins/supergraph/bin/sg-team-status.js",
+    "sg-browser-mcp": "./plugins/supergraph/bin/sg-browser-mcp.js"
   },
   "scripts": {
     "test": "node --test plugins/supergraph/tests/*.mjs"
@@ -54,5 +55,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/datit309/supergraph.git"
+  },
+  "dependencies": {
+    "@playwright/mcp": "^0.0.80"
   }
 }

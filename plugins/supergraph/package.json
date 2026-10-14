@@ -12,7 +12,8 @@
   "bin": {
     "sg-team-mcp": "./bin/sg-team-mcp.js",
     "sg-team-ui": "./bin/sg-team-ui.js",
-    "sg-team-status": "./bin/sg-team-status.js"
+    "sg-team-status": "./bin/sg-team-status.js",
+    "sg-browser-mcp": "./bin/sg-browser-mcp.js"
   },
   "scripts": {
     "test": "node --test tests/*.mjs"

@@ -61,6 +61,28 @@
           maxAttempts: 20
           initialDelayMs: 1000
           maxDelayMs: 30000
+    - id: mcp-supergraph-browser
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: supergraph-browser
+        transport: stdio
+        command: node
+        args:
+          - !!js >-
+            (() => {
+              const path = process.getBuiltinModule('node:path');
+              const req = process.getBuiltinModule('node:module').createRequire(baseUrl);
+              try {
+                return path.join(path.dirname(req.resolve('supergraph/package.json')), 'plugins/supergraph/bin/sg-browser-mcp.js');
+              } catch {
+                return path.join(path.dirname(req.resolve('./package.json')), 'bin/sg-browser-mcp.js');
+              }
+            })()
+        reconnect:
+          enabled: true
+          maxAttempts: 20
+          initialDelayMs: 1000
+          maxDelayMs: 30000
     - id: supergraph-hooks
       name: '@deepseek-ai/dsh-hooks-claude-code'
       config:
