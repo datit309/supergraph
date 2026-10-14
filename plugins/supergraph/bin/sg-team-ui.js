@@ -46,8 +46,8 @@ const server = http.createServer((req, res) => {
       'Access-Control-Allow-Origin': '*'
     })
     let state = engine._loadState(sessionId)
-    if (!state || !state.mission) {
-      // Fallback to shared/repo mission if session has no isolated mission
+    if (!sessionId && (!state || !state.mission)) {
+      // Fallback to shared/repo mission ONLY if NO sessionId was requested
       state = engine._loadState(null)
     }
     res.end(JSON.stringify(state))

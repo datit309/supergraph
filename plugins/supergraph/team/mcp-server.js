@@ -172,6 +172,11 @@ export class TeamMcpServer {
   }
 
   async executeTool(name, args = {}) {
+    const sid = args.session_id || this.sessionId || process.env.DSH_SESSION_ID || null
+    if (sid && sid !== this.engine.sessionId) {
+      this.sessionId = sid
+      this.engine.sessionId = sid
+    }
     switch (name) {
       case 'sg_team_init': {
         const sid = args.session_id || this.sessionId || process.env.DSH_SESSION_ID || null

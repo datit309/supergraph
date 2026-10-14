@@ -1089,7 +1089,11 @@ export function getTeamUiHtml() {
     async function initDemoMission() {
       if (!confirm('Khởi tạo Demo Mission để mô phỏng tiến độ Multi-Agent?')) return;
       try {
-        await fetch('/api/init-demo', { method: 'POST' });
+        const queryParams = new URLSearchParams();
+        if (currentSessionId) queryParams.set("sessionId", currentSessionId);
+        if (currentCwd) queryParams.set("cwd", currentCwd);
+        const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
+        await fetch('/api/init-demo' + qs, { method: 'POST' });
         updateDashboard();
       } catch (e) {
         alert('Lỗi: ' + e.message);
@@ -1099,7 +1103,11 @@ export function getTeamUiHtml() {
     async function resetMission() {
       if (!confirm('Bạn có chắc muốn xóa và reset toàn bộ state của mission hiện tại?')) return;
       try {
-        await fetch('/api/reset', { method: 'POST' });
+        const queryParams = new URLSearchParams();
+        if (currentSessionId) queryParams.set("sessionId", currentSessionId);
+        if (currentCwd) queryParams.set("cwd", currentCwd);
+        const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
+        await fetch('/api/reset' + qs, { method: 'POST' });
         updateDashboard();
       } catch (e) {
         alert('Lỗi: ' + e.message);
