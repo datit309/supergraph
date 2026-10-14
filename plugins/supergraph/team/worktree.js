@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { execSync, spawnSync } from 'node:child_process'
+import { execSync, spawnSync, execFileSync } from 'node:child_process'
 
 export class WorktreeManager {
   constructor(repoRoot) {
@@ -21,7 +21,7 @@ export class WorktreeManager {
     }
 
     try {
-      execSync(`git worktree add -B "${branch}" "${worktreeDir}" "${baseBranch}"`, {
+      execFileSync('git', ['worktree', 'add', '-B', branch, worktreeDir, baseBranch], {
         cwd: this.repoRoot,
         stdio: 'pipe'
       })
@@ -156,7 +156,7 @@ export class WorktreeManager {
           targetRef = 'main'
         }
       }
-      const diffOut = execSync(`git diff --name-only "${targetRef}"...HEAD`, { cwd: worktreeDir, encoding: 'utf8' })
+      const diffOut = execFileSync('git', ['diff', '--name-only', `${targetRef}...HEAD`], { cwd: worktreeDir, encoding: 'utf8' })
       for (const line of diffOut.split('\n')) {
         const file = line.trim()
         if (file) files.add(file)
@@ -192,7 +192,16 @@ export class WorktreeManager {
           return file === prefix || file.startsWith(prefix + '/')
         }
         if (s.includes('*')) {
-          const regex = new RegExp('^' + s.replace(/\./g, '\\.').replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*') + '$')
+          const parts = s.split('**')
+          const pattern = parts
+            .map(part =>
+              part
+                .split('*')
+                .map(sub => sub.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+                .join('[^/]*')
+            )
+            .join('.*')
+          const regex = new RegExp('^' + pattern + '$')
           return regex.test(file)
         }
         return file === s || file.startsWith(s + '/')
@@ -217,8 +226,8 @@ export class WorktreeManager {
     try {
       const status = execSync('git status --porcelain', { cwd: worktreeDir, encoding: 'utf8' }).trim()
       if (status) {
-        execSync('git add -A', { cwd: worktreeDir, stdio: 'pipe' })
-        execSync(`git commit -m "chore(${taskId}): sync checkpoint"`, { cwd: worktreeDir, stdio: 'pipe' })
+        execFileSync('git', ['add', '-A'], { cwd: worktreeDir, stdio: 'pipe' })
+        execFileSync('git', ['commit', '-m', `chore(${taskId}): sync checkpoint`], { cwd: worktreeDir, stdio: 'pipe' })
       }
     } catch {}
 
@@ -232,11 +241,11 @@ export class WorktreeManager {
     }
 
     try {
-      execSync(`git merge "${targetRef}" --no-edit`, { cwd: worktreeDir, stdio: 'pipe' })
+      execFileSync('git', ['merge', targetRef, '--no-edit'], { cwd: worktreeDir, stdio: 'pipe' })
       return { success: true, syncedWith: targetRef }
     } catch (err) {
       try {
-        execSync('git merge --abort', { cwd: worktreeDir, stdio: 'ignore' })
+        execFileSync('git', ['merge', '--abort'], { cwd: worktreeDir, stdio: 'ignore' })
       } catch {}
       throw new Error(`Sync conflict with base '${targetRef}': worktree cannot merge cleanly with latest branch. Resolve conflicts before merge. Detail: ${err.message}`)
     }
@@ -289,9 +298,9 @@ export class WorktreeManager {
       try {
         const status = execSync('git status --porcelain', { cwd: worktreeDir, encoding: 'utf8' }).trim()
         if (status) {
-          execSync('git add -A', { cwd: worktreeDir, stdio: 'pipe' })
+          execFileSync('git', ['add', '-A'], { cwd: worktreeDir, stdio: 'pipe' })
           const msg = commitMsg || `feat(${taskId}): complete task changes`
-          execSync(`git commit -m "${msg.replace(/"/g, '\\"')}"`, { cwd: worktreeDir, stdio: 'pipe' })
+          execFileSync('git', ['commit', '-m', msg], { cwd: worktreeDir, stdio: 'pipe' })
         }
       } catch (err) {
         throw new Error(`Failed to commit in worktree: ${err.message}`)
@@ -302,7 +311,7 @@ export class WorktreeManager {
         try {
           const current = execSync('git rev-parse --abbrev-ref HEAD', { cwd: this.repoRoot, encoding: 'utf8' }).trim()
           if (current !== targetBranch) {
-            execSync(`git checkout "${targetBranch}"`, { cwd: this.repoRoot, stdio: 'pipe' })
+            execFileSync('git', ['checkout', targetBranch], { cwd: this.repoRoot, stdio: 'pipe' })
           }
         } catch (err) {
           throw new Error(`Failed to checkout target branch ${targetBranch}: ${err.message}`)
@@ -311,10 +320,10 @@ export class WorktreeManager {
 
       // 3. Merge task branch into base repo, with abort on failure
       try {
-        execSync(`git merge "${branch}" --no-edit`, { cwd: this.repoRoot, stdio: 'pipe' })
+        execFileSync('git', ['merge', branch, '--no-edit'], { cwd: this.repoRoot, stdio: 'pipe' })
       } catch (err) {
         try {
-          execSync('git merge --abort', { cwd: this.repoRoot, stdio: 'ignore' })
+          execFileSync('git', ['merge', '--abort'], { cwd: this.repoRoot, stdio: 'ignore' })
         } catch {}
         throw new Error(`Failed to merge branch ${branch} into base repo (merge aborted cleanly): ${err.message}`)
       }
@@ -345,12 +354,12 @@ export class WorktreeManager {
       }
 
       try {
-        execSync(`git worktree remove --force "${worktreeDir}"`, { cwd: this.repoRoot, stdio: 'ignore' })
+        execFileSync('git', ['worktree', 'remove', '--force', worktreeDir], { cwd: this.repoRoot, stdio: 'ignore' })
       } catch {}
     }
 
     try {
-      execSync(`git branch -D "${branch}"`, { cwd: this.repoRoot, stdio: 'ignore' })
+      execFileSync('git', ['branch', '-D', branch], { cwd: this.repoRoot, stdio: 'ignore' })
     } catch {}
   }
 }
