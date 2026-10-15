@@ -274,7 +274,15 @@ server.on("upgrade", (req, socket, head) => {
       const set = cdpClients.get(tabId);
       if (set) {
         set.delete(ws);
-        if (set.size === 0) cdpClients.delete(tabId);
+        if (set.size === 0) {
+          cdpClients.delete(tabId);
+          if (extensionWs) {
+            extensionWs.send({
+              type: "detach_tab",
+              tabId: parseInt(tabId, 10)
+            });
+          }
+        }
       }
     };
     return;
