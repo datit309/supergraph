@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 280px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 14px;
+      margin: 0;
+      background: #18181b;
+      color: #fafafa;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #27272a;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+    .badge.connected {
+      background: #064e3b;
+      color: #34d399;
+    }
+    .badge.disconnected {
+      background: #450a0a;
+      color: #f87171;
+    }
+    .info {
+      font-size: 12px;
+      color: #a1a1aa;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    button {
+      width: 100%;
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0369a1;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">Supergraph Relay</div>
+    <div id="status" class="badge disconnected">Offline</div>
+  </div>
+  <div class="info">
+    Bridges your active Chrome session directly to Supergraph AI agents and <code>agent-browser</code> without bot detection.
+  </div>
+  <button id="reconnectBtn">Test Connection (:9333)</button>
+  <script src="popup.js"></script>
+</body>
+</html>

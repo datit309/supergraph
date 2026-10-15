@@ -55,7 +55,17 @@ open <url>          snapshot -i               click @e2                 wait_for
 Call `snapshot` to get verified element references (`@e1`, `@e2`, ...).
 
 ### 2. Bypassing Strict Bot Walls (Cloudflare, Akamai, CAPTCHA)
-Connect directly to your active browser:
+Connect directly to your active browser using either method:
+
+**Method A: Supergraph Chrome Relay Extension (Recommended - Zero restart, 100% human profile)**
+```bash
+# 1. Start relay server
+node plugins/supergraph/extensions/chrome-relay/relay-server.js
+# 2. Attach agent
+export SG_BROWSER_CDP="http://127.0.0.1:9333"
+```
+
+**Method B: Chrome Remote Debugging Port**
 ```bash
 # Attach to existing Chrome
 export SG_BROWSER_CDP="http://127.0.0.1:9222"

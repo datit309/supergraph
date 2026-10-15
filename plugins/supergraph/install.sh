@@ -283,3 +283,10 @@ if [ "$platform" = "all" ]; then
 else
   install_one "$platform"
 fi
+
+# Auto-install Chrome Relay Extension
+_ext_installer="$source_dir/extensions/chrome-relay/scripts/install-extension.sh"
+if [ -f "$_ext_installer" ]; then
+  printf '\n'
+  bash "$_ext_installer"
+fi

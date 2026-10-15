@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Supergraph Chrome Relay",
+  "version": "1.0.0",
+  "description": "Bridges local Supergraph AI agents and agent-browser directly to authenticated Chrome sessions via chrome.debugger CDP.",
+  "permissions": [
+    "debugger",
+    "tabs",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Supergraph Chrome Relay"
+  }
+}
