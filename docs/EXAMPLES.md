@@ -1,6 +1,10 @@
 # Supergraph Workflow Examples
 
-End-to-end walkthroughs demonstrating Supergraph engineering pipelines across common scenarios.
+End-to-end walkthroughs demonstrating Supergraph engineering pipelines across common scenarios:
+- **Scientific Debugging**: 6-phase root-cause isolation with Serena LSP and `diagnostician`.
+- **Wave DAG Feature Implementation**: Multi-worker git worktree execution with `supergraph-team`.
+- **Full-Stack QA & Anti-Bot Testing**: Native Rust CDP (`agent-browser`) with 5-dimension ISTQB matrix.
+- **Architectural Refactoring**: System contracts, blast-radius mitigation, and independent review.
 
 ---
 

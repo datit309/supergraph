@@ -1,6 +1,7 @@
 # Hướng dẫn cài đặt Supergraph
 
 Hướng dẫn chi tiết từng nền tảng: Claude Code, OpenAI Codex CLI, Google Antigravity, OpenCode, và DeepSeek Harness (DSH).
+Bao gồm cấu hình Codebase Memory MCP, Serena LSP, bộ điều phối Supergraph Team và trình duyệt tự động hoá Rust CDP (agent-browser).
 
 ---
 

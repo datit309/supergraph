@@ -1,6 +1,7 @@
 # Supergraph Installation Guide
 
 Complete platform-by-platform setup guide for Claude Code, OpenAI Codex CLI, Google Antigravity, OpenCode, and DeepSeek Harness (DSH).
+Includes configuration for Codebase Memory MCP, Serena LSP, Supergraph Team multi-agent engine, and native Rust CDP browser automation (agent-browser).
 
 ---
 

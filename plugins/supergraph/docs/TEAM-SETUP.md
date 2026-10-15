@@ -28,7 +28,10 @@ Every non-trivial change follows the evidence-gated workflow:
 
 `scan → analyze → plan → TDD → execute → fix → verify → review`
 
-Codebase Memory MCP (`>=0.10.8,<0.11.0`) indexes the repository locally under `CBM_PROJECT`. The skills use that graph for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed-symbol impact. Serena is optional and adds LSP references and diagnostics.
+- **Codebase Memory MCP (`>=0.10.8,<0.11.0`)**: Indexes the repository locally under `CBM_PROJECT`. The skills use that graph for blast radius, callers/callees, architecture clusters, dependency cycles, test gaps, complexity hotspots, and changed-symbol impact. Serena is optional and adds LSP references and diagnostics.
+- **Supergraph Team Engine (`supergraph-team`)**: Coordinates multi-agent Wave DAG scheduling with isolated Git worktrees (`.supergraph/worktrees/`) for 0 file collisions and real-time dashboard visualization (`:3333`).
+- **Autonomous Human Browser Agent & QA (`browser-agent`)**: Native Rust CDP (`agent-browser`, zero Playwright). Provides anti-bot bypass via user profiles, 5-dimension ISTQB test matrices, and automated defect reports.
+- **7-Subagent Architecture**: Dedicated subagents (`plan-writer`, `plan-reviewer`, `executor`, `qa-tester`, `security-auditor`, `diagnostician`, `code-reviewer`) for strict separation of concerns.
 
 On Windows, `hooks/run-hook.cmd` dynamically resolves Git Bash from `CLAUDE_CODE_GIT_BASH_PATH`, system Git, user-level Git, or `where git.exe`. If Git Bash is unavailable it prints `supergraph: Git Bash not found — hooks skipped` and exits `0`, so hooks remain non-blocking while skills and MCP continue to work.
 

@@ -14,7 +14,10 @@ Mọi thay đổi code đều tuân thủ nghiêm ngặt vòng đời kỹ thu�
 
 `scan → analyze → plan → TDD → execute → fix → verify → review`
 
-Tầng đồ thị được vận hành bởi [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). Hệ thống lập chỉ mục cục bộ vào `.codebase-memory/graph.db.zst` (cache tại `~/.cache/codebase-memory-mcp`) qua `index_repository`, cung cấp bán kính ảnh hưởng toán học (blast radius), cây gọi hàm, chu trình phụ thuộc và lỗ hổng kiểm thử. [Serena](https://github.com/oraios/serena) cung cấp khả năng điều hướng symbol và chẩn đoán LSP.
+- **Đồ thị tri thức & Trí tuệ mã nguồn**: Vận hành bởi [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). Lập chỉ mục cục bộ vào `.codebase-memory/graph.db.zst` (cache tại `~/.cache/codebase-memory-mcp`) qua `index_repository`, cung cấp bán kính ảnh hưởng toán học (blast radius), cây gọi hàm, chu trình phụ thuộc và lỗ hổng kiểm thử. [Serena](https://github.com/oraios/serena) cung cấp điều hướng symbol và chẩn đoán LSP.
+- **Kiến trúc 7 Subagents chuyên biệt**: Phân tách trách nhiệm độc lập — `plan-writer` (lập kế hoạch), `plan-reviewer` (kiểm tra spec), `executor` (thực thi TDD), `qa-tester` (kiểm thử E2E browser/API), `security-auditor` (kiểm toán bảo mật AppSec), `diagnostician` (gỡ lỗi khoa học), và `code-reviewer` (phán quyết merge độc lập).
+- **Trình duyệt tự động hoá như người thật & QA Full-Stack (`browser-agent`)**: Nhân native Rust CDP (`agent-browser`, zero Playwright). Dùng cây trợ năng accessibility tree (`@ref`) siêu nhẹ token, vượt rào chống bot qua user profile thật, lập ma trận test ISTQB 5 chiều (UI + API + giả lập lỗi DB), xuất báo cáo sự cố chuyên nghiệp.
+- **Điều phối Đa Agent Đẳng cấp (`supergraph-team`)**: Lập lịch nhiệm vụ DAG theo wave với git worktree cô lập tuyệt đối và dashboard giám sát thời gian thực (`:3333`).
 
 ### Hành vi Hook trên Windows
 Trên Windows, `hooks/run-hook.cmd` tự tìm Git Bash động qua các đường dẫn chuẩn và user. Nếu không tìm thấy Git Bash, hooks skipped kèm cảnh báo nhẹ và không chặn thực thi của agent.

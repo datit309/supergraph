@@ -491,12 +491,11 @@
 <div class="hero">
   <div class="hero-badge">
     <span class="dot"></span>
-    Plugin cho AI Coding Agents &middot; v2.2.4
+    Plugin cho AI Coding Agents &middot; v2.3.0
   </div>
   <h1>Hướng dẫn sử dụng<br><em>Supergraph</em></h1>
   <p class="subtitle">
-    Bộ plugin kết hợp quy trình AI bắt buộc, phân tích codebase dạng đồ thị và tích hợp LSP thông minh —
-    biến AI coding agent của bạn thành một kỹ sư phần mềm có kỷ luật.
+    Hệ thống quy trình kỹ thuật chuẩn mực cho AI coding agents: Bộ 7 subagents chuyên biệt, đồ thị Codebase Memory, Serena LSP, trình duyệt tự động hoá Rust CDP (agent-browser) và điều phối đa agent Supergraph Team.
   </p>
 </div>
 
@@ -526,13 +525,13 @@
     <div class="section-label">Giới thiệu</div>
     <h2 class="section-title">Supergraph là gì?</h2>
     <p class="section-desc">
-      Supergraph là một plugin dành cho các AI coding agent (Claude Code, Antigravity CLI, Codex CLI, OpenCode), kết hợp ba công cụ mạnh mẽ thành một hệ thống nhất:
+      Supergraph là hệ thống quy trình kỹ thuật chuẩn mực cho các AI coding agent (Claude Code, Antigravity CLI, Codex CLI, OpenCode, DeepSeek Harness), tích hợp sức mạnh toàn diện:
     </p>
     <div class="card-grid">
       <div class="card">
         <div class="card-icon purple">⚡</div>
-        <h3>Superpowers Workflow</h3>
-        <p>Quy trình AI bắt buộc: không code khi chưa có plan, không merge khi chưa review. Tuân thủ TDD nghiêm ngặt.</p>
+        <h3>Quy trình Evidence-Gated</h3>
+        <p>Bắt buộc kế hoạch và TDD: không code khi chưa có plan, không merge khi chưa có test đỏ (RED) và review độc lập.</p>
       </div>
       <div class="card">
         <div class="card-icon green">🔗</div>
@@ -543,6 +542,21 @@
         <div class="card-icon cyan">🧠</div>
         <h3>Serena LSP</h3>
         <p>Tích hợp Language Server Protocol: điều hướng symbol, chẩn đoán lỗi kiểu, rename và replace an toàn toàn codebase.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon blue">🌐</div>
+        <h3>Browser Agent (Rust CDP)</h3>
+        <p>Lái trình duyệt như người thật qua nhân Rust CDP (agent-browser, zero Playwright). Vượt bot wall, sinh ma trận QA ISTQB 5 chiều và báo cáo lỗi.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon orange">👥</div>
+        <h3>Bộ 7 Subagents chuyên biệt</h3>
+        <p>Phân quyền nhiệm vụ rõ ràng: plan-writer, plan-reviewer, executor, qa-tester, security-auditor, diagnostician, code-reviewer.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon red">🏗️</div>
+        <h3>Supergraph Team</h3>
+        <p>Lập lịch DAG theo wave, chạy đa worker trên các git worktree hoàn toàn cô lập và dashboard giám sát thời gian thực (:3333).</p>
       </div>
     </div>
     <p class="section-desc" style="margin-top:24px;">

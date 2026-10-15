@@ -14,7 +14,10 @@ Every non-trivial change follows the strict engineering lifecycle:
 
 `scan → analyze → plan → TDD → execute → fix → verify → review`
 
-The graph layer is powered by [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). It indexes repository state locally into `.codebase-memory/graph.db.zst` (cache in `~/.cache/codebase-memory-mcp`) via `index_repository`, providing mathematical blast radius, call hierarchy, dependency cycles, and test gaps. [Serena](https://github.com/oraios/serena) provides LSP-level symbol navigation and diagnostics.
+- **Knowledge Graph & Code Intelligence**: Powered by [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). Indexes repository state locally into `.codebase-memory/graph.db.zst` (cache in `~/.cache/codebase-memory-mcp`) via `index_repository`, providing mathematical blast radius, call hierarchy, dependency cycles, and test gaps. [Serena](https://github.com/oraios/serena) provides LSP-level symbol navigation and diagnostics.
+- **7-Subagent Specialized Architecture**: Autonomous separation of concerns — `plan-writer` (planning), `plan-reviewer` (spec checks), `executor` (TDD execution), `qa-tester` (E2E browser/API testing), `security-auditor` (OWASP/Vibesec AppSec), `diagnostician` (root-cause debugging), and `code-reviewer` (independent merge verdict).
+- **Autonomous Human Browser Agent & QA (`browser-agent`)**: Native Rust CDP (`agent-browser`, zero Playwright). Uses compact accessibility tree snapshots (`@ref`), bypasses anti-bot walls via real user profiles, generates 5-dimension ISTQB test matrices (UI + API + DB fault injection), and exports structured bug reports.
+- **Multi-Agent Orchestration (`supergraph-team`)**: Wave DAG task scheduling with isolated Git worktrees and live dashboard (`:3333`).
 
 ### Windows Hook Behavior
 On Windows, `hooks/run-hook.cmd` dynamically resolves Git Bash across standard and user-level paths. If Git Bash is not found, hooks skipped with a warning, keeping platform execution non-blocking.

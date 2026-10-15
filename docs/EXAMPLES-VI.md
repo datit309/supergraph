@@ -1,6 +1,10 @@
 # Ví dụ thực tế quy trình Supergraph
 
-Các kịch bản thực tế khi áp dụng pipeline Supergraph trong phát triển phần mềm.
+Các kịch bản thực tế khi áp dụng pipeline Supergraph trong phát triển phần mềm:
+- **Gỡ lỗi khoa học**: 6 pha cô lập nguyên nhân gốc rễ cùng Serena LSP và subagent `diagnostician`.
+- **Triển khai tính năng Wave DAG**: Thực thi đa worker cô lập worktree cùng `supergraph-team`.
+- **Kiểm thử QA Full-Stack & Vượt Bot**: Nhân native Rust CDP (`agent-browser`) cùng ma trận ISTQB 5 chiều.
+- **Tái cấu trúc kiến trúc**: Ràng buộc hợp đồng kiến trúc, kiểm soát bán kính rủi ro và review độc lập.
 
 ---
 
