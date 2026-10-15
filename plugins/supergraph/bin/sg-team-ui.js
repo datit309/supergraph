@@ -11,23 +11,38 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3333
 const repoRoot = process.cwd()
 
 function findStateRoot(startDir) {
+  const candidates = [
+    startDir,
+    process.env.DSH_WORKSPACE,
+    process.cwd(),
+    '/Users/trantandat/GIC/Freelancer',
+    '/Users/trantandat/GIC/deepseek-harness'
+  ].filter(Boolean)
+
+  let newestDir = null
+  let newestMtime = 0
+
+  for (const c of candidates) {
+    const file = path.join(c, '.supergraph', 'team', 'state.json')
+    if (fs.existsSync(file)) {
+      try {
+        const stats = fs.statSync(file)
+        if (stats.mtimeMs > newestMtime) {
+          newestMtime = stats.mtimeMs
+          newestDir = c
+        }
+      } catch {}
+    }
+  }
+
+  if (newestDir) return newestDir
+
   let curr = path.resolve(startDir || process.cwd())
   while (curr && curr !== path.dirname(curr)) {
     if (fs.existsSync(path.join(curr, '.supergraph', 'team', 'state.json'))) {
       return curr
     }
     curr = path.dirname(curr)
-  }
-  const candidates = [
-    process.env.DSH_WORKSPACE,
-    '/Users/trantandat/GIC/Freelancer',
-    '/Users/trantandat/GIC/deepseek-harness',
-    process.cwd()
-  ].filter(Boolean)
-  for (const c of candidates) {
-    if (fs.existsSync(path.join(c, '.supergraph', 'team', 'state.json'))) {
-      return c
-    }
   }
   return startDir || process.cwd()
 }
@@ -46,9 +61,12 @@ const server = http.createServer((req, res) => {
       'Access-Control-Allow-Origin': '*'
     })
     let state = engine._loadState(sessionId)
-    if (!sessionId && (!state || !state.mission)) {
-      // Fallback to shared/repo mission ONLY if NO sessionId was requested
-      state = engine._loadState(null)
+    if (!state || !state.mission || (Array.isArray(state.tasks) && state.tasks.length === 0)) {
+      // Fallback to shared/repo mission if session-specific state has no active mission or tasks
+      const fallback = engine._loadState(null)
+      if (fallback && fallback.mission) {
+        state = fallback
+      }
     }
     res.end(JSON.stringify(state))
     return
