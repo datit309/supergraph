@@ -57,7 +57,7 @@ All skills depend on `/supergraph:scan` being loaded first in the session.
 
 ## Subagent Guard
 
-When dispatching subagents (executor, code-reviewer, plan-writer, plan-reviewer):
+When dispatching subagents (executor, code-reviewer, plan-writer, plan-reviewer, qa-tester, security-auditor, diagnostician):
 - Subagents get self-contained prompts — never session history
 - Subagents do NOT trigger skills independently — this is the orchestrator's job
 - Subagents report results back; orchestrator decides next step (fix, verify, review)

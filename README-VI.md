@@ -678,6 +678,9 @@ plugins/supergraph/
 │   ├── plan-writer.md          # Tạo plan, không bao giờ viết code
 │   ├── plan-reviewer.md        # Review plan trước khi execute
 │   ├── executor.md             # Execute plan, không bao giờ tạo plan
+│   ├── qa-tester.md            # Chuyên viên QA kiểm thử E2E & API ISTQB
+│   ├── security-auditor.md     # Kiểm toán bảo mật chuyên sâu OWASP/Vibesec
+│   ├── diagnostician.md        # Chẩn đoán nguyên nhân gốc rễ bug
 │   └── code-reviewer.md        # Agent review độc lập cuối cùng
 ├── hooks/
 │   ├── session-start           # Load CONTEXT.md, nhắc handoff

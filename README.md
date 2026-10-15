@@ -678,6 +678,9 @@ plugins/supergraph/
 │   ├── plan-writer.md          # Creates plans, never writes code
 │   ├── plan-reviewer.md        # Reviews plans pre-execution
 │   ├── executor.md             # Executes plans, never creates them
+│   ├── qa-tester.md            # ISTQB QA & E2E browser/API automation
+│   ├── security-auditor.md     # OWASP/Vibesec application security review
+│   ├── diagnostician.md        # Scientific root cause debugger
 │   └── code-reviewer.md        # Final independent review agent
 ├── hooks/
 │   ├── session-start           # CONTEXT.md load, handoff reminder
