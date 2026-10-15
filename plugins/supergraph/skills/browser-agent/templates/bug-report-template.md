@@ -1,6 +1,6 @@
 # Defect Report: [{{DEFECT_ID}}] {{DEFECT_TITLE}}
 
-> Standard: ISTQB Incident Report | Severity: {{SEVERITY}} | Priority: {{PRIORITY}}
+> Standard: ISTQB Incident Report | Scope: {{DEFECT_SCOPE}} | Severity: {{SEVERITY}} | Priority: {{PRIORITY}}
 > Date: {{DATE}} | Reporter: Supergraph QA Automation
 
 ---
@@ -8,31 +8,38 @@
 ## 1. Defect Overview
 
 - **Defect ID:** `{{DEFECT_ID}}`
-- **Component / Feature:** `{{FEATURE_NAME}}`
+- **Scope:** `{{DEFECT_SCOPE}}` *(UI / API / Full-Stack / Database)*
+- **Component / Service:** `{{FEATURE_NAME}}`
 - **Severity:** `{{SEVERITY}}` *(Blocker / Critical / Major / Minor)*
-- **Priority:** `{{PRIORITY}}` *(P0 - Fix Immediately / P1 - High / P2 - Normal)*
-- **Environment:**
-  - Browser Engine: Chrome CDP (`agent-browser`)
-  - Target URL: `{{TARGET_URL}}`
-  - Viewport: `{{VIEWPORT}}`
+- **Priority:** `{{PRIORITY}}` *(P0 - Blocker / P1 - High / P2 - Medium)*
+- **Target Route / Endpoint:** `{{TARGET_URL}}`
 
 ---
 
-## 2. Preconditions
+## 2. Preconditions & Environment
 
 1. {{PRECONDITION_1}}
 2. {{PRECONDITION_2}}
+- Environment Details: OS, Runtime, Browser / HTTP Client, DB state.
 
 ---
 
 ## 3. Steps to Reproduce (Deterministic)
 
+### UI Reproduction Steps (`agent-browser`)
 ```bash
-# Exact agent-browser commands to reproduce:
 agent-browser open "{{TARGET_URL}}"
 agent-browser snapshot -i
 agent-browser fill @{{REF_INPUT}} "{{TEST_INPUT}}"
 agent-browser click @{{REF_SUBMIT}}
+```
+
+### API Reproduction Steps (`curl` / HTTP)
+```bash
+curl -X POST "{{TARGET_URL}}" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -d '{{TEST_INPUT}}'
 ```
 
 ---
@@ -44,22 +51,29 @@ agent-browser click @{{REF_SUBMIT}}
 
 ---
 
-## 5. Diagnostics & Evidence
+## 5. Technical Diagnostics & Evidence
 
-### Console Errors (`agent-browser console`)
+### HTTP / API Dump
+- **Status Code:** `{{ACTUAL_STATUS_CODE}}` *(Expected: `{{EXPECTED_STATUS_CODE}}`)*
+- **Response Headers / Body:**
+```json
+{{RESPONSE_BODY}}
+```
+
+### UI & Client Diagnostics (`agent-browser`)
+- **Console Log (`agent-browser console`):**
 ```text
 {{CONSOLE_OUTPUT}}
 ```
-
-### Unhandled Runtime Errors (`agent-browser errors`)
+- **Runtime Errors (`agent-browser errors`):**
 ```text
 {{ERRORS_OUTPUT}}
 ```
+- **Screenshot Link:** `docs/qa/evidence/{{EVIDENCE_FILENAME}}`
 
-### Failed Network Requests (`agent-browser network requests`)
+### Server & Database State
+- **Server Log / Stack Trace:**
 ```text
-{{NETWORK_OUTPUT}}
+{{SERVER_LOG}}
 ```
-
-### Screenshot Evidence
-`docs/qa/evidence/{{EVIDENCE_FILENAME}}`
+- **Database Discrepancy:** *(e.g., Row inserted with null foreign key, transaction not rolled back)*

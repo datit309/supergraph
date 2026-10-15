@@ -52,8 +52,10 @@ Max 3 retries. On failure:
 
 Trace failure to source module, fix, re-run.
 
-### 5. Run E2E & Web QA Automation
-- **Web/Frontend Projects**: ALWAYS automatically invoke `/supergraph:browser-agent` to generate or verify ISTQB QA matrix coverage (Happy path, Sad path, Boundary, Network 500 error injection, Auth/RBAC) using native Rust CDP (anti-bot bypass, zero Playwright).
+### 5. Run E2E & Full-Stack QA Automation
+- **QA Matrix Generation**: Generate or verify ISTQB QA matrix coverage (`docs/qa/test-matrix-<feature>.md`) covering Happy path, Sad path, Boundary, Network 500 error injection, Auth/RBAC, and IDOR (scaffold via `bash plugins/supergraph/skills/browser-agent/scripts/init-qa.sh matrix <feature> [ui|api|fullstack]`).
+- **Web/Frontend Projects**: ALWAYS automatically invoke `/supergraph:browser-agent` to run autonomous user-flow tests via native Rust CDP (anti-bot bypass, zero Playwright).
+- **Backend / API Services**: Verify API endpoint schemas, response codes, DB state integrity, and error sanitization.
 - **Execution**: Run automated test cases via `agent-browser` or project e2e test script. Max 2 retries (e2e is inherently flaky). Annotate flaky tests — do not block merge on known-flaky external network tests.
 
 ### 6. Graph Validation
