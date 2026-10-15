@@ -3,9 +3,28 @@ const RELAY_WS_URL = "ws://127.0.0.1:9333/extension";
 let socket = null;
 let reconnectTimer = null;
 const attachedTabs = new Set();
+const tabIdleTimers = new Map();
+const IDLE_DETACH_TIMEOUT_MS = 5000; // Auto-detach after 5s of inactivity to remove Chrome debug infobar
 
 function log(...args) {
   console.log("[Supergraph Relay]", ...args);
+}
+
+function clearIdleTimer(tabId) {
+  if (tabIdleTimers.has(tabId)) {
+    clearTimeout(tabIdleTimers.get(tabId));
+    tabIdleTimers.delete(tabId);
+  }
+}
+
+function resetIdleTimer(tabId) {
+  clearIdleTimer(tabId);
+  const timer = setTimeout(() => {
+    tabIdleTimers.delete(tabId);
+    log(`Auto-detaching tab ${tabId} after 5s idle.`);
+    detachTab(tabId);
+  }, IDLE_DETACH_TIMEOUT_MS);
+  tabIdleTimers.set(tabId, timer);
 }
 
 function connect() {
@@ -26,12 +45,16 @@ function connect() {
       clearTimeout(reconnectTimer);
       reconnectTimer = null;
     }
+    // Clean up any stale attachments from prior sessions immediately
+    detachAllTabs();
     syncTabs();
   };
 
   socket.onclose = () => {
     log("Disconnected from local relay server.");
     socket = null;
+    // When relay server disconnects, detach tabs immediately so no banner remains
+    detachAllTabs();
     scheduleReconnect();
   };
 
@@ -77,38 +100,9 @@ function send(data) {
 
 async function markTabActive(tabId) {
   try {
+    // Only set extension icon badge in toolbar — NO intrusive DOM injection on user page
     await chrome.action.setBadgeText({ tabId, text: "AI" });
     await chrome.action.setBadgeBackgroundColor({ tabId, color: "#0284c7" });
-    
-    // Inject visual indicator pill and prefix tab title on Chrome tab strip
-    const badgeScript = `
-      (() => {
-        // 1. Prefix Chrome tab title
-        if (!window.__sg_original_title) {
-          window.__sg_original_title = document.title;
-        }
-        if (!document.title.startsWith("⚡ [AI] ")) {
-          document.title = "⚡ [AI] " + window.__sg_original_title;
-        }
-
-        // 2. Inject floating HUD pill
-        if (document.getElementById("supergraph-ai-hud")) return;
-        const hud = document.createElement("div");
-        hud.id = "supergraph-ai-hud";
-        hud.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;margin-right:8px;animation:sg-pulse 1.2s infinite ease-in-out;"></span><span style="font-weight:700;font-size:11px;letter-spacing:0.8px;color:#38bdf8;text-transform:uppercase;">Supergraph AI Control</span>';
-        hud.setAttribute("style", "position:fixed!important;top:14px!important;right:18px!important;z-index:2147483647!important;display:flex!important;align-items:center!important;padding:6px 14px!important;background:rgba(15,23,42,0.92)!important;backdrop-filter:blur(8px)!important;border:1.5px solid #0284c7!important;border-radius:9999px!important;box-shadow:0 4px 20px rgba(0,0,0,0.5),0 0 15px rgba(2,132,199,0.35)!important;pointer-events:none!important;font-family:-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,sans-serif!important;user-select:none!important;");
-        
-        const style = document.createElement("style");
-        style.id = "supergraph-ai-hud-style";
-        style.textContent = "@keyframes sg-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.35;transform:scale(0.8)}}";
-        
-        document.documentElement.appendChild(style);
-        document.documentElement.appendChild(hud);
-      })()
-    `;
-    chrome.debugger.sendCommand({ tabId }, "Runtime.evaluate", { expression: badgeScript }, () => {
-      if (chrome.runtime.lastError) { /* ignore restricted tabs like chrome:// */ }
-    });
   } catch (err) {
     log("Error setting tab badge:", err);
   }
@@ -117,17 +111,15 @@ async function markTabActive(tabId) {
 async function unmarkTab(tabId) {
   try {
     await chrome.action.setBadgeText({ tabId, text: "" });
+    // Clean up any legacy HUD element or title modification if previously present
     const removeScript = `
       (() => {
-        // 1. Restore original tab title
         if (window.__sg_original_title) {
           document.title = window.__sg_original_title;
           delete window.__sg_original_title;
         } else if (document.title.startsWith("⚡ [AI] ")) {
           document.title = document.title.replace(/^⚡ \\[AI\\] /, "");
         }
-
-        // 2. Remove floating HUD pill
         document.getElementById("supergraph-ai-hud")?.remove();
         document.getElementById("supergraph-ai-hud-style")?.remove();
       })()
@@ -141,7 +133,10 @@ async function unmarkTab(tabId) {
 }
 
 async function attachTab(tabId) {
-  if (attachedTabs.has(tabId)) return true;
+  if (attachedTabs.has(tabId)) {
+    resetIdleTimer(tabId);
+    return true;
+  }
   return new Promise((resolve) => {
     chrome.debugger.attach({ tabId }, "1.3", () => {
       if (chrome.runtime.lastError) {
@@ -150,6 +145,7 @@ async function attachTab(tabId) {
       } else {
         attachedTabs.add(tabId);
         markTabActive(tabId);
+        resetIdleTimer(tabId);
         log(`Attached to tab ${tabId}`);
         resolve(true);
       }
@@ -158,12 +154,19 @@ async function attachTab(tabId) {
 }
 
 function detachTab(tabId) {
+  clearIdleTimer(tabId);
   if (!attachedTabs.has(tabId)) return;
   unmarkTab(tabId);
   chrome.debugger.detach({ tabId }, () => {
     attachedTabs.delete(tabId);
     log(`Detached from tab ${tabId}`);
   });
+}
+
+function detachAllTabs() {
+  for (const tabId of Array.from(attachedTabs)) {
+    detachTab(tabId);
+  }
 }
 
 async function handleServerMessage(msg) {
@@ -182,6 +185,11 @@ async function handleServerMessage(msg) {
       send({ type: "detach_response", tabId: msg.tabId, success: true });
       break;
     }
+    case "detach_all": {
+      detachAllTabs();
+      send({ type: "detach_all_response", success: true });
+      break;
+    }
     case "cdp_command": {
       const { tabId, id, method, params } = msg;
       if (!attachedTabs.has(tabId)) {
@@ -196,7 +204,10 @@ async function handleServerMessage(msg) {
         }
       }
 
+      resetIdleTimer(tabId);
+
       chrome.debugger.sendCommand({ tabId }, method, params || {}, (result) => {
+        resetIdleTimer(tabId);
         if (chrome.runtime.lastError) {
           send({
             type: "cdp_response",
@@ -213,6 +224,10 @@ async function handleServerMessage(msg) {
       });
       break;
     }
+    default:
+      log("Unknown server message type:", msg.type);
+  }
+}
     default:
       log("Unknown server message type:", msg.type);
   }

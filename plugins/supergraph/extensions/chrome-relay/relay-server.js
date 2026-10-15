@@ -148,6 +148,22 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (url.pathname === "/detach_all" || url.pathname === "/json/detach_all") {
+    if (extensionWs) {
+      extensionWs.send({ type: "detach_all" });
+      // Also send individual detach_tab commands for older background workers
+      for (const t of cachedTabs) {
+        extensionWs.send({ type: "detach_tab", tabId: t.id });
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ success: true, message: "Detached all tabs" }));
+    } else {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ success: false, message: "Extension not connected" }));
+    }
+    return;
+  }
+
   if (url.pathname === "/json" || url.pathname === "/json/list") {
     const list = cachedTabs.map(t => ({
       description: "",
@@ -190,6 +206,8 @@ server.on("upgrade", (req, socket, head) => {
   if (url.pathname === "/extension") {
     console.log("[Relay] Chrome Extension connected.");
     extensionWs = ws;
+    // Clean up any stale attachments from previous sessions
+    ws.send({ type: "detach_all" });
 
     ws.onMessage = (msgStr) => {
       try {
@@ -297,3 +315,15 @@ server.listen(PORT, "127.0.0.1", () => {
   console.log(`👉 CDP Discovery: http://127.0.0.1:${PORT}/json/version`);
   console.log(`👉 Active Tabs:   http://127.0.0.1:${PORT}/json/list`);
 });
+
+const cleanup = () => {
+  if (extensionWs) {
+    try {
+      extensionWs.send({ type: "detach_all" });
+    } catch (e) {}
+  }
+  process.exit(0);
+};
+
+process.on("SIGINT", cleanup);
+process.on("SIGTERM", cleanup);
