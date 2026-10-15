@@ -59,4 +59,61 @@ EOF
 chmod +x "$LAUNCHER"
 printf '    [OK] Installed CLI launcher to %s\n' "$LAUNCHER"
 
-printf '==> Supergraph Chrome Relay successfully configured!\n'
+# 3. Automatic background service (launchd on macOS, systemd on Linux)
+NODE_BIN="$(command -v node || echo '/usr/local/bin/node')"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  LAUNCH_AGENTS_DIR="$HOME/Library/LaunchAgents"
+  mkdir -p "$LAUNCH_AGENTS_DIR"
+  PLIST_FILE="$LAUNCH_AGENTS_DIR/com.supergraph.relay.plist"
+  
+  # Unload previous version if loaded
+  launchctl unload "$PLIST_FILE" 2>/dev/null || true
+  
+  cat > "$PLIST_FILE" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.supergraph.relay</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$NODE_BIN</string>
+        <string>$SCRIPT_DIR/relay-server.js</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/supergraph-relay.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/supergraph-relay.err</string>
+</dict>
+</plist>
+EOF
+  launchctl load -w "$PLIST_FILE" 2>/dev/null || true
+  printf '    [OK] Configured and started background service via launchd (%s)\n' "$PLIST_FILE"
+elif [[ "$OSTYPE" == "linux"* ]] && command -v systemctl >/dev/null 2>&1; then
+  SYSTEMD_DIR="$HOME/.config/systemd/user"
+  mkdir -p "$SYSTEMD_DIR"
+  SERVICE_FILE="$SYSTEMD_DIR/supergraph-relay.service"
+  cat > "$SERVICE_FILE" <<EOF
+[Unit]
+Description=Supergraph Chrome Relay Server
+After=network.target
+
+[Service]
+ExecStart=$NODE_BIN $SCRIPT_DIR/relay-server.js
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+EOF
+  systemctl --user daemon-reload 2>/dev/null || true
+  systemctl --user enable --now supergraph-relay.service 2>/dev/null || true
+  printf '    [OK] Configured and started background service via systemd user unit\n'
+fi
+
+printf '==> Supergraph Chrome Relay successfully configured and running!\n'
