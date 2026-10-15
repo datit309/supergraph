@@ -8,8 +8,8 @@
     {
       "name": "supergraph",
       "source": "./plugins/supergraph",
-      "version": "2.2.8",
-      "description": "Engineering workflow system for AI coding agents that enforces planning, TDD, verification, review, and architecture-aware decisions with local codebase graph intelligence across Claude Code, Codex CLI, Antigravity, and OpenCode.",
+      "version": "2.3.0",
+      "description": "Evidence-gated engineering workflows, 7 specialized subagents, and native Rust CDP browser/API automation for AI coding agents across Claude Code, Codex CLI, Antigravity, OpenCode, and DeepSeek Harness (DSH).",
       "author": {
         "name": "datit309",
         "email": "datit309@gmail.com"

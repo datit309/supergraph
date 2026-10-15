@@ -1,7 +1,7 @@
 {
   "name": "supergraph",
   "version": "2.3.0",
-  "description": "Supergraph workflow, skills, and MCP tools for DeepSeek Harness (DSH)",
+  "description": "Evidence-gated engineering workflows, 7 specialized subagents, and native Rust CDP browser/API automation for AI coding agents",
   "type": "module",
   "main": "./index.js",
   "exports": {

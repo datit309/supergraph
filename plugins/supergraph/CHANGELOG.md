@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.3.0 - 2026-10-10
+## 2.3.0 - 2026-10-15
 
 ### Added
 
@@ -10,6 +10,19 @@
   - **TDD Enforcement Gate**: Enforces RED test evidence before green implementation; automated test runner blocks merge unless exit code is 0.
   - **Standard MCP Stdio Tools**: `sg_team_init`, `sg_task_create`, `sg_task_list`, `sg_task_claim`, `sg_task_record_red`, `sg_task_submit`, `sg_task_verify_merge`, `sg_worktree_cleanup`, `sg_team_status`.
   - **Multi-Platform Integration**: Compatible out-of-the-box across DSH (`cordis.patch.yml`), Claude Code (`.mcp.json`), Antigravity/Gemini (`mcp_config.json`), OpenCode, and Codex.
+- **Autonomous Human Browser Agent & ISTQB QA (`browser-agent`)** — Replaced legacy Playwright with native Rust CDP (`agent-browser` v0.39.1).
+  - **Anti-Bot Bypass**: Supports connecting to real user Chrome profiles (`--profile Default --headed`) or existing CDP endpoints (`:9222`), preserving cookies, login sessions, and passing Cloudflare/Akamai bot walls.
+  - **Token-Efficient Accessibility Tree**: Snapshot `@ref` element indexing (~10-100 tokens) eliminating huge DOM or mandatory screenshot dumps.
+  - **Full-Stack ISTQB QA Suite**: 5-dimension test matrix generation (Happy path, Negative, Boundary, 500 fault resilience, RBAC/IDOR), automated testcase execution, console/network error tracing, and formal defect reporting in `docs/qa/`.
+- **7-Subagent Specialized Architecture** — Expanded subagent suite from 4 to 7 specialized roles:
+  - `plan-writer`: Code graph analysis & plan creation.
+  - `plan-reviewer`: Independent plan & spec verification.
+  - `executor`: TDD execution in isolated git worktrees.
+  - `qa-tester`: Autonomous E2E browser & API testing with ISTQB matrices.
+  - `security-auditor`: OWASP Top 10 & Vibesec AppSec vulnerability audits.
+  - `diagnostician`: Scientific root-cause debugging with Serena LSP & Codebase Memory.
+  - `code-reviewer`: Independent final review & merge verdict.
+- **Modular Documentation Architecture** — Extracted detailed platform installation and examples to `docs/INSTALLATION.md` and `docs/EXAMPLES.md`, reducing README size by ~75% (saving ~6,000 tokens per session load).
 
 ## 2.2.15 - 2026-09-16
 
