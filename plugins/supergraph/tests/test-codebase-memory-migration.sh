@@ -262,7 +262,7 @@ database_integration() {
 }
 
 diagnose_web() {
-  local files=("$ROOT/plugins/supergraph/skills/diagnose/SKILL.md" "$ROOT/plugins/supergraph/skills/webapp-testing/SKILL.md") f
+  local files=("$ROOT/plugins/supergraph/skills/diagnose/SKILL.md" "$ROOT/plugins/supergraph/skills/browser-agent/SKILL.md") f
   for f in "${files[@]}"; do contains "$f" CBM_PROJECT; contains "$f" search_graph; contains "$f" trace_path; contains "$f" unavailable; ! grep -Eq "$LEGACY_EXEC|mcp__code-review" "$f" || fail "$f contains legacy calls"; done
   grep -Rq 'test-gaps' "${files[@]}"
 }

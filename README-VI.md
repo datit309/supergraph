@@ -427,7 +427,6 @@ Tất cả skill dùng prefix `/supergraph:` để tránh xung đột với lệ
 | `/supergraph:flutter-screenshots`      | Tự động chụp screenshot chuẩn App Store & Google Play (native độ phân giải, bỏ alpha) | Tạo ảnh chụp ứng dụng nộp Store          |
 | `/supergraph:flutter-dart-code-review` | Checklist review Flutter/Dart 15 mục                                               | Code review Flutter/Dart                 |
 | `/supergraph:frontend-design`          | UI production-grade — không có aesthetics AI generic                               | Component và layout web UI               |
-| `/supergraph:webapp-testing`           | Web testing dùng Playwright                                                        | E2E web testing                          |
 | `/supergraph:browser-agent`            | Điều khiển browser như người thật & kiểm thử QA ISTQB (Rust agent-browser + CDP)   | Test trải nghiệm thật, vượt anti-bot, ma trận QA |
 
 ---
@@ -674,7 +673,7 @@ plugins/supergraph/
 │   ├── flutter-screenshots/    # Tự động chụp screenshot nộp Store
 │   ├── flutter-dart-code-review/ # Checklist review Flutter/Dart
 │   ├── frontend-design/        # UI production-grade
-│   └── webapp-testing/         # Playwright web testing
+│   └── browser-agent/          # Giả lập người dùng & kiểm thử QA (Rust CDP)
 ├── agents/
 │   ├── plan-writer.md          # Tạo plan, không bao giờ viết code
 │   ├── plan-reviewer.md        # Review plan trước khi execute

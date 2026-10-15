@@ -427,7 +427,6 @@ All skills use the `/supergraph:` prefix to avoid conflicts with built-in comman
 | `/supergraph:flutter-screenshots`      | Automate App Store & Google Play screenshots with native resolutions and no alpha | Flutter store screenshot generation    |
 | `/supergraph:flutter-dart-code-review` | 15-section Flutter/Dart review checklist                                         | Flutter/Dart code review               |
 | `/supergraph:frontend-design`          | Production-grade UI — no generic AI aesthetics                                   | Web UI components and layouts          |
-| `/supergraph:webapp-testing`           | Playwright-based web application testing                                         | E2E web testing                        |
 | `/supergraph:browser-agent`            | Autonomous human browser emulation & ISTQB QA testing (Rust agent-browser + CDP) | Real user testing, anti-bot bypass, QA matrix |
 
 ---
@@ -674,7 +673,7 @@ plugins/supergraph/
 │   ├── flutter-screenshots/    # Store screenshot automation
 │   ├── flutter-dart-code-review/ # Flutter/Dart review checklist
 │   ├── frontend-design/        # Production-grade UI
-│   └── webapp-testing/         # Playwright web testing
+│   └── browser-agent/          # Rust CDP browser emulation & QA testing
 ├── agents/
 │   ├── plan-writer.md          # Creates plans, never writes code
 │   ├── plan-reviewer.md        # Reviews plans pre-execution

@@ -130,7 +130,7 @@ Serena is invoked as optional hooks inside other supergraph skills:
 | `integration` | Post-test | `find_referencing_symbols`, `get_diagnostics_for_file` |
 | `architecture` | Step 2 | `get_symbols_overview` |
 | `database-migrations` | Impact check | `find_referencing_symbols` |
-| `webapp-testing` | Component impact | `find_referencing_symbols` |
+| `browser-agent` | Component impact | `find_referencing_symbols` |
 | `flutter-dart-code-review` | MCP-Integrated Review | `get_diagnostics_for_file`, `find_referencing_symbols`, `find_implementations` |
 
 ## MCP Tool Name Variants

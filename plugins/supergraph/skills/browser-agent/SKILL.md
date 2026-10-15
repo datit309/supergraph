@@ -70,6 +70,10 @@ Uses your real user session, cookies, extensions, canvas fingerprints, and hardw
 
 When tasked with testing a feature or application, the agent acts as a Senior QA Automation Engineer:
 
+### Phase 0: Graph Context & Impact Prioritization
+Before running test automation, query graph context to prioritize coverage on changed paths:
+Use `CBM_PROJECT`: call `detect_changes`, `search_graph` for changed routes/pages, then `trace_path` for inbound/outbound call and data-flow paths. Run validated `test-gaps` recipes. If results are unavailable, fall back to filesystem inspection.
+
 ### Phase 1: Test Matrix Generation
 Generate a comprehensive test matrix covering 5 dimensions and save to `docs/qa/test-matrix-<feature>.md`:
 1. **Happy Path:** Expected valid user flow from entrance to success.

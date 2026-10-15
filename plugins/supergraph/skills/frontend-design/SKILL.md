@@ -38,7 +38,7 @@ Produce working code (HTML/CSS/JS, React, Vue, etc.) that is:
 ### 4. Handoff
 Deliver the working code. If the user is in a supergraph workflow:
 - Static component → no further steps needed
-- Interactive feature → `/supergraph:webapp-testing` to verify UI behavior
+- Interactive feature → `/supergraph:browser-agent` to verify UI behavior
 
 ## Design Reference (condensed)
 Purpose/Tone/Constraints/Differentiation — pick one bold direction (minimal/maximalist/retro/luxury/brutalist etc) and execute with precision.

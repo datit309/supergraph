@@ -23,8 +23,7 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | `/supergraph:execute` | `/execute` | When executing saved plans |
 | `/supergraph:fix` | `/fix` | After all coding is complete |
 | `/supergraph:integration` | `/integration` | After unit tests pass |
-| `/supergraph:playwright-tester` | `/playwright-tester` | Comprehensive Web E2E testing, QA/QC matrix & failure simulation |
-| `/supergraph:browser-agent` | `/browser-agent` | Autonomous human-like browser control & E2E user-flow testing |
+| `/supergraph:browser-agent` | `/browser-agent` | Autonomous human browser emulation & ISTQB QA testing (Rust CDP) |
 | `/supergraph:vibesec` | `/vibesec` | Security audit, vulnerability prevention (IDOR, XSS, CSRF, SSRF, SQLi, Auth/JWT) |
 | `/supergraph:verify` | `/verify` | Before claiming done/ready or committing |
 | `/supergraph:review` | `/review` | Before merging or when review is needed |
@@ -59,8 +58,8 @@ Use the correct test/lint commands for the detected language.
 |---|---|---|
 | **Explore** | Codebase exploration, architectural research, tracing flows (no code changes) | `/explore` (or `/zoom-out` → `/explore`) — zero code/test mutation |
 | **Micro** | < 20 lines, ≤2 files, no hub/bridge, complexity <10 | `/supergraph:tdd` directly → `/supergraph:verify` (skip analyze/plan) |
-| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:playwright-tester` (if web) → `/supergraph:verify` |
-| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → plan [with embedded contracts] → execute → fix → playwright-tester → verify → review`) |
+| **Standard** | ≤5 files, clear requirement, no cross-boundary | `/supergraph:analyze` → `/supergraph:plan` (lightweight) → `/supergraph:execute` → `/supergraph:fix` → `/supergraph:browser-agent` (if web) → `/supergraph:verify` |
+| **Full** | >5 files, ambiguous, hub/bridge, cross-boundary, or blast radius >5 | Full pipeline below (`scan → analyze → plan [with embedded contracts] → execute → fix → browser-agent → verify → review`) |
 
 **When in doubt, pick one tier lower — upgrade if complexity reveals itself.**
 
