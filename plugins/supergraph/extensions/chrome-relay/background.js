@@ -80,9 +80,18 @@ async function markTabActive(tabId) {
     await chrome.action.setBadgeText({ tabId, text: "AI" });
     await chrome.action.setBadgeBackgroundColor({ tabId, color: "#0284c7" });
     
-    // Inject visual indicator pill into the page DOM
+    // Inject visual indicator pill and prefix tab title on Chrome tab strip
     const badgeScript = `
       (() => {
+        // 1. Prefix Chrome tab title
+        if (!window.__sg_original_title) {
+          window.__sg_original_title = document.title;
+        }
+        if (!document.title.startsWith("⚡ [AI] ")) {
+          document.title = "⚡ [AI] " + window.__sg_original_title;
+        }
+
+        // 2. Inject floating HUD pill
         if (document.getElementById("supergraph-ai-hud")) return;
         const hud = document.createElement("div");
         hud.id = "supergraph-ai-hud";
@@ -110,6 +119,15 @@ async function unmarkTab(tabId) {
     await chrome.action.setBadgeText({ tabId, text: "" });
     const removeScript = `
       (() => {
+        // 1. Restore original tab title
+        if (window.__sg_original_title) {
+          document.title = window.__sg_original_title;
+          delete window.__sg_original_title;
+        } else if (document.title.startsWith("⚡ [AI] ")) {
+          document.title = document.title.replace(/^⚡ \\[AI\\] /, "");
+        }
+
+        // 2. Remove floating HUD pill
         document.getElementById("supergraph-ai-hud")?.remove();
         document.getElementById("supergraph-ai-hud-style")?.remove();
       })()
