@@ -75,7 +75,7 @@ Before running test automation, query graph context to prioritize coverage on ch
 Use `CBM_PROJECT`: call `detect_changes`, `search_graph` for changed routes/pages, then `trace_path` for inbound/outbound call and data-flow paths. Run validated `test-gaps` recipes. If results are unavailable, fall back to filesystem inspection.
 
 ### Phase 1: Test Matrix Generation
-Generate a comprehensive test matrix covering 5 dimensions and save to `docs/qa/test-matrix-<feature>.md`:
+Generate a comprehensive test matrix covering 5 dimensions and save to `docs/qa/test-matrix-<feature>.md` (scaffold quickly with `scripts/init-qa.sh matrix <feature> <target-url>` from `templates/test-matrix-template.md`):
 1. **Happy Path:** Expected valid user flow from entrance to success.
 2. **Negative Path:** Missing required fields, invalid credentials, malformed emails, business constraint violations.
 3. **Boundary Value Analysis:** 0 chars, 1 char, limit max chars, SQLi/XSS probe strings (`<script>`, `' OR 1=1`).
@@ -99,7 +99,7 @@ Assert that no silent runtime bugs were introduced:
 - `agent-browser network requests` → Identify failed HTTP 4xx/500 endpoints.
 
 ### Phase 4: Structured Defect Reporting
-If defects are found, generate a formal Bug Report at `docs/qa/bug-report-<timestamp>.md`:
+If defects are found, generate a formal Bug Report at `docs/qa/bug-report-<timestamp>.md` (scaffold quickly with `scripts/init-qa.sh bug <feature> <defect-id> <defect-title>` from `templates/bug-report-template.md`):
 - **Defect ID & Title:** e.g., `BUG-AUTH-001: Missing password validation triggers unhandled 500 error`.
 - **Severity:** Blocker / Critical / Major / Minor.
 - **Preconditions & Environment:** Browser profile, viewport, user state.
