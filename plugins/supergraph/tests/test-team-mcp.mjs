@@ -183,6 +183,20 @@ test('TeamMcpServer - protocol handling & tools lifecycle', async (t) => {
 
   // Cleanup
   await server.executeTool('sg_worktree_cleanup', { task_id: 'scoped-task' })
+
+  // 10. Test direct task complete
+  await server.executeTool('sg_task_create', {
+    id: 'direct-complete-task',
+    title: 'Direct Complete Task',
+    wave: 3
+  })
+  const completeRes = await server.executeTool('sg_task_complete', {
+    task_id: 'direct-complete-task',
+    summary: 'Direct commit verification'
+  })
+  assert.equal(completeRes.isError, false)
+  const completedTask = JSON.parse(completeRes.content[0].text)
+  assert.equal(completedTask.status, 'merged')
 })
 
 test('TeamMcpServer - stdio binary integration', async (t) => {

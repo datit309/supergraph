@@ -113,6 +113,28 @@ const server = http.createServer((req, res) => {
     return
   }
 
+  if (pathname === '/api/task/merge' && req.method === 'POST') {
+    let body = ''
+    req.on('data', chunk => { body += chunk })
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}')
+        if (!payload.taskId) {
+          res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+          res.end(JSON.stringify({ error: 'taskId is required' }))
+          return
+        }
+        const task = engine.markMerged({ taskId: payload.taskId })
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+        res.end(JSON.stringify({ success: true, task }))
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
+        res.end(JSON.stringify({ error: err.message }))
+      }
+    })
+    return
+  }
+
   if (pathname === '/api/reset' && req.method === 'POST') {
     const resetEngine = new TeamEngine(cwd, sessionId)
     resetEngine.initMission({ objective: '', baseBranch: 'HEAD', sessionId: sessionId || null })

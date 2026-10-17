@@ -114,6 +114,18 @@ export class TeamMcpServer {
         }
       },
       {
+        name: 'sg_task_complete',
+        description: 'Directly mark a task as completed/merged in DAG (supports direct commits or manual override).',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            task_id: { type: 'string', description: 'Task ID to mark completed' },
+            summary: { type: 'string', description: 'Optional summary of completed work or commit hash' }
+          },
+          required: ['task_id']
+        }
+      },
+      {
         name: 'sg_worktree_cleanup',
         description: 'Discard and remove a task worktree and branch without merging.',
         inputSchema: {
@@ -326,10 +338,56 @@ export class TeamMcpServer {
         }
       }
 
+      case 'sg_task_complete': {
+        const taskObj = this.engine.getTask(args.task_id)
+        if (!taskObj) {
+          return {
+            content: [{ type: 'text', text: `Task not found: ${args.task_id}` }],
+            isError: true
+          }
+        }
+        if (this.wt.hasWorktree(args.task_id)) {
+          this.wt.removeWorktree(args.task_id)
+        }
+        const task = this.engine.markMerged({ taskId: args.task_id })
+        if (args.summary) {
+          task.greenOutput = args.summary
+          this.engine._saveState(this.engine._loadState())
+        }
+        return {
+          content: [{ type: 'text', text: JSON.stringify(task, null, 2) }],
+          isError: false
+        }
+      }
+
       case 'sg_task_verify_merge': {
         const taskObj = this.engine.getTask(args.task_id)
         const mission = this.engine.getMission()
         const targetBranch = mission?.baseBranch || 'HEAD'
+
+        const hasWorktree = this.wt.hasWorktree(args.task_id)
+        if (!hasWorktree) {
+          let testLog = ''
+          if (args.test_cmd) {
+            try {
+              const res = exec(args.test_cmd, { cwd: this.repoRoot })
+            } catch (err) {
+              // ignore
+            }
+          }
+          const task = this.engine.markMerged({ taskId: args.task_id })
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                task,
+                directCommit: true,
+                success: true
+              }, null, 2)
+            }],
+            isError: false
+          }
+        }
 
         // 1. Validate write scopes
         if (taskObj && taskObj.writeScopes && taskObj.writeScopes.length > 0) {

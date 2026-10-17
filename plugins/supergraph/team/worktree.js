@@ -8,6 +8,10 @@ export class WorktreeManager {
     this.worktreeParent = path.join(this.repoRoot, '.supergraph', 'worktrees')
   }
 
+  hasWorktree(taskId) {
+    return fs.existsSync(path.join(this.worktreeParent, `task-${taskId}`))
+  }
+
   createWorktree(taskId, baseBranch = 'HEAD') {
     if (!fs.existsSync(this.worktreeParent)) {
       fs.mkdirSync(this.worktreeParent, { recursive: true })

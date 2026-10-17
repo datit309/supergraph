@@ -778,6 +778,12 @@ export function getTeamUiHtml() {
           </h4>
           <div class="code-block code-diff" id="modal-task-diff">Chưa có git diff.</div>
         </div>
+
+        <div id="modal-action-row" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px;">
+          <button id="btn-mark-merged" class="btn btn-outline" style="color: var(--success); border-color: var(--success);" onclick="markCurrentTaskMerged()">
+            ✓ Đánh dấu Hoàn thành (Mark Merged)
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -785,6 +791,7 @@ export function getTeamUiHtml() {
   <script>
     let currentData = null;
     let currentTab = 'dag';
+    let currentModalTaskId = null;
 
     function switchTab(tab) {
       currentTab = tab;
@@ -1072,6 +1079,39 @@ export function getTeamUiHtml() {
       }
 
       document.getElementById('task-modal').classList.add('open');
+
+      currentModalTaskId = t.id;
+      const btnMark = document.getElementById('btn-mark-merged');
+      if (btnMark) {
+        btnMark.style.display = t.status === 'merged' ? 'none' : 'inline-flex';
+      }
+    }
+
+    async function markCurrentTaskMerged() {
+      if (!currentModalTaskId) return;
+      const queryParams = new URLSearchParams();
+      if (currentSessionId) queryParams.set("sessionId", currentSessionId);
+      if (currentCwd) queryParams.set("cwd", currentCwd);
+      const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
+
+      const btn = document.getElementById('btn-mark-merged');
+      if (btn) btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/task/merge' + qs, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ taskId: currentModalTaskId })
+        });
+        if (res && res.ok) {
+          closeModal();
+          await updateDashboard();
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
     function closeModal() {
