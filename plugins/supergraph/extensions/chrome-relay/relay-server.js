@@ -48,6 +48,8 @@ function createWebSocket(socket) {
   };
 
   let buffer = Buffer.alloc(0);
+  let fragmentedPayload = Buffer.alloc(0);
+  let fragmentedOpcode = 0;
 
   socket.on("data", (chunk) => {
     buffer = Buffer.concat([buffer, chunk]);
@@ -55,6 +57,7 @@ function createWebSocket(socket) {
     while (buffer.length >= 2) {
       const firstByte = buffer[0];
       const secondByte = buffer[1];
+      const isFin = (firstByte & 0x80) !== 0;
       const opcode = firstByte & 0x0f;
       const isMasked = (secondByte & 0x80) !== 0;
       let payloadLength = secondByte & 0x7f;
@@ -101,9 +104,24 @@ function createWebSocket(socket) {
         pong[1] = 0x00;
         socket.write(pong);
       } else if (opcode === 0x01 || opcode === 0x02) {
-        // Text or binary
-        if (ws.onMessage) {
-          ws.onMessage(payload.toString("utf8"));
+        if (isFin) {
+          if (ws.onMessage) {
+            ws.onMessage(payload.toString("utf8"));
+          }
+        } else {
+          fragmentedOpcode = opcode;
+          fragmentedPayload = Buffer.concat([fragmentedPayload, payload]);
+        }
+      } else if (opcode === 0x00) {
+        // Continuation frame
+        fragmentedPayload = Buffer.concat([fragmentedPayload, payload]);
+        if (isFin) {
+          const completePayload = fragmentedPayload;
+          fragmentedPayload = Buffer.alloc(0);
+          fragmentedOpcode = 0;
+          if (ws.onMessage) {
+            ws.onMessage(completePayload.toString("utf8"));
+          }
         }
       }
     }
@@ -134,6 +152,13 @@ const server = http.createServer((req, res) => {
   }
 
   const url = new URL(req.url, `http://${req.headers.host}`);
+
+  if (url.pathname === "/log") {
+    console.log("[Extension Log]", url.searchParams.get("msg"));
+    res.writeHead(200);
+    res.end("ok");
+    return;
+  }
 
   if (url.pathname === "/json/version") {
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -219,6 +244,7 @@ server.on("upgrade", (req, socket, head) => {
           if (pending) {
             pendingCommands.delete(msg.id);
             const resObj = { id: pending.originalId };
+            if (pending.sessionId) resObj.sessionId = pending.sessionId;
             if (msg.error) resObj.error = msg.error;
             if (msg.result) resObj.result = msg.result;
             pending.cdpSocket.send(JSON.stringify(resObj));
@@ -227,6 +253,7 @@ server.on("upgrade", (req, socket, head) => {
           const clients = cdpClients.get(String(msg.tabId));
           if (clients) {
             const eventStr = JSON.stringify({
+              sessionId: String(msg.tabId),
               method: msg.method,
               params: msg.params
             });
@@ -262,10 +289,81 @@ server.on("upgrade", (req, socket, head) => {
     ws.onMessage = (msgStr) => {
       try {
         const cmd = JSON.parse(msgStr);
+
+        if (cmd.method === "Target.setDiscoverTargets" || cmd.method === "Target.setAutoAttach") {
+          ws.send(JSON.stringify({ id: cmd.id, result: {} }));
+          return;
+        }
+        if (cmd.method === "Target.getTargets") {
+          const tab = cachedTabs.find(t => String(t.id) === String(tabId));
+          ws.send(JSON.stringify({
+            id: cmd.id,
+            result: {
+              targetInfos: [
+                {
+                  targetId: String(tabId),
+                  type: "page",
+                  title: tab?.title || "Chrome Tab",
+                  url: tab?.url || "about:blank",
+                  attached: true,
+                  canAccessOpener: false
+                }
+              ]
+            }
+          }));
+          return;
+        }
+        if (cmd.method === "Target.getTargetInfo") {
+          const tab = cachedTabs.find(t => String(t.id) === String(tabId));
+          ws.send(JSON.stringify({
+            id: cmd.id,
+            result: {
+              targetInfo: {
+                targetId: String(tabId),
+                type: "page",
+                title: tab?.title || "Chrome Tab",
+                url: tab?.url || "about:blank",
+                attached: true,
+                canAccessOpener: false
+              }
+            }
+          }));
+          return;
+        }
+        if (cmd.method === "Target.attachToTarget") {
+          ws.send(JSON.stringify({
+            id: cmd.id,
+            result: { sessionId: String(tabId) }
+          }));
+          return;
+        }
+        if (cmd.method.startsWith("Target.")) {
+          ws.send(JSON.stringify({ id: cmd.id, result: {} }));
+          return;
+        }
+        if (cmd.method.startsWith("Browser.") && cmd.method !== "Browser.getVersion") {
+          ws.send(JSON.stringify({ id: cmd.id, result: {} }));
+          return;
+        }
+        if (cmd.method === "Browser.getVersion") {
+          ws.send(JSON.stringify({
+            id: cmd.id,
+            result: {
+              protocolVersion: "1.3",
+              product: "Chrome/Supergraph-Relay",
+              revision: "@1.0.0",
+              userAgent: "Mozilla/5.0",
+              jsVersion: "11.0"
+            }
+          }));
+          return;
+        }
+
         const internalId = `${tabId}_${Date.now()}_${commandCounter++}`;
         pendingCommands.set(internalId, {
           cdpSocket: ws,
-          originalId: cmd.id
+          originalId: cmd.id,
+          sessionId: cmd.sessionId
         });
 
         if (extensionWs) {
@@ -301,6 +399,141 @@ server.on("upgrade", (req, socket, head) => {
             });
           }
         }
+      }
+    };
+    return;
+  }
+
+  if (url.pathname === "/devtools/browser") {
+    console.log("[Relay] Browser-level CDP client connected.");
+    let commandCounter = 1;
+
+    ws.onMessage = (msgStr) => {
+      try {
+        const cmd = JSON.parse(msgStr);
+
+        if (cmd.method === "Browser.getVersion") {
+          ws.send(JSON.stringify({
+            id: cmd.id,
+            result: {
+              protocolVersion: "1.3",
+              product: "Chrome/Supergraph-Relay",
+              revision: "@1.0.0",
+              userAgent: "Mozilla/5.0",
+              jsVersion: "11.0"
+            }
+          }));
+          return;
+        }
+
+        if (cmd.method === "Target.setDiscoverTargets") {
+          ws.send(JSON.stringify({ id: cmd.id, result: {} }));
+          if (cmd.params?.discover) {
+            for (const t of cachedTabs) {
+              ws.send(JSON.stringify({
+                method: "Target.targetCreated",
+                params: {
+                  targetInfo: {
+                    targetId: String(t.id),
+                    type: "page",
+                    title: t.title || "Chrome Tab",
+                    url: t.url || "about:blank",
+                    attached: false,
+                    canAccessOpener: false
+                  }
+                }
+              }));
+            }
+          }
+          return;
+        }
+
+        if (cmd.method === "Target.getTargets") {
+          ws.send(JSON.stringify({
+            id: cmd.id,
+            result: {
+              targetInfos: cachedTabs.map(t => ({
+                targetId: String(t.id),
+                type: "page",
+                title: t.title || "Chrome Tab",
+                url: t.url || "about:blank",
+                attached: false,
+                canAccessOpener: false
+              }))
+            }
+          }));
+          return;
+        }
+
+        if (cmd.method === "Target.attachToTarget") {
+          const targetId = String(cmd.params?.targetId);
+          const sessionId = targetId;
+
+          if (!cdpClients.has(targetId)) {
+            cdpClients.set(targetId, new Set());
+          }
+          cdpClients.get(targetId).add(ws);
+
+          ws.send(JSON.stringify({
+            id: cmd.id,
+            result: { sessionId }
+          }));
+
+          const tab = cachedTabs.find(t => String(t.id) === targetId);
+          ws.send(JSON.stringify({
+            method: "Target.attachedToTarget",
+            params: {
+              sessionId,
+              targetInfo: {
+                targetId,
+                type: "page",
+                title: tab?.title || "Chrome Tab",
+                url: tab?.url || "about:blank",
+                attached: true,
+                canAccessOpener: false
+              },
+              waitingForDebugger: false
+            }
+          }));
+          return;
+        }
+
+        if (cmd.method === "Target.setAutoAttach") {
+          ws.send(JSON.stringify({ id: cmd.id, result: {} }));
+          return;
+        }
+
+        const targetTabId = cmd.sessionId || cmd.params?.sessionId;
+        if (targetTabId) {
+          const internalId = `${targetTabId}_${Date.now()}_${commandCounter++}`;
+          pendingCommands.set(internalId, {
+            cdpSocket: ws,
+            originalId: cmd.id,
+            sessionId: targetTabId
+          });
+
+          if (extensionWs) {
+            extensionWs.send({
+              type: "cdp_command",
+              tabId: parseInt(targetTabId, 10),
+              id: internalId,
+              method: cmd.method,
+              params: cmd.params
+            });
+          }
+          return;
+        }
+
+        ws.send(JSON.stringify({ id: cmd.id, result: {} }));
+      } catch (err) {
+        console.error("[Relay] Error in browser-level CDP handler:", err);
+      }
+    };
+
+    ws.onClose = () => {
+      console.log("[Relay] Browser-level CDP client disconnected.");
+      for (const [tId, set] of cdpClients.entries()) {
+        set.delete(ws);
       }
     };
     return;

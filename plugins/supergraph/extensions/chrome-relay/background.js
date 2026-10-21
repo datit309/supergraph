@@ -135,19 +135,20 @@ async function unmarkTab(tabId) {
 async function attachTab(tabId) {
   if (attachedTabs.has(tabId)) {
     resetIdleTimer(tabId);
-    return true;
+    return { ok: true };
   }
   return new Promise((resolve) => {
     chrome.debugger.attach({ tabId }, "1.3", () => {
       if (chrome.runtime.lastError) {
-        log(`Failed to attach to tab ${tabId}:`, chrome.runtime.lastError.message);
-        resolve(false);
+        const errMsg = chrome.runtime.lastError.message;
+        log(`Failed to attach to tab ${tabId}:`, errMsg);
+        resolve({ ok: false, error: errMsg });
       } else {
         attachedTabs.add(tabId);
         markTabActive(tabId);
         resetIdleTimer(tabId);
         log(`Attached to tab ${tabId}`);
-        resolve(true);
+        resolve({ ok: true });
       }
     });
   });
@@ -193,12 +194,12 @@ async function handleServerMessage(msg) {
     case "cdp_command": {
       const { tabId, id, method, params } = msg;
       if (!attachedTabs.has(tabId)) {
-        const attached = await attachTab(tabId);
-        if (!attached) {
+        const attachRes = await attachTab(tabId);
+        if (!attachRes.ok) {
           send({
             type: "cdp_response",
             id,
-            error: { message: `Could not attach to tab ${tabId}` }
+            error: { message: `Could not attach to tab ${tabId}: ${attachRes.error}` }
           });
           return;
         }

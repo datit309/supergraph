@@ -196,6 +196,62 @@ export function getTeamUiHtml() {
       background: rgba(239, 68, 68, 0.1);
       border-color: #ef4444;
     }
+    .btn-warning {
+      color: #fbbf24 !important;
+      border-color: #f59e0b !important;
+      background: rgba(245, 158, 11, 0.15) !important;
+      animation: pulse-warn 1s infinite alternate;
+    }
+    .btn-warning:hover {
+      background: rgba(245, 158, 11, 0.25) !important;
+    }
+    @keyframes pulse-warn {
+      from { border-color: #f59e0b; }
+      to { border-color: #ef4444; }
+    }
+    .spin {
+      display: inline-block;
+      animation: sg-spin 0.8s linear infinite;
+    }
+    @keyframes sg-spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Toast Notification System */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast-item {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast-item.hide {
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+    }
+    .toast-success { border-left: 4px solid var(--success); }
+    .toast-warning { border-left: 4px solid var(--warning); }
+    .toast-danger { border-left: 4px solid var(--danger); }
+    .toast-info { border-left: 4px solid var(--primary); }
 
     /* KPI Summary Row */
     .kpi-row {
@@ -603,10 +659,10 @@ export function getTeamUiHtml() {
     </div>
     <div class="header-actions">
       <button class="btn" id="theme-toggle" onclick="toggleTheme()" title="Chuyển đổi Chế độ Sáng / Tối">☀️ Sáng</button>
-      <button class="btn" onclick="updateDashboard()" title="Tải lại ngay">🔄 Làm mới</button>
-      <button class="btn" onclick="copyStateJson()" title="Sao chép toàn bộ state JSON">📋 Copy State</button>
+      <button class="btn" id="btn-refresh" onclick="handleRefreshClick()" title="Tải lại ngay">🔄 Làm mới</button>
+      <button class="btn" id="btn-copy-state" onclick="copyStateJson()" title="Sao chép toàn bộ state JSON">📋 Copy State</button>
       <button class="btn btn-primary" id="btn-init-demo" onclick="initDemoMission()" style="display: none;">🚀 Khởi tạo Demo Mission</button>
-      <button class="btn btn-danger" id="btn-reset" onclick="resetMission()" style="display: none;">🗑️ Reset Mission</button>
+      <button class="btn btn-danger" id="btn-reset" onclick="handleResetClick()" style="display: none;">🗑️ Reset Mission</button>
     </div>
   </div>
 
@@ -783,6 +839,27 @@ export function getTeamUiHtml() {
           <button id="btn-mark-merged" class="btn btn-outline" style="color: var(--success); border-color: var(--success);" onclick="markCurrentTaskMerged()">
             ✓ Đánh dấu Hoàn thành (Mark Merged)
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSON Export Modal -->
+  <div class="modal-backdrop" id="json-modal" onclick="if(event.target===this)closeJsonModal()">
+    <div class="modal-box" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">📋 Supergraph Team State JSON</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Sao chép trực tiếp nội dung state hoặc tải file JSON về máy</div>
+        </div>
+        <button class="close-btn" onclick="closeJsonModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="json-export-textarea" class="code-block" style="width: 100%; height: 320px; resize: vertical; font-size: 11px; padding: 12px;" readonly></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+          <button class="btn btn-primary" id="btn-modal-copy" onclick="copyFromModalTextarea()">📋 Copy từ ô này</button>
+          <button class="btn" onclick="downloadStateJson()">💾 Tải file JSON</button>
+          <button class="btn" onclick="closeJsonModal()">Đóng</button>
         </div>
       </div>
     </div>
@@ -1126,39 +1203,203 @@ export function getTeamUiHtml() {
       if (e.key === 'Escape') closeModal();
     });
 
-    async function initDemoMission() {
-      if (!confirm('Khởi tạo Demo Mission để mô phỏng tiến độ Multi-Agent?')) return;
+    function showToast(message, type) {
+      type = type || 'info';
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast-item toast-' + type;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('hide');
+        setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+      }, 3000);
+    }
+
+    async function handleRefreshClick() {
+      const btn = document.getElementById('btn-refresh');
+      if (!btn) return;
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = '<span class="spin">🔄</span> Đang tải...';
+      btn.disabled = true;
       try {
-        const queryParams = new URLSearchParams();
-        if (currentSessionId) queryParams.set("sessionId", currentSessionId);
-        if (currentCwd) queryParams.set("cwd", currentCwd);
-        const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
-        await fetch('/api/init-demo' + qs, { method: 'POST' });
-        updateDashboard();
+        await updateDashboard();
+        btn.innerHTML = '✓ Đã tải';
+        showToast('✓ Đã cập nhật dữ liệu mới nhất từ server!', 'success');
       } catch (e) {
-        alert('Lỗi: ' + e.message);
+        btn.innerHTML = '⚠️ Lỗi tải';
+        showToast('Lỗi khi làm mới: ' + e.message, 'danger');
+      } finally {
+        setTimeout(() => {
+          btn.innerHTML = origHtml;
+          btn.disabled = false;
+        }, 800);
       }
     }
 
-    async function resetMission() {
-      if (!confirm('Bạn có chắc muốn xóa và reset toàn bộ state của mission hiện tại?')) return;
-      try {
-        const queryParams = new URLSearchParams();
-        if (currentSessionId) queryParams.set("sessionId", currentSessionId);
-        if (currentCwd) queryParams.set("cwd", currentCwd);
-        const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
-        await fetch('/api/reset' + qs, { method: 'POST' });
-        updateDashboard();
-      } catch (e) {
-        alert('Lỗi: ' + e.message);
+    function openJsonModal() {
+      if (!currentData) {
+        showToast('Chưa có dữ liệu state để hiển thị', 'warning');
+        return;
+      }
+      const ta = document.getElementById('json-export-textarea');
+      if (ta) {
+        ta.value = JSON.stringify(currentData, null, 2);
+        const modal = document.getElementById('json-modal');
+        if (modal) modal.classList.add('open');
+        setTimeout(() => {
+          ta.focus();
+          ta.select();
+        }, 100);
       }
     }
 
-    function copyStateJson() {
+    function closeJsonModal() {
+      const modal = document.getElementById('json-modal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function copyFromModalTextarea() {
+      const ta = document.getElementById('json-export-textarea');
+      if (!ta) return;
+      ta.focus();
+      ta.select();
+      try {
+        const ok = document.execCommand('copy');
+        if (ok) {
+          showToast('✓ Đã sao chép vào clipboard!', 'success');
+        } else {
+          showToast('Nhấn Ctrl+C (hoặc ⌘C) để sao chép', 'info');
+        }
+      } catch (e) {
+        showToast('Nhấn Ctrl+C (hoặc ⌘C) để sao chép', 'info');
+      }
+    }
+
+    function downloadStateJson() {
       if (!currentData) return;
-      navigator.clipboard.writeText(JSON.stringify(currentData, null, 2))
-        .then(() => alert('Đã sao chép State JSON vào clipboard!'))
-        .catch(() => alert('Không thể sao chép JSON.'));
+      const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'supergraph-team-state.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('✓ Đã tải file supergraph-team-state.json', 'success');
+    }
+
+    async function copyStateJson() {
+      if (!currentData) {
+        showToast('Chưa có dữ liệu state để sao chép', 'warning');
+        return;
+      }
+      const jsonStr = JSON.stringify(currentData, null, 2);
+      let ok = false;
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(jsonStr);
+          ok = true;
+        } catch (e) {
+          ok = false;
+        }
+      }
+      if (!ok) {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = jsonStr;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          ta.style.top = '-9999px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch (e) {
+          ok = false;
+        }
+      }
+
+      const btn = document.getElementById('btn-copy-state');
+      if (ok) {
+        if (btn) {
+          const orig = btn.innerHTML;
+          btn.innerHTML = '✓ Đã copy!';
+          setTimeout(() => { btn.innerHTML = orig; }, 1200);
+        }
+        showToast('✓ Đã sao chép State JSON vào clipboard!', 'success');
+      } else {
+        openJsonModal();
+        showToast('Đã mở cửa sổ State JSON để bạn sao chép hoặc tải về!', 'info');
+      }
+    }
+
+    let resetTimeoutId = null;
+    async function handleResetClick() {
+      const btn = document.getElementById('btn-reset');
+      if (!btn) return;
+
+      if (!btn.dataset.confirming) {
+        btn.dataset.confirming = 'true';
+        btn.dataset.origText = btn.innerHTML;
+        btn.innerHTML = '⚠️ Xác nhận Reset? (Click lại)';
+        btn.classList.add('btn-warning');
+        btn.classList.remove('btn-danger');
+
+        showToast('Bấm "Xác nhận Reset" thêm một lần nữa trong 4 giây để xóa dữ liệu.', 'warning');
+
+        if (resetTimeoutId) clearTimeout(resetTimeoutId);
+        resetTimeoutId = setTimeout(() => {
+          btn.removeAttribute('data-confirming');
+          btn.innerHTML = btn.dataset.origText || '🗑️ Reset Mission';
+          btn.classList.remove('btn-warning');
+          btn.classList.add('btn-danger');
+        }, 4000);
+        return;
+      }
+
+      if (resetTimeoutId) clearTimeout(resetTimeoutId);
+      btn.removeAttribute('data-confirming');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin">⏳</span> Đang xóa...';
+
+      try {
+        const queryParams = new URLSearchParams();
+        if (currentSessionId) queryParams.set("sessionId", currentSessionId);
+        if (currentCwd) queryParams.set("cwd", currentCwd);
+        const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
+
+        const res = await fetch('/api/reset' + qs, { method: 'POST' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        await updateDashboard();
+        showToast('✓ Đã reset mission và tasks thành công!', 'success');
+      } catch (err) {
+        showToast('Lỗi khi reset: ' + err.message, 'danger');
+      } finally {
+        btn.innerHTML = btn.dataset.origText || '🗑️ Reset Mission';
+        btn.classList.remove('btn-warning');
+        btn.classList.add('btn-danger');
+        btn.disabled = false;
+      }
+    }
+
+    async function initDemoMission() {
+      try {
+        const queryParams = new URLSearchParams();
+        if (currentSessionId) queryParams.set("sessionId", currentSessionId);
+        if (currentCwd) queryParams.set("cwd", currentCwd);
+        const qs = queryParams.toString() ? "?" + queryParams.toString() : "";
+        const res = await fetch('/api/init-demo' + qs, { method: 'POST' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        await updateDashboard();
+        showToast('✓ Đã khởi tạo Demo Mission thành công!', 'success');
+      } catch (e) {
+        showToast('Lỗi: ' + e.message, 'danger');
+      }
     }
 
     function escapeHtml(str) {
@@ -1201,6 +1442,7 @@ export function getTeamUiHtml() {
     updateDashboard();
     setInterval(updateDashboard, 1500);
   </script>
+  <div class="toast-container" id="toast-container"></div>
 </body>
 </html>`;
 }

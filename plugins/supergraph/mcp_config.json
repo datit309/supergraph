@@ -11,6 +11,10 @@
     "supergraph-team": {
       "command": "node",
       "args": ["bin/sg-team-mcp.js"]
+    },
+    "supergraph-browser": {
+      "command": "node",
+      "args": ["bin/sg-browser-mcp.js"]
     }
   }
 }

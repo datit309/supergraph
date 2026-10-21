@@ -73,40 +73,50 @@ const server = http.createServer((req, res) => {
   }
 
   if (pathname === '/api/init-demo' && req.method === 'POST') {
-    const demoEngine = new TeamEngine(cwd, sessionId)
-    demoEngine.initMission({
-      objective: 'Tái cấu trúc Kiến trúc Multi-Agent & Git Worktree Isolation',
-      baseBranch: 'main',
-      sessionId: sessionId || null
-    })
-    demoEngine.createTask({
-      id: 'task-1-schema',
-      title: 'Thiết kế Data Contract & Schema định nghĩa DAG Wave',
-      wave: 1,
-      dependencies: [],
-      writeScopes: ['packages/core/src/schema.ts']
-    })
-    demoEngine.createTask({
-      id: 'task-2-engine',
-      title: 'Xây dựng TeamEngine core & State Machine',
-      wave: 1,
-      dependencies: [],
-      writeScopes: ['packages/core/src/engine.ts']
-    })
-    demoEngine.markMerged({ taskId: 'task-1-schema' })
-    demoEngine.claimTask({ taskId: 'task-2-engine', workerId: 'agent-beta' })
-    demoEngine.recordRed({ taskId: 'task-2-engine', testOutput: 'FAIL: Task state machine transition invalid' })
-    demoEngine.recordGreen({
-      taskId: 'task-2-engine',
-      testOutput: 'PASS: 12 tests passed',
-      diff: 'diff --git a/engine.ts b/engine.ts\n+ state machine tests green'
-    })
-    demoEngine.markMerged({ taskId: 'task-2-engine' })
+    const candidateDirs = [cwd, '/Users/trantandat/GIC/Freelancer', '/Users/trantandat/GIC/deepseek-harness'].filter(Boolean)
+    for (const c of candidateDirs) {
+      try {
+        const demoEngine = new TeamEngine(c, sessionId)
+        demoEngine.initMission({
+          objective: 'Tái cấu trúc Kiến trúc Multi-Agent & Git Worktree Isolation',
+          baseBranch: 'main',
+          sessionId: sessionId || null
+        })
+        demoEngine.createTask({
+          id: 'task-1-schema',
+          title: 'Thiết kế Data Contract & Schema định nghĩa DAG Wave',
+          wave: 1,
+          dependencies: [],
+          writeScopes: ['packages/core/src/schema.ts']
+        })
+        demoEngine.createTask({
+          id: 'task-2-engine',
+          title: 'Xây dựng TeamEngine core & State Machine',
+          wave: 1,
+          dependencies: [],
+          writeScopes: ['packages/core/src/engine.ts']
+        })
+        demoEngine.markMerged({ taskId: 'task-1-schema' })
+        demoEngine.claimTask({ taskId: 'task-2-engine', workerId: 'agent-beta' })
+        demoEngine.recordRed({ taskId: 'task-2-engine', testOutput: 'FAIL: Task state machine transition invalid' })
+        demoEngine.recordGreen({
+          taskId: 'task-2-engine',
+          testOutput: 'PASS: 12 tests passed',
+          diff: 'diff --git a/engine.ts b/engine.ts\n+ state machine tests green'
+        })
+        demoEngine.markMerged({ taskId: 'task-2-engine' })
 
-    demoEngine.claimTask({ taskId: 'task-3-worktree', workerId: 'agent-gamma' })
-    demoEngine.recordRed({ taskId: 'task-3-worktree', testOutput: 'FAIL: git worktree add failed with exit code 1\n  fatal: invalid reference: HEAD' })
+        demoEngine.claimTask({ taskId: 'task-3-worktree', workerId: 'agent-gamma' })
+        demoEngine.recordRed({ taskId: 'task-3-worktree', testOutput: 'FAIL: git worktree add failed with exit code 1\n  fatal: invalid reference: HEAD' })
 
-    demoEngine.claimTask({ taskId: 'task-4-mcp', workerId: 'agent-delta' })
+        demoEngine.claimTask({ taskId: 'task-4-mcp', workerId: 'agent-delta' })
+
+        if (sessionId) {
+          const s = demoEngine._loadState(sessionId)
+          demoEngine._saveState(s, null)
+        }
+      } catch {}
+    }
 
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
     res.end(JSON.stringify({ success: true }))
@@ -136,12 +146,22 @@ const server = http.createServer((req, res) => {
   }
 
   if (pathname === '/api/reset' && req.method === 'POST') {
-    const resetEngine = new TeamEngine(cwd, sessionId)
-    resetEngine.initMission({ objective: '', baseBranch: 'HEAD', sessionId: sessionId || null })
-    const state = resetEngine._loadState(sessionId)
-    state.mission = null
-    state.tasks = []
-    resetEngine._saveState(state, sessionId)
+    const candidateDirs = [cwd, '/Users/trantandat/GIC/Freelancer', '/Users/trantandat/GIC/deepseek-harness'].filter(Boolean)
+    for (const c of candidateDirs) {
+      try {
+        const resetEngine = new TeamEngine(c, sessionId)
+        if (sessionId) {
+          const s1 = resetEngine._loadState(sessionId)
+          s1.mission = null
+          s1.tasks = []
+          resetEngine._saveState(s1, sessionId)
+        }
+        const s2 = resetEngine._loadState(null)
+        s2.mission = null
+        s2.tasks = []
+        resetEngine._saveState(s2, null)
+      } catch {}
+    }
     res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' })
     res.end(JSON.stringify({ success: true }))
     return
