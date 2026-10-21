@@ -23,6 +23,61 @@ window.__ModuleLoader__.load({
       );
     }
 
+    function HeaderTeamButton(props) {
+      const sessionId = props?.sessionId ||
+        (typeof globalCtx?.sidebarRight?.mounted?.getSnapshot === 'function' ? globalCtx.sidebarRight.mounted.getSnapshot() : null);
+
+      return h('button', {
+        type: 'button',
+        title: 'Open Supergraph Team Monitor (Click: DSH Sidebar, Cmd/Ctrl+Click: New Tab)',
+        'aria-label': 'Supergraph Team Monitor',
+        onClick: (e) => {
+          if (e && (e.metaKey || e.ctrlKey)) {
+            const host = (typeof window !== 'undefined' && window.location?.hostname) ? window.location.hostname : '127.0.0.1';
+            window.open(`http://${host}:3333/`, '_blank');
+            return;
+          }
+          if (!globalCtx?.sidebarRight) return;
+          try {
+            const sid = sessionId ||
+              (typeof globalCtx.sidebarRight.mounted?.getSnapshot === 'function' ? globalCtx.sidebarRight.mounted.getSnapshot() : null);
+            if (sid && typeof globalCtx.sidebarRight.openTabIn === 'function') {
+              globalCtx.sidebarRight.openTabIn(sid, TAB_KIND);
+            } else if (typeof globalCtx.sidebarRight.openTab === 'function') {
+              globalCtx.sidebarRight.openTab(TAB_KIND);
+            }
+            if (sid && typeof globalCtx.sidebarRight.actionsFor === 'function') {
+              const acts = globalCtx.sidebarRight.actionsFor(sid);
+              if (acts && typeof acts.setExpanded === 'function') {
+                acts.setExpanded(sid, true);
+              }
+            }
+          } catch (err) {
+            console.warn('[supergraph-team] open sidebar tab error:', err);
+          }
+        },
+        style: {
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '5px',
+          height: '28px',
+          padding: '0 9px',
+          borderRadius: '6px',
+          border: '1px solid var(--dsh-border, rgba(255,255,255,0.15))',
+          background: 'var(--dsh-bg-secondary, rgba(255,255,255,0.06))',
+          color: 'var(--dsh-text, #e6edf3)',
+          fontSize: '12px',
+          fontWeight: '500',
+          cursor: 'pointer',
+          lineHeight: '1',
+          userSelect: 'none'
+        }
+      },
+        h('span', { style: { fontSize: '13px', lineHeight: '1' } }, '⚡'),
+        h('span', null, 'Team Monitor')
+      );
+    }
+
     function SupergraphTeamPane(props) {
       const sessionId = props?.sessionId ||
         (typeof globalCtx?.sidebarRight?.mounted?.getSnapshot === 'function' ? globalCtx.sidebarRight.mounted.getSnapshot() : null);
@@ -95,6 +150,15 @@ window.__ModuleLoader__.load({
             key: TAB_ID
           }, SupergraphTeamTitle));
         }, 'supergraph-team: title slot');
+
+        // 4. Register header action button in conversation header
+        ctx.effect(() => {
+          return ctx.slots.inject('conversation.session.header.actions', () => ctx.slots.register({
+            name: 'conversation.session.header.actions',
+            id: 'supergraph-team-header-button',
+            order: 24
+          }, HeaderTeamButton));
+        }, 'supergraph-team: header action slot');
 
         // Auto-open and expand helper scoped strictly to target session
         function autoOpenAndExpand(sid) {

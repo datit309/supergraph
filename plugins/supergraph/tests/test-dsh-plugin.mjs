@@ -61,11 +61,19 @@ const loaded = await registeredProvider.get(scanSkill)
 assert.strictEqual(loaded.name, 'scan')
 assert.ok(loaded.content.includes('/supergraph:scan'), 'Loaded content must contain skill body')
 
-// 6. Verify client.js dynamic host contract
+// 6. Verify client.js dynamic host contract and header action button
 const clientJs = fs.readFileSync(new URL('../client.js', import.meta.url), 'utf8')
 assert.ok(
   clientJs.includes('location.hostname') || clientJs.includes('window.location?.hostname'),
   'client.js must dynamically resolve hostname instead of hardcoding 127.0.0.1'
+)
+assert.ok(
+  clientJs.includes('HeaderTeamButton'),
+  'client.js must define HeaderTeamButton'
+)
+assert.ok(
+  clientJs.includes('conversation.session.header.actions'),
+  'client.js must register into conversation.session.header.actions'
 )
 
 console.log(`Self-check passed: ${candidates.length} Supergraph skills loaded successfully for DSH.`)
