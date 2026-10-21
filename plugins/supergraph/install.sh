@@ -248,23 +248,11 @@ install_one() {
 
       _patch_file="$_dsh_home/cordis.patch.yml"
       _patch_template="$source_dir/.dsh-plugin/cordis.patch.yml"
-      if [ ! -f "$_patch_file" ]; then
-        cp "$_patch_template" "$_patch_file"
-        printf 'Created %s with Supergraph MCP config.\n' "$_patch_file"
-      else
-        if ! grep -q 'mcp-codebase-memory' "$_patch_file"; then
-          printf '\n# Added by Supergraph installer\n' >> "$_patch_file"
-          cat "$_patch_template" >> "$_patch_file"
-          printf 'Appended Supergraph MCP config to %s.\n' "$_patch_file"
-        else
-          printf 'Supergraph MCP config already present in %s.\n' "$_patch_file"
-        fi
-      fi
+      cp "$_patch_template" "$_patch_file"
+      printf 'Synced %s with Supergraph Cordis config.\n' "$_patch_file"
 
-      if [ ! -f "$_dsh_home/AGENTS.md" ]; then
-        cp "$source_dir/AGENTS.md" "$_dsh_home/AGENTS.md" 2>/dev/null || true
-        printf 'Created %s/AGENTS.md\n' "$_dsh_home"
-      fi
+      cp "$source_dir/AGENTS.md" "$_dsh_home/AGENTS.md" 2>/dev/null || true
+      printf 'Synced %s/AGENTS.md\n' "$_dsh_home"
       ;;
   esac
   printf 'Installed Supergraph plugin for %s.\n' "$_platform"
