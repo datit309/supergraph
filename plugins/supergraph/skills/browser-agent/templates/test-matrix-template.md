@@ -9,6 +9,7 @@
 
 - **Feature / Component:** `{{FEATURE_NAME}}`
 - **Target URL / Route:** `{{TARGET_URL}}`
+- **Session ID:** `{{AGENT_BROWSER_SESSION}}`
 - **Environment:** Headed / Headless Chrome (`agent-browser`)
 - **Preconditions / Auth:** {{PRECONDITIONS}}
 
@@ -25,14 +26,18 @@
 | `TC-{{PREFIX}}-005` | **Boundary** | Security probe payloads (XSS, SQLi strings) | Input fields | 1. Input `<script>alert(1)</script>`<br>2. Submit | Sanitized/escaped output, zero script execution | | `PENDING` | - |
 | `TC-{{PREFIX}}-006` | **Fault** | Backend 500 / Network timeout resilience | Network connected | 1. Simulate 500 error on submit endpoint<br>2. Check UI | User-friendly error message, retry button, no white screen | | `PENDING` | - |
 | `TC-{{PREFIX}}-007` | **RBAC** | Unauthorized access attempt to restricted action | Guest or Low-privilege role | 1. Directly access protected URL/action | Redirected to login/403 forbidden with clear notice | | `PENDING` | - |
+| `TC-{{PREFIX}}-008` | **Accessibility** | axe-core WCAG 2.1 AA compliance audit | Page & forms loaded | 1. Run `agent-browser a11y --tags wcag2a,wcag2aa` | 0 critical/serious violations, accessible names on all controls | | `PENDING` | - |
+| `TC-{{PREFIX}}-009` | **Responsive** | Mobile Viewport Layout Verification (375x812) | Default route open | 1. Run `agent-browser set viewport 375 812`<br>2. Snapshot UI | Zero horizontal scroll, touch targets ≥44px, nav collapse works | | `PENDING` | - |
 
 ---
 
-## 3. Runtime Diagnostics Checklist
+## 3. Runtime Diagnostics & Quality Gates Checklist
 
 - [ ] **Console Cleanliness:** Run `agent-browser console` — No unhandled React hydration errors, 0 runtime exceptions.
 - [ ] **Unhandled Rejections:** Run `agent-browser errors` — Empty log.
 - [ ] **Network Health:** Run `agent-browser network requests` — No 4xx/5xx requests on critical assets/endpoints.
+- [ ] **Core Web Vitals:** Run `agent-browser vitals --json` — LCP < 2.5s, CLS < 0.1, TTFB < 800ms, React hydration clean.
+- [ ] **Accessibility Gate:** Run `agent-browser a11y` — Zero WCAG 2.1 AA blockers.
 
 ---
 

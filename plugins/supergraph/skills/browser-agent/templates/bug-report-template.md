@@ -13,6 +13,7 @@
 - **Severity:** `{{SEVERITY}}` *(Blocker / Critical / Major / Minor)*
 - **Priority:** `{{PRIORITY}}` *(P0 - Blocker / P1 - High / P2 - Medium)*
 - **Target Route / Endpoint:** `{{TARGET_URL}}`
+- **Session ID:** `{{AGENT_BROWSER_SESSION}}`
 
 ---
 
@@ -28,10 +29,16 @@
 
 ### UI Reproduction Steps (`agent-browser`)
 ```bash
-agent-browser open "{{TARGET_URL}}"
-agent-browser snapshot -i
-agent-browser fill @{{REF_INPUT}} "{{TEST_INPUT}}"
-agent-browser click @{{REF_SUBMIT}}
+# Optional: Start video recording for interactive/state reproduction
+agent-browser --session "{{AGENT_BROWSER_SESSION}}" record start docs/qa/evidence/{{DEFECT_ID}}-repro.webm --cursor --contact-sheet
+
+agent-browser --session "{{AGENT_BROWSER_SESSION}}" open "{{TARGET_URL}}"
+agent-browser --session "{{AGENT_BROWSER_SESSION}}" snapshot -i
+agent-browser --session "{{AGENT_BROWSER_SESSION}}" fill @{{REF_INPUT}} "{{TEST_INPUT}}"
+agent-browser --session "{{AGENT_BROWSER_SESSION}}" click @{{REF_SUBMIT}}
+
+# Stop video recording
+agent-browser --session "{{AGENT_BROWSER_SESSION}}" record stop
 ```
 
 ### API Reproduction Steps (`curl` / HTTP)
@@ -53,6 +60,10 @@ curl -X POST "{{TARGET_URL}}" \
 
 ## 5. Technical Diagnostics & Evidence
 
+### Visual & Video Evidence
+- **Interactive Video Reproduction:** `docs/qa/evidence/{{DEFECT_ID}}-repro.webm` *(with `--cursor --contact-sheet`)*
+- **Static Annotated Screenshot:** `docs/qa/evidence/{{DEFECT_ID}}-annotated.png`
+
 ### HTTP / API Dump
 - **Status Code:** `{{ACTUAL_STATUS_CODE}}` *(Expected: `{{EXPECTED_STATUS_CODE}}`)*
 - **Response Headers / Body:**
@@ -69,7 +80,14 @@ curl -X POST "{{TARGET_URL}}" \
 ```text
 {{ERRORS_OUTPUT}}
 ```
-- **Screenshot Link:** `docs/qa/evidence/{{EVIDENCE_FILENAME}}`
+- **Web Vitals / Hydration (`agent-browser vitals`):**
+```json
+{{VITALS_OUTPUT}}
+```
+- **Accessibility Violations (`agent-browser a11y`):**
+```json
+{{A11Y_OUTPUT}}
+```
 
 ### Server & Database State
 - **Server Log / Stack Trace:**
