@@ -637,15 +637,122 @@ export function getTeamUiHtml() {
     }
     .close-btn:hover { color: var(--text); }
   
-    @media (max-width: 680px) {
-      body { padding: 12px; font-size: 11px; }
-      .header { padding: 12px 14px; margin-bottom: 12px; }
+    /* ========================================================
+       📱 RESPONSIVE & DSH SIDEBAR ADAPTATION (< 960px)
+       ======================================================== */
+    @media (max-width: 960px) {
+      body { padding: 10px; font-size: 12px; }
+      .header { padding: 12px 14px; margin-bottom: 12px; gap: 10px; }
       .brand-area { gap: 8px; }
-      .title-area h1 { font-size: 15px; }
-      .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
-      .tab-group, .filter-group { flex-wrap: wrap; }
-      .desk-dual-monitors { grid-template-columns: 1fr; }
+      .title-area h1 { font-size: 16px; }
+      .mission-desc { font-size: 11px; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+      .kpi-card { padding: 10px 12px; }
+      .kpi-num { font-size: 20px; }
+      .toolbar { flex-direction: column; align-items: stretch; gap: 8px; margin-bottom: 14px; }
+      .nav-tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding: 3px; }
+      .tab-btn { padding: 6px 10px; font-size: 11px; white-space: nowrap; }
+      .filter-area { max-width: none; width: 100%; }
+      .office-view-toggle { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+      .view-toggle-btn { padding: 5px 8px; font-size: 10px; white-space: nowrap; }
+      .office-tagline { display: none; }
+      .office-war-room { flex-direction: column; gap: 10px; padding: 12px 14px; }
+      .war-room-stats { justify-content: flex-start; }
+
+      /* Gather.town Responsive Vertical Stack */
+      .gather-office {
+        overflow: visible;
+        border-radius: 12px;
+      }
+      .gather-map {
+        min-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 12px !important;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        position: relative;
+      }
+      .gather-corridor-h, .gather-corridor-v, .gather-walking-agent {
+        display: none !important;
+      }
+      .gather-room {
+        position: relative !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+      }
+      .gather-conf-table {
+        width: 100%;
+        height: 60px;
+        font-size: 10px;
+      }
+      .gather-server-area {
+        flex-wrap: wrap;
+      }
+      .gather-workstations-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+        gap: 12px !important;
+      }
+
+      /* 2D Floorplan Responsive Vertical Stack */
+      .floorplan-container {
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 12px !important;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        overflow: visible;
+      }
+      .floorplan-hallway, .walking-agent, .potted-plant {
+        display: none !important;
+      }
+      .floorplan-meeting-room,
+      .floorplan-qa-lab,
+      .floorplan-engineering-bay,
+      .floorplan-pantry {
+        position: relative !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+      }
+
+      /* 2.5D Isometric Fit */
+      .iso-scene {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .gather-workstations-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .floorplan-workstations-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .office-desks-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .gather-monitors {
+        width: 100%;
+      }
+      .gather-monitor {
+        max-width: 50%;
+      }
     }
 
     /* ========================================================
@@ -1120,14 +1227,17 @@ export function getTeamUiHtml() {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
       border-radius: 20px;
-      min-height: 680px;
+      min-height: 980px;
+      height: auto;
+      padding-bottom: 30px;
       box-shadow: var(--card-shadow);
       background-image: 
         linear-gradient(var(--card-subtle-border) 1px, transparent 1px),
         linear-gradient(90deg, var(--card-subtle-border) 1px, transparent 1px);
       background-size: 28px 28px;
       margin-bottom: 24px;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: visible;
       box-sizing: border-box;
       user-select: none;
     }
@@ -1377,8 +1487,9 @@ export function getTeamUiHtml() {
       position: absolute;
       top: 385px;
       left: 20px;
-      width: calc(60% - 65px);
-      height: 275px;
+      width: calc(65% - 35px);
+      height: auto;
+      min-height: 520px;
       background: rgba(124, 58, 237, 0.03);
       border: 2px solid rgba(124, 58, 237, 0.3);
       border-radius: 16px;
@@ -1570,8 +1681,9 @@ export function getTeamUiHtml() {
       position: absolute;
       top: 385px;
       right: 20px;
-      width: calc(40% - 50px);
-      height: 275px;
+      width: calc(35% - 35px);
+      height: auto;
+      min-height: 520px;
       background: rgba(234, 88, 12, 0.03);
       border: 2px solid rgba(234, 88, 12, 0.35);
       border-radius: 16px;
@@ -1661,7 +1773,8 @@ export function getTeamUiHtml() {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
       border-radius: 16px;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: visible;
       box-shadow: var(--card-shadow);
       margin-bottom: 24px;
       user-select: none;
@@ -1670,7 +1783,9 @@ export function getTeamUiHtml() {
       position: relative;
       width: 100%;
       min-width: 900px;
-      height: 600px;
+      min-height: 1040px;
+      height: auto;
+      padding-bottom: 30px;
       background-color: #f8fafc;
       background-image: 
         radial-gradient(circle at 50% 50%, rgba(2, 132, 199, 0.04) 0%, transparent 80%),
@@ -1688,7 +1803,7 @@ export function getTeamUiHtml() {
     .gather-corridor-h {
       position: absolute;
       left: 0; right: 0;
-      top: 255px; height: 80px;
+      top: 285px; height: 80px;
       background: rgba(2, 132, 199, 0.06);
       border-top: 2px dashed rgba(2, 132, 199, 0.18);
       border-bottom: 2px dashed rgba(2, 132, 199, 0.18);
@@ -1728,7 +1843,7 @@ export function getTeamUiHtml() {
       z-index: 5;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible;
     }
     .gather-wall-top {
       height: 20px;
@@ -1751,22 +1866,24 @@ export function getTeamUiHtml() {
     }
     .gather-room-war {
       top: 14px; left: 14px;
-      width: 422px; height: 228px;
+      width: 422px; height: 255px;
       background: radial-gradient(circle at 50% 30%, rgba(2, 132, 199, 0.05) 0%, var(--card-bg) 100%);
     }
     .gather-room-qa {
       top: 14px; right: 14px;
-      width: 422px; height: 228px;
+      width: calc(100% - 460px); min-width: 420px; height: 255px;
       background: radial-gradient(circle at 50% 30%, rgba(5, 150, 105, 0.05) 0%, var(--card-bg) 100%);
     }
     .gather-room-eng {
-      bottom: 14px; left: 14px;
-      width: 532px; height: 228px;
+      top: 385px; left: 14px;
+      width: calc(100% - 330px); min-width: 532px;
+      height: auto; min-height: 620px;
       background: radial-gradient(circle at 50% 30%, rgba(124, 58, 237, 0.05) 0%, var(--card-bg) 100%);
     }
     .gather-room-pantry {
-      bottom: 14px; right: 14px;
-      width: 312px; height: 228px;
+      top: 385px; right: 14px;
+      width: 290px;
+      height: auto; min-height: 620px;
       background: radial-gradient(circle at 50% 30%, rgba(217, 119, 6, 0.05) 0%, var(--card-bg) 100%);
     }
     .gather-room-body {

@@ -57,6 +57,12 @@ test('Supergraph Team UI Virtual Office Workspace Contract', async (t) => {
     assert.match(html, /@keyframes\s+typing-arm|@keyframes\s+type-hands|\.hands-typing|\.typing-hands-anim/, 'Should define animated typing hands')
   })
 
+  await t.test('defines responsive fluid layout and avoids cramped fixed clipping in sidebar frames', () => {
+    assert.match(html, /@media[^{]*max-width:\s*960px|@media[^{]*max-width:\s*768px/, 'Should define responsive media query for narrow sidebar viewports')
+    assert.match(html, /\.gather-room-eng[\s\S]*?(?:height:\s*auto|min-height)/, 'Engineering room should have auto or min-height without fixed clipping')
+    assert.match(html, /\.gather-office[\s\S]*?(?:overflow:\s*auto|overflow-x:\s*auto)/, 'Gather office container should support responsive scrolling')
+  })
+
   await t.test('includes renderOffice logic in client script', () => {
     assert.match(html, /function\s+renderOffice\s*\(/, 'Should define renderOffice function')
     assert.match(html, /renderOffice\(\)/, 'Should call renderOffice on update or tab switch')
