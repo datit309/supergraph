@@ -203,3 +203,6 @@ All checks pass before merge.
 | `agent_browser_wait_for_text`     | Wait for condition, element, or simulate user pause |
 | `agent_browser_screenshot`        | Capture visual test evidence without layout shift   |
 | `agent_browser_close`             | Close browser tab / session cleanly                 |
+| **UI Skills** (via `ui-skills` / `mcp__ui-skills__*`) | |
+| `list_skills`                     | List skills from UI Skills registry (https://www.ui-skills.com) |
+| `get_skill`                      | Fetch skill markdown by discovery name or slug      |
