@@ -685,9 +685,17 @@ export function getTeamUiHtml() {
         left: auto !important;
         right: auto !important;
         width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
         height: auto !important;
         min-height: 0 !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+      }
+      .gather-room-war, .gather-room-qa, .gather-room-eng, .gather-room-pantry {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
       }
       .gather-conf-table {
         width: 100%;
@@ -698,7 +706,7 @@ export function getTeamUiHtml() {
         flex-wrap: wrap;
       }
       .gather-workstations-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)) !important;
         gap: 12px !important;
       }
 
@@ -725,8 +733,11 @@ export function getTeamUiHtml() {
         left: auto !important;
         right: auto !important;
         width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
         height: auto !important;
         min-height: 0 !important;
+        box-sizing: border-box !important;
       }
 
       /* 2.5D Isometric Fit */
