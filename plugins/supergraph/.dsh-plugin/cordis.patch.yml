@@ -1,5 +1,7 @@
 # Supergraph plugin bundle for DeepSeek Harness (DSH)
 - insert:
+    - id: supergraph
+      name: supergraph
     - id: supergraph-skills
       name: '@deepseek-ai/dsh-skill-filesystem'
       config:

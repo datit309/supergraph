@@ -16,6 +16,17 @@ assert.strictEqual(pkg.dsh?.manifestVersion, 1)
 assert.strictEqual(pkg.dsh?.bundle?.patch, './cordis.patch.yml')
 assert.strictEqual(pkg.exports?.['./client'], './client.js')
 assert.strictEqual(pkg.dsh?.client?.platform, 'web')
+assert.ok(
+  pkg.dsh?.client?.inject?.includes('@deepseek-ai/dsh-client-ui-conversation'),
+  'package.json client.inject must include @deepseek-ai/dsh-client-ui-conversation for conversation header slot'
+)
+
+// 2b. Verify cordis.patch.yml includes supergraph entry for loader discovery
+const patchYaml = fs.readFileSync(new URL('../cordis.patch.yml', import.meta.url), 'utf8')
+assert.ok(
+  patchYaml.includes('id: supergraph') && patchYaml.includes('name: supergraph'),
+  'cordis.patch.yml must insert { id: supergraph, name: supergraph } so DSH Loader loads supergraph and discovers client.js'
+)
 
 // 3. Verify mock DSH context registration with Cordis-like strict get()
 let registeredProvider = null
