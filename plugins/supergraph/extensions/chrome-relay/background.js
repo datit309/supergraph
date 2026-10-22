@@ -225,14 +225,30 @@ async function handleServerMessage(msg) {
       });
       break;
     }
+    case "pong": {
+      // Keepalive response from server
+      break;
+    }
     default:
       log("Unknown server message type:", msg.type);
   }
 }
-    default:
-      log("Unknown server message type:", msg.type);
+
+// Keepalive ping every 20s to prevent Manifest V3 Service Worker sleep
+setInterval(() => {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    send({ type: "ping" });
   }
-}
+}, 20000);
+
+// Listen for messages from popup (e.g. manual reconnect)
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === "reconnect") {
+    connect();
+    sendResponse({ ok: true, connected: socket && socket.readyState === WebSocket.OPEN });
+  }
+  return true;
+});
 
 chrome.debugger.onEvent.addListener((source, method, params) => {
   send({
