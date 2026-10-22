@@ -239,6 +239,8 @@ server.on("upgrade", (req, socket, head) => {
         const msg = JSON.parse(msgStr);
         if (msg.type === "tabs_list") {
           cachedTabs = msg.tabs || [];
+        } else if (msg.type === "ping") {
+          ws.send({ type: "pong" });
         } else if (msg.type === "cdp_response") {
           const pending = pendingCommands.get(msg.id);
           if (pending) {
