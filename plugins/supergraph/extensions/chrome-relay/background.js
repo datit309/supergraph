@@ -191,6 +191,50 @@ async function handleServerMessage(msg) {
       send({ type: "detach_all_response", success: true });
       break;
     }
+    case "create_tab": {
+      try {
+        const tab = await chrome.tabs.create({
+          url: msg.url || "about:blank",
+          active: msg.active !== undefined ? msg.active : true
+        });
+        send({
+          type: "create_tab_response",
+          id: msg.id,
+          tabId: tab.id,
+          success: true
+        });
+        syncTabs();
+      } catch (err) {
+        send({
+          type: "create_tab_response",
+          id: msg.id,
+          success: false,
+          error: err.message
+        });
+      }
+      break;
+    }
+    case "close_tab": {
+      try {
+        await chrome.tabs.remove(msg.tabId);
+        send({
+          type: "close_tab_response",
+          id: msg.id,
+          tabId: msg.tabId,
+          success: true
+        });
+        syncTabs();
+      } catch (err) {
+        send({
+          type: "close_tab_response",
+          id: msg.id,
+          tabId: msg.tabId,
+          success: false,
+          error: err.message
+        });
+      }
+      break;
+    }
     case "cdp_command": {
       const { tabId, id, method, params } = msg;
       if (!attachedTabs.has(tabId)) {
@@ -234,7 +278,22 @@ async function handleServerMessage(msg) {
   }
 }
 
-// Keepalive ping every 20s to prevent Manifest V3 Service Worker sleep
+// Google Chrome Modern Web Guidance (MV3):
+// 1. chrome.alarms for persistent keepalive & waking up suspended service worker
+if (chrome.alarms) {
+  chrome.alarms.create("relay_heartbeat", { periodInMinutes: 0.5 });
+  chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === "relay_heartbeat") {
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        connect();
+      } else {
+        send({ type: "ping" });
+      }
+    }
+  });
+}
+
+// 2. Fallback timer when service worker is actively executing
 setInterval(() => {
   if (socket && socket.readyState === WebSocket.OPEN) {
     send({ type: "ping" });
@@ -282,6 +341,33 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   attachedTabs.delete(tabId);
   syncTabs();
 });
+
+// Top-level synchronous listeners to wake up service worker on tab/window interaction
+chrome.tabs.onActivated.addListener(() => {
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    connect();
+  } else {
+    syncTabs();
+  }
+});
+
+chrome.tabs.onCreated.addListener(() => {
+  if (!socket || socket.readyState !== WebSocket.OPEN) {
+    connect();
+  } else {
+    syncTabs();
+  }
+});
+
+if (chrome.windows?.onFocusChanged) {
+  chrome.windows.onFocusChanged.addListener((windowId) => {
+    if (windowId !== chrome.windows.WINDOW_ID_NONE) {
+      if (!socket || socket.readyState !== WebSocket.OPEN) {
+        connect();
+      }
+    }
+  });
+}
 
 // Initial startup
 connect();

@@ -13,6 +13,22 @@ let extensionWs = null;
 let cachedTabs = [];
 const cdpClients = new Map(); // tabId -> Set of sockets
 const pendingCommands = new Map(); // id -> { cdpSocket, originalId }
+const browserClients = new Set(); // Browser-level CDP sockets (/devtools/browser)
+
+// Security: Whitelist allowed origins (prevent Cross-Site WebSocket Hijacking & CSRF/data leakage)
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // CLI tools (agent-browser, curl, wscat) do not send Origin header
+  try {
+    const u = new URL(origin);
+    if (u.protocol === "chrome-extension:") return true;
+    if ((u.hostname === "127.0.0.1" || u.hostname === "localhost" || u.hostname === "::1") && (u.protocol === "http:" || u.protocol === "https:")) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
 
 // Lightweight RFC 6455 Frame Parser & Encoder
 function createWebSocket(socket) {
@@ -141,7 +157,15 @@ function createWebSocket(socket) {
 }
 
 const server = http.createServer((req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const origin = req.headers.origin;
+  if (origin && !isAllowedOrigin(origin)) {
+    console.warn(`[Relay Security] Blocked HTTP request from unauthorized origin: ${origin}`);
+    res.writeHead(403, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Forbidden: Cross-Origin access from untrusted origin denied." }));
+    return;
+  }
+
+  res.setHeader("Access-Control-Allow-Origin", origin || "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "*");
 
@@ -209,6 +233,14 @@ const server = http.createServer((req, res) => {
 });
 
 server.on("upgrade", (req, socket, head) => {
+  const origin = req.headers.origin;
+  if (origin && !isAllowedOrigin(origin)) {
+    console.warn(`[Relay Security] Blocked unauthorized WebSocket upgrade from origin: ${origin}`);
+    socket.write("HTTP/1.1 403 Forbidden\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nCross-Origin WebSocket access denied.\r\n");
+    socket.destroy();
+    return;
+  }
+
   const key = req.headers["sec-websocket-key"];
   if (!key) {
     socket.destroy();
@@ -238,7 +270,75 @@ server.on("upgrade", (req, socket, head) => {
       try {
         const msg = JSON.parse(msgStr);
         if (msg.type === "tabs_list") {
+          const oldTabs = cachedTabs;
           cachedTabs = msg.tabs || [];
+
+          // Notify browser-level CDP clients about newly created or closed tabs
+          if (browserClients.size > 0) {
+            const oldIds = new Set(oldTabs.map(t => String(t.id)));
+            const newIds = new Set(cachedTabs.map(t => String(t.id)));
+
+            for (const t of cachedTabs) {
+              if (!oldIds.has(String(t.id))) {
+                const eventStr = JSON.stringify({
+                  method: "Target.targetCreated",
+                  params: {
+                    targetInfo: {
+                      targetId: String(t.id),
+                      type: "page",
+                      title: t.title || "Chrome Tab",
+                      url: t.url || "about:blank",
+                      attached: false,
+                      canAccessOpener: false
+                    }
+                  }
+                });
+                for (const bClient of browserClients) bClient.send(eventStr);
+              }
+            }
+
+            for (const t of oldTabs) {
+              if (!newIds.has(String(t.id))) {
+                const eventStr = JSON.stringify({
+                  method: "Target.targetDestroyed",
+                  params: { targetId: String(t.id) }
+                });
+                for (const bClient of browserClients) bClient.send(eventStr);
+              }
+            }
+          }
+        } else if (msg.type === "create_tab_response") {
+          const pending = pendingCommands.get(msg.id);
+          if (pending) {
+            pendingCommands.delete(msg.id);
+            if (msg.success) {
+              pending.cdpSocket.send(JSON.stringify({
+                id: pending.originalId,
+                result: { targetId: String(msg.tabId) }
+              }));
+            } else {
+              pending.cdpSocket.send(JSON.stringify({
+                id: pending.originalId,
+                error: { message: msg.error || "Failed to create tab" }
+              }));
+            }
+          }
+        } else if (msg.type === "close_tab_response") {
+          const pending = pendingCommands.get(msg.id);
+          if (pending) {
+            pendingCommands.delete(msg.id);
+            if (msg.success) {
+              pending.cdpSocket.send(JSON.stringify({
+                id: pending.originalId,
+                result: { success: true }
+              }));
+            } else {
+              pending.cdpSocket.send(JSON.stringify({
+                id: pending.originalId,
+                error: { message: msg.error || "Failed to close tab" }
+              }));
+            }
+          }
         } else if (msg.type === "ping") {
           ws.send({ type: "pong" });
         } else if (msg.type === "cdp_response") {
@@ -339,6 +439,46 @@ server.on("upgrade", (req, socket, head) => {
           }));
           return;
         }
+        if (cmd.method === "Target.createTarget") {
+          if (!extensionWs) {
+            ws.send(JSON.stringify({
+              id: cmd.id,
+              error: { message: "Extension is not connected to Supergraph Relay Server" }
+            }));
+            return;
+          }
+          const internalId = `create_${Date.now()}_${commandCounter++}`;
+          pendingCommands.set(internalId, {
+            cdpSocket: ws,
+            originalId: cmd.id
+          });
+          extensionWs.send({
+            type: "create_tab",
+            id: internalId,
+            url: cmd.params?.url || "about:blank"
+          });
+          return;
+        }
+        if (cmd.method === "Target.closeTarget") {
+          if (!extensionWs) {
+            ws.send(JSON.stringify({
+              id: cmd.id,
+              error: { message: "Extension is not connected to Supergraph Relay Server" }
+            }));
+            return;
+          }
+          const internalId = `close_${Date.now()}_${commandCounter++}`;
+          pendingCommands.set(internalId, {
+            cdpSocket: ws,
+            originalId: cmd.id
+          });
+          extensionWs.send({
+            type: "close_tab",
+            id: internalId,
+            tabId: parseInt(cmd.params?.targetId || tabId, 10)
+          });
+          return;
+        }
         if (cmd.method.startsWith("Target.")) {
           ws.send(JSON.stringify({ id: cmd.id, result: {} }));
           return;
@@ -408,6 +548,7 @@ server.on("upgrade", (req, socket, head) => {
 
   if (url.pathname === "/devtools/browser") {
     console.log("[Relay] Browser-level CDP client connected.");
+    browserClients.add(ws);
     let commandCounter = 1;
 
     ws.onMessage = (msgStr) => {
@@ -425,6 +566,48 @@ server.on("upgrade", (req, socket, head) => {
               jsVersion: "11.0"
             }
           }));
+          return;
+        }
+
+        if (cmd.method === "Target.createTarget") {
+          if (!extensionWs) {
+            ws.send(JSON.stringify({
+              id: cmd.id,
+              error: { message: "Extension is not connected to Supergraph Relay Server" }
+            }));
+            return;
+          }
+          const internalId = `create_${Date.now()}_${commandCounter++}`;
+          pendingCommands.set(internalId, {
+            cdpSocket: ws,
+            originalId: cmd.id
+          });
+          extensionWs.send({
+            type: "create_tab",
+            id: internalId,
+            url: cmd.params?.url || "about:blank"
+          });
+          return;
+        }
+
+        if (cmd.method === "Target.closeTarget") {
+          if (!extensionWs) {
+            ws.send(JSON.stringify({
+              id: cmd.id,
+              error: { message: "Extension is not connected to Supergraph Relay Server" }
+            }));
+            return;
+          }
+          const internalId = `close_${Date.now()}_${commandCounter++}`;
+          pendingCommands.set(internalId, {
+            cdpSocket: ws,
+            originalId: cmd.id
+          });
+          extensionWs.send({
+            type: "close_tab",
+            id: internalId,
+            tabId: parseInt(cmd.params?.targetId, 10)
+          });
           return;
         }
 
@@ -534,6 +717,7 @@ server.on("upgrade", (req, socket, head) => {
 
     ws.onClose = () => {
       console.log("[Relay] Browser-level CDP client disconnected.");
+      browserClients.delete(ws);
       for (const [tId, set] of cdpClients.entries()) {
         set.delete(ws);
       }
