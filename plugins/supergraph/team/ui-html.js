@@ -1654,6 +1654,345 @@ export function getTeamUiHtml() {
     }
 
     /* ==========================================================================
+       GATHER.TOWN STYLE 2.5D RPG 3/4 VIRTUAL OFFICE WORKSPACE
+       ========================================================================== */
+    .gather-office {
+      position: relative;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+      user-select: none;
+    }
+    .gather-map {
+      position: relative;
+      width: 100%;
+      min-width: 900px;
+      height: 600px;
+      background-color: #f8fafc;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(2, 132, 199, 0.04) 0%, transparent 80%),
+        linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+    }
+    [data-theme="dark"] .gather-map {
+      background-color: #0d1322;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.05) 0%, transparent 80%),
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    }
+    .gather-corridor-h {
+      position: absolute;
+      left: 0; right: 0;
+      top: 255px; height: 80px;
+      background: rgba(2, 132, 199, 0.06);
+      border-top: 2px dashed rgba(2, 132, 199, 0.18);
+      border-bottom: 2px dashed rgba(2, 132, 199, 0.18);
+      z-index: 2;
+    }
+    .gather-corridor-v {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 450px; width: 80px;
+      background: rgba(2, 132, 199, 0.06);
+      border-left: 2px dashed rgba(2, 132, 199, 0.18);
+      border-right: 2px dashed rgba(2, 132, 199, 0.18);
+      z-index: 2;
+    }
+    .gather-carpet-runner-h {
+      position: absolute;
+      top: 14px; bottom: 14px;
+      left: 0; right: 0;
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      opacity: 0.15;
+      border-radius: 4px;
+    }
+    .gather-carpet-runner-v {
+      position: absolute;
+      left: 14px; right: 14px;
+      top: 0; bottom: 0;
+      background: linear-gradient(90deg, #38bdf8 0%, #0284c7 100%);
+      opacity: 0.15;
+      border-radius: 4px;
+    }
+    .gather-room {
+      position: absolute;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.06);
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .gather-wall-top {
+      height: 20px;
+      background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
+      border-bottom: 2px solid #475569;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+    [data-theme="dark"] .gather-wall-top {
+      background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+      border-bottom: 2px solid #0f172a;
+    }
+    .gather-room-war {
+      top: 14px; left: 14px;
+      width: 422px; height: 228px;
+      background: radial-gradient(circle at 50% 30%, rgba(2, 132, 199, 0.05) 0%, var(--card-bg) 100%);
+    }
+    .gather-room-qa {
+      top: 14px; right: 14px;
+      width: 422px; height: 228px;
+      background: radial-gradient(circle at 50% 30%, rgba(5, 150, 105, 0.05) 0%, var(--card-bg) 100%);
+    }
+    .gather-room-eng {
+      bottom: 14px; left: 14px;
+      width: 532px; height: 228px;
+      background: radial-gradient(circle at 50% 30%, rgba(124, 58, 237, 0.05) 0%, var(--card-bg) 100%);
+    }
+    .gather-room-pantry {
+      bottom: 14px; right: 14px;
+      width: 312px; height: 228px;
+      background: radial-gradient(circle at 50% 30%, rgba(217, 119, 6, 0.05) 0%, var(--card-bg) 100%);
+    }
+    .gather-room-body {
+      padding: 10px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .gather-smartboard {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #38bdf8;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .gather-smartboard-title {
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .gather-smartboard-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+    }
+    .gather-conf-table {
+      margin: auto auto 4px auto;
+      width: 82%;
+      height: 70px;
+      background: linear-gradient(180deg, #9a3412 0%, #7c2d12 70%, #451a03 100%);
+      border: 2px solid #ea580c;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fed7aa;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+    .gather-server-area {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .gather-server-rack {
+      width: 58px;
+      height: 95px;
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      padding: 5px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .gather-server-unit {
+      height: 14px;
+      background: #1e293b;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      gap: 4px;
+    }
+    .gather-workstations-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .gather-desk {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .gather-desk:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px -2px rgba(2, 132, 199, 0.25);
+      border-color: var(--primary);
+    }
+    .gather-desk.state-claimed { border-left: 3px solid var(--primary); }
+    .gather-desk.state-red { border-left: 3px solid var(--danger); background: var(--danger-dim); }
+    .gather-desk.state-green { border-left: 3px solid var(--success); }
+    .gather-desk.state-merged { border-left: 3px solid var(--purple); opacity: 0.85; }
+    .gather-monitors {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .gather-monitor {
+      width: 44px;
+      height: 26px;
+      background: #020617;
+      border: 2px solid #334155;
+      border-radius: 4px;
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 8px;
+      font-weight: 800;
+      color: #38bdf8;
+      overflow: hidden;
+    }
+    .gather-desk-surface {
+      width: 100%;
+      height: 14px;
+      background: linear-gradient(180deg, #d97706 0%, #b45309 80%, #78350f 100%);
+      border-radius: 3px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+      margin-bottom: 4px;
+      position: relative;
+    }
+    .gather-keyboard {
+      position: absolute;
+      top: 2px; left: 50%;
+      transform: translateX(-50%);
+      width: 26px; height: 5px;
+      background: #334155;
+      border-radius: 1px;
+    }
+    .gather-character-area {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      justify-content: flex-start;
+    }
+    .gather-character {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .gather-character.typing::after {
+      content: '⌨️';
+      position: absolute;
+      bottom: -6px;
+      right: -6px;
+      font-size: 10px;
+      animation: bounce-typing 0.8s infinite alternate;
+    }
+    .gather-worker-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.1;
+      overflow: hidden;
+    }
+    .gather-worker-name {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .gather-worker-task {
+      font-size: 8px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .gather-bar-counter {
+      display: flex;
+      gap: 8px;
+      background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
+      border: 2px solid #b45309;
+      border-radius: 8px;
+      padding: 6px 8px;
+      color: #fef3c7;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .gather-walking-agent {
+      position: absolute;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--primary);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      animation: gather-patrol 20s ease-in-out infinite;
+    }
+    @keyframes gather-patrol {
+      0%   { top: 275px; left: 60px; }
+      25%  { top: 275px; left: 460px; }
+      50%  { top: 80px;  left: 460px; }
+      75%  { top: 275px; left: 460px; }
+      100% { top: 275px; left: 60px; }
+    }
+
+    /* ==========================================================================
        2.5D ISOMETRIC VIRTUAL OFFICE ARCHITECTURAL STYLES
        ========================================================================== */
     .iso-scene {
@@ -2113,15 +2452,145 @@ export function getTeamUiHtml() {
     <!-- Office View Mode Toggle -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
       <div class="office-view-toggle">
-        <button id="btn-view-iso" class="view-toggle-btn active" onclick="setOfficeView('iso')">🏛️ Phối Cảnh 2.5D Isometric</button>
+        <button id="btn-view-gather" class="view-toggle-btn active" onclick="setOfficeView('gather')">🎮 Văn Phòng 2.5D RPG</button>
         <button id="btn-view-floorplan" class="view-toggle-btn" onclick="setOfficeView('floorplan')">🗺️ Mặt Bằng 2D</button>
-        <button id="btn-view-pods" class="view-toggle-btn" onclick="setOfficeView('pods')">💻 Bàn Làm Việc Chi Tiết</button>
+        <button id="btn-view-iso" class="view-toggle-btn" onclick="setOfficeView('iso')">🏛️ 3D Nghiêng</button>
+        <button id="btn-view-pods" class="view-toggle-btn" onclick="setOfficeView('pods')">💻 Bàn Chi Tiết</button>
       </div>
       <span class="office-tagline" id="office-active-count">Đang hiển thị không gian văn phòng ảo</span>
     </div>
 
-    <!-- VIEW 0: 2.5D ISOMETRIC VIRTUAL OFFICE ARCHITECTURAL SCENE -->
-    <div id="office-iso-wrapper" style="display: block;">
+    <!-- VIEW 0: GATHER.TOWN STYLE 2.5D RPG 3/4 VIRTUAL OFFICE -->
+    <div id="office-gather-wrapper" style="display: block;">
+      <div class="gather-office">
+        <div class="gather-map">
+          <!-- Corridors with runner carpets -->
+          <div class="gather-corridor-h">
+            <div class="gather-carpet-runner-h"></div>
+          </div>
+          <div class="gather-corridor-v">
+            <div class="gather-carpet-runner-v"></div>
+          </div>
+
+          <!-- Animated Walking Personnel -->
+          <div class="gather-walking-agent">
+            <span>🏃</span>
+            <span>Sprint Runner</span>
+          </div>
+
+          <!-- Room 1: War Room (Top-Left) -->
+          <div class="gather-room gather-room-war">
+            <div class="gather-wall-top">
+              <span>🎯 Phòng Chỉ Huy Chiến Lược (War Room)</span>
+              <span id="gather-smartboard-wave" class="gather-smartboard-badge">Wave 1</span>
+            </div>
+            <div class="gather-room-body">
+              <div class="gather-smartboard">
+                <div class="gather-smartboard-title">
+                  <span>📋</span>
+                  <span id="gather-smartboard-title">Sprint Strategic Board</span>
+                </div>
+                <div id="gather-meeting-percent" class="gather-smartboard-badge" style="color:var(--primary); font-size:11px;">0% Hoàn thành</div>
+              </div>
+
+              <div class="gather-conf-table">
+                <span>BOARDROOM</span>
+                <!-- Chairs around conference table -->
+                <div class="gather-conf-chair" style="top:-14px; left:20%;"></div>
+                <div class="gather-conf-chair" style="top:-14px; left:50%;"></div>
+                <div class="gather-conf-chair" style="top:-14px; left:80%;"></div>
+                <div class="gather-conf-chair" style="bottom:-14px; left:20%;"></div>
+                <div class="gather-conf-chair" style="bottom:-14px; left:50%;"></div>
+                <div class="gather-conf-chair" style="bottom:-14px; left:80%;"></div>
+              </div>
+
+              <!-- Seated Lead Architect -->
+              <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+                <div class="gather-character" style="background:linear-gradient(135deg, #0284c7, #38bdf8);">📐</div>
+                <div style="font-size:10px; font-weight:800;">
+                  @architect <span style="font-size:9px; color:var(--text-muted);">(Lead Architect)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Room 2: QA & Server Lab (Top-Right) -->
+          <div class="gather-room gather-room-qa">
+            <div class="gather-wall-top">
+              <span>🧪 Phòng Kiểm Thử &amp; Server (QA Lab)</span>
+              <span style="font-size:9px; color:#a7f3d0;">60 FPS CDP</span>
+            </div>
+            <div class="gather-room-body">
+              <div class="gather-server-area">
+                <div class="gather-server-rack">
+                  <div class="gather-server-unit"><span class="led-dot"></span></div>
+                  <div class="gather-server-unit"><span class="led-dot blue"></span></div>
+                  <div class="gather-server-unit"><span class="led-dot red"></span></div>
+                  <div class="gather-server-unit"><span class="led-dot"></span></div>
+                </div>
+                <div class="gather-server-rack">
+                  <div class="gather-server-unit"><span class="led-dot blue"></span></div>
+                  <div class="gather-server-unit"><span class="led-dot"></span></div>
+                  <div class="gather-server-unit"><span class="led-dot"></span></div>
+                  <div class="gather-server-unit"><span class="led-dot blue"></span></div>
+                </div>
+                <div style="flex:1; font-size:11px; display:flex; flex-direction:column; gap:4px;">
+                  <div><strong>Browser Agent:</strong> Native CDP</div>
+                  <div><strong>Axe-core:</strong> WCAG 2.1 Pass</div>
+                  <div><strong>Tracing:</strong> Zero Playwright</div>
+                </div>
+              </div>
+
+              <!-- QA Tester -->
+              <div style="display:flex; align-items:center; gap:8px; margin-top:12px; background:var(--nav-bg); padding:6px 10px; border-radius:8px; border:1px solid var(--card-border);">
+                <div class="gather-character" style="background:linear-gradient(135deg, #059669, #34d399);">🧪</div>
+                <div>
+                  <div style="font-size:10px; font-weight:800;">@tester-qa <span style="font-size:9px; color:var(--success);">(QA Lead)</span></div>
+                  <div id="gather-qa-status-text" style="font-size:9px; color:var(--text-muted);">Sẵn sàng kiểm thử</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Room 3: Engineering Bay (Bottom-Left) -->
+          <div class="gather-room gather-room-eng">
+            <div class="gather-wall-top">
+              <span>💻 Cụm Bàn Kỹ Thuật (Engineering Desks)</span>
+              <span style="font-size:9px; color:#ddd6fe;">Dual-Monitors</span>
+            </div>
+            <div class="gather-room-body">
+              <div class="gather-workstations-grid" id="gather-workstations-container">
+                <!-- Dynamically populated Gather workstations -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Room 4: Pantry & Coffee Bar (Bottom-Right) -->
+          <div class="gather-room gather-room-pantry">
+            <div class="gather-wall-top">
+              <span>☕ Căng-tin &amp; Cafe (Pantry)</span>
+              <span style="font-size:9px; color:#fde68a;">Free Coffee</span>
+            </div>
+            <div class="gather-room-body">
+              <div class="gather-bar-counter">
+                <div>☕ Barista</div>
+                <div>🧊 Tủ lạnh</div>
+                <div>💧 Nước uống</div>
+              </div>
+              <div style="font-size:10px; font-weight:700; color:var(--text-muted); margin-top:10px;">
+                Standby Pool:
+              </div>
+              <div class="pantry-break-agents" id="gather-break-agents" style="margin-top:6px;">
+                <!-- Dynamically populated Standby agents -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 0B: 2.5D ISOMETRIC VIRTUAL OFFICE ARCHITECTURAL SCENE -->
+    <div id="office-iso-wrapper" style="display: none;">
       <div class="iso-scene" id="iso-scene">
         <!-- Interactive 3D Camera / Angle Controls -->
         <div class="iso-controls">
@@ -2654,7 +3123,7 @@ export function getTeamUiHtml() {
       }
     }
 
-    let currentOfficeView = 'iso';
+    let currentOfficeView = 'gather';
     let isoRotX = 56;
     let isoRotZ = -38;
     let isoScale = 0.92;
@@ -2676,17 +3145,21 @@ export function getTeamUiHtml() {
 
     function setOfficeView(mode) {
       currentOfficeView = mode;
-      const btnIso = document.getElementById('btn-view-iso');
+      const btnGather = document.getElementById('btn-view-gather');
       const btnFp = document.getElementById('btn-view-floorplan');
+      const btnIso = document.getElementById('btn-view-iso');
       const btnPods = document.getElementById('btn-view-pods');
-      const wrapIso = document.getElementById('office-iso-wrapper');
+      const wrapGather = document.getElementById('office-gather-wrapper');
       const wrapFp = document.getElementById('office-floorplan-wrapper');
+      const wrapIso = document.getElementById('office-iso-wrapper');
       const wrapPods = document.getElementById('office-pods-wrapper');
-      if (btnIso) btnIso.classList.toggle('active', mode === 'iso');
+      if (btnGather) btnGather.classList.toggle('active', mode === 'gather');
       if (btnFp) btnFp.classList.toggle('active', mode === 'floorplan');
+      if (btnIso) btnIso.classList.toggle('active', mode === 'iso');
       if (btnPods) btnPods.classList.toggle('active', mode === 'pods');
-      if (wrapIso) wrapIso.style.display = mode === 'iso' ? 'block' : 'none';
+      if (wrapGather) wrapGather.style.display = mode === 'gather' ? 'block' : 'none';
       if (wrapFp) wrapFp.style.display = mode === 'floorplan' ? 'block' : 'none';
+      if (wrapIso) wrapIso.style.display = mode === 'iso' ? 'block' : 'none';
       if (wrapPods) wrapPods.style.display = mode === 'pods' ? 'block' : 'none';
     }
 
@@ -2714,6 +3187,14 @@ export function getTeamUiHtml() {
       const activeWave = activeTasks.length > 0 ? activeTasks[0].wave : (tasks.find(t => t.status === 'pending')?.wave || 1);
       const waveEl = document.getElementById('office-current-wave');
       if (waveEl) waveEl.textContent = 'Wave ' + (activeWave || 1);
+
+      // Update Gather.town War Room Smartboard
+      const gatherSbTitle = document.getElementById('gather-smartboard-title');
+      if (gatherSbTitle) gatherSbTitle.textContent = mission.objective ? (mission.objective.length > 36 ? mission.objective.slice(0, 36) + '...' : mission.objective) : 'Sprint Strategic Board';
+      const gatherSbWave = document.getElementById('gather-smartboard-wave');
+      if (gatherSbWave) gatherSbWave.textContent = 'Wave ' + (activeWave || 1);
+      const gatherMeetingPercent = document.getElementById('gather-meeting-percent');
+      if (gatherMeetingPercent) gatherMeetingPercent.textContent = percent + '% Hoàn thành';
 
       // Update 2D Floorplan War Room Smartboard
       const fpSbTitle = document.getElementById('fp-smartboard-title');
@@ -2769,6 +3250,9 @@ export function getTeamUiHtml() {
 
       const isoWsContainer = document.getElementById('iso-workstations-container');
       if (isoWsContainer) isoWsContainer.innerHTML = '';
+
+      const gatherWsContainer = document.getElementById('gather-workstations-container');
+      if (gatherWsContainer) gatherWsContainer.innerHTML = '';
 
       let displayedDeskCount = 0;
       const idleMembers = [];
@@ -2870,6 +3354,41 @@ export function getTeamUiHtml() {
             '</div>';
 
           fpWsContainer.appendChild(fpWs);
+        }
+
+        // --- Gather.town 2.5D RPG Workstation ---
+        if (gatherWsContainer) {
+          const gatherWs = document.createElement('div');
+          gatherWs.className = 'gather-desk ' + deskStateClass;
+          if (task) {
+            gatherWs.onclick = () => openTaskModal(task.id);
+            gatherWs.title = 'Click để xem task ' + task.id;
+          } else {
+            gatherWs.onclick = () => showToast('info', 'Thành viên @' + wId + ' (' + archetype.role + ') đang ở chế độ chờ.');
+            gatherWs.title = '@' + wId + ' đang sẵn sàng';
+          }
+
+          gatherWs.innerHTML =
+            '<div class="gather-monitors">' +
+              '<div class="gather-monitor">' + (task ? (task.status === 'red_tested' ? 'ERR!' : task.status === 'green' ? 'PASS' : 'DEV') : 'IDLE') + '</div>' +
+              '<div class="gather-monitor" style="color:#a855f7;">' + (task ? escapeHtml(task.id.slice(0, 7)) : '---') + '</div>' +
+            '</div>' +
+            '<div class="gather-desk-surface">' +
+              '<div class="gather-keyboard"></div>' +
+            '</div>' +
+            '<div class="gather-character-area">' +
+              '<div class="gather-character ' + (task && (task.status === 'claimed' || task.status === 'red_tested') ? 'typing' : '') + '" style="background:' + archetype.bg + ';">' +
+                archetype.icon +
+              '</div>' +
+              '<div class="gather-worker-meta">' +
+                '<span class="gather-worker-name">@' + escapeHtml(wId) + '</span>' +
+                '<span class="gather-worker-task badge-' + (task ? (task.status === 'merged' ? 'merged' : task.status === 'green' ? 'green' : task.status === 'red_tested' ? 'red' : 'claimed') : 'claimed') + '">' +
+                  (task ? escapeHtml(task.id) : 'Standby') +
+                '</span>' +
+              '</div>' +
+            '</div>';
+
+          gatherWsContainer.appendChild(gatherWs);
         }
 
         // --- 2.5D Isometric Workstation ---
@@ -2995,6 +3514,22 @@ export function getTeamUiHtml() {
         }
       }
 
+      // Update Gather Pantry Break Agents
+      const gatherBreakContainer = document.getElementById('gather-break-agents');
+      if (gatherBreakContainer) {
+        gatherBreakContainer.innerHTML = '';
+        if (idleMembers.length === 0) {
+          gatherBreakContainer.innerHTML = '<span style="font-size:10px; color:var(--text-muted); font-style:italic;">Toàn bộ team đang làm việc tại bàn.</span>';
+        } else {
+          for (const m of idleMembers) {
+            const chip = document.createElement('div');
+            chip.className = 'pantry-break-agent-chip';
+            chip.innerHTML = '<span style="font-size:12px;">' + m.archetype.icon + '</span> <span>@' + escapeHtml(m.id) + '</span>';
+            gatherBreakContainer.appendChild(chip);
+          }
+        }
+      }
+
       // Update 2.5D Pantry Break Agents
       const isoBreakContainer = document.getElementById('iso-break-agents');
       if (isoBreakContainer) {
@@ -3031,22 +3566,26 @@ export function getTeamUiHtml() {
       const qaStatusEl = document.getElementById('qa-engine-status');
       const fpQaStatusEl = document.getElementById('fp-qa-status-text');
       const isoQaStatusEl = document.getElementById('iso-qa-status-text');
+      const gatherQaStatusEl = document.getElementById('gather-qa-status-text');
 
       if (redTasks > 0) {
         const text = 'Đang theo dõi ' + redTasks + ' bài test RED';
         if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--danger)'; }
         if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--danger)'; }
         if (isoQaStatusEl) { isoQaStatusEl.textContent = text; isoQaStatusEl.style.color = 'var(--danger)'; }
+        if (gatherQaStatusEl) { gatherQaStatusEl.textContent = text; gatherQaStatusEl.style.color = 'var(--danger)'; }
       } else if (greenTasks > 0) {
         const text = greenTasks + ' test suite đã GREEN - Sẵn sàng merge';
         if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--success)'; }
         if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--success)'; }
         if (isoQaStatusEl) { isoQaStatusEl.textContent = text; isoQaStatusEl.style.color = 'var(--success)'; }
+        if (gatherQaStatusEl) { gatherQaStatusEl.textContent = text; gatherQaStatusEl.style.color = 'var(--success)'; }
       } else {
         const text = 'Hệ thống kiểm thử native CDP sẵn sàng';
         if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--success)'; }
         if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--success)'; }
         if (isoQaStatusEl) { isoQaStatusEl.textContent = text; isoQaStatusEl.style.color = 'var(--success)'; }
+        if (gatherQaStatusEl) { gatherQaStatusEl.textContent = text; gatherQaStatusEl.style.color = 'var(--success)'; }
       }
     }
 

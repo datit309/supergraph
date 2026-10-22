@@ -40,6 +40,16 @@ test('Supergraph Team UI Virtual Office Workspace Contract', async (t) => {
     assert.match(html, /setOfficeView\(['"]iso['"]\)/, 'Should support setOfficeView to iso')
   })
 
+  await t.test('defines Gather.town style 2.5D RPG 3/4 layout and pixel/isometric office styles', () => {
+    assert.match(html, /\.gather-office/, 'Should define .gather-office main container')
+    assert.match(html, /\.gather-room/, 'Should define .gather-room for 3/4 oblique rooms')
+    assert.match(html, /\.gather-desk/, 'Should define .gather-desk for front-facing wooden desks with 3/4 depth')
+    assert.match(html, /\.gather-character/, 'Should define .gather-character for front-facing avatars')
+    assert.match(html, /\.gather-monitor/, 'Should define .gather-monitor for dual forward-facing monitors')
+    assert.match(html, /id=["']btn-view-gather["']/, 'Should define btn-view-gather toggle button')
+    assert.match(html, /setOfficeView\(['"]gather['"]\)/, 'Should support setOfficeView to gather')
+  })
+
   await t.test('includes renderOffice logic in client script', () => {
     assert.match(html, /function\s+renderOffice\s*\(/, 'Should define renderOffice function')
     assert.match(html, /renderOffice\(\)/, 'Should call renderOffice on update or tab switch')
