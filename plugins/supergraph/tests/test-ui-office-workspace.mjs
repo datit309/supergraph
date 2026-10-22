@@ -50,6 +50,13 @@ test('Supergraph Team UI Virtual Office Workspace Contract', async (t) => {
     assert.match(html, /setOfficeView\(['"]gather['"]\)/, 'Should support setOfficeView to gather')
   })
 
+  await t.test('defines realistic human illustrated avatars with hair, face, clothes, and animated typing hands', () => {
+    assert.match(html, /renderHumanDeveloperSvg/, 'Should define renderHumanDeveloperSvg function')
+    assert.match(html, /\.human-avatar-svg/, 'Should define .human-avatar-svg styles')
+    assert.match(html, /human-character-container|\.human-avatar-wrapper/, 'Should define human avatar container')
+    assert.match(html, /@keyframes\s+typing-arm|@keyframes\s+type-hands|\.hands-typing|\.typing-hands-anim/, 'Should define animated typing hands')
+  })
+
   await t.test('includes renderOffice logic in client script', () => {
     assert.match(html, /function\s+renderOffice\s*\(/, 'Should define renderOffice function')
     assert.match(html, /renderOffice\(\)/, 'Should call renderOffice on update or tab switch')

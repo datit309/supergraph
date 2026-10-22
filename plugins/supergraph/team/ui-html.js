@@ -1849,115 +1849,239 @@ export function getTeamUiHtml() {
     }
     .gather-workstations-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 4px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
     }
     .gather-desk {
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 6px 8px;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
       cursor: pointer;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .gather-desk:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px -2px rgba(2, 132, 199, 0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px -4px rgba(2, 132, 199, 0.3);
       border-color: var(--primary);
     }
-    .gather-desk.state-claimed { border-left: 3px solid var(--primary); }
-    .gather-desk.state-red { border-left: 3px solid var(--danger); background: var(--danger-dim); }
-    .gather-desk.state-green { border-left: 3px solid var(--success); }
-    .gather-desk.state-merged { border-left: 3px solid var(--purple); opacity: 0.85; }
+    .gather-desk.state-claimed { border-left: 4px solid var(--primary); }
+    .gather-desk.state-red { border-left: 4px solid var(--danger); background: var(--danger-dim); }
+    .gather-desk.state-green { border-left: 4px solid var(--success); }
+    .gather-desk.state-merged { border-left: 4px solid var(--purple); opacity: 0.9; }
     .gather-monitors {
       display: flex;
-      gap: 4px;
+      gap: 6px;
       margin-bottom: 4px;
+      justify-content: center;
+      width: 100%;
     }
     .gather-monitor {
-      width: 44px;
-      height: 26px;
-      background: #020617;
-      border: 2px solid #334155;
-      border-radius: 4px;
+      flex: 1;
+      max-width: 96px;
+      height: 48px;
+      background: #090d16;
+      border: 1.5px solid #334155;
+      border-radius: 6px;
       position: relative;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      justify-content: space-between;
+      padding: 4px 6px;
       font-size: 8px;
-      font-weight: 800;
+      font-weight: 700;
       color: #38bdf8;
       overflow: hidden;
     }
-    .gather-desk-surface {
-      width: 100%;
-      height: 14px;
-      background: linear-gradient(180deg, #d97706 0%, #b45309 80%, #78350f 100%);
-      border-radius: 3px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
-      margin-bottom: 4px;
-      position: relative;
+    .gather-monitor .mon-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 7px;
+      color: #94a3b8;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 1px;
     }
-    .gather-keyboard {
-      position: absolute;
-      top: 2px; left: 50%;
-      transform: translateX(-50%);
-      width: 26px; height: 5px;
-      background: #334155;
+    .gather-monitor .mon-code {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 2px;
+    }
+    .gather-monitor .code-bar {
+      height: 2px;
       border-radius: 1px;
     }
-    .gather-character-area {
+    .gather-desk-surface {
+      width: 100%;
+      height: 22px;
+      background: linear-gradient(180deg, #d97706 0%, #b45309 60%, #78350f 100%);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 3px 6px rgba(0, 0, 0, 0.25);
+      margin-bottom: 6px;
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 6px;
-      width: 100%;
-      justify-content: flex-start;
+      justify-content: space-between;
+      padding: 0 8px;
     }
-    .gather-character {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
+    .desk-mat {
+      background: #1e293b;
+      border-radius: 3px;
+      padding: 2px 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+    }
+    .gather-keyboard {
+      display: flex;
+      gap: 1.5px;
+      background: #0f172a;
+      padding: 1.5px 3px;
+      border-radius: 2px;
+    }
+    .gather-keyboard .keycap {
+      width: 3px;
+      height: 5px;
+      background: #64748b;
+      border-radius: 0.5px;
+    }
+    .gather-mouse {
+      width: 5px;
+      height: 7px;
+      background: #475569;
+      border-radius: 2px;
+    }
+    .gather-coffee-mug {
+      font-size: 10px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .gather-character-area {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    .human-speech-bubble {
+      font-size: 9px;
+      font-weight: 700;
+      background: var(--card-bg);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      animation: float-bubble 3s infinite ease-in-out;
+    }
+    @keyframes float-bubble {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+    /* Realistic Human Illustrated Avatars & Workstations */
+    .human-character-container {
+      position: relative;
+      width: 82px;
+      height: 90px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      position: relative;
-      flex-shrink: 0;
     }
-    .gather-character.typing::after {
-      content: '⌨️';
-      position: absolute;
-      bottom: -6px;
-      right: -6px;
-      font-size: 10px;
-      animation: bounce-typing 0.8s infinite alternate;
+    .human-avatar-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      display: block;
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+    }
+    @keyframes human-eye-blink {
+      0%, 93%, 100% { transform: scaleY(1); }
+      95%, 97% { transform: scaleY(0.08); }
+    }
+    .human-eye {
+      transform-origin: 50% 37px;
+      animation: human-eye-blink 4.2s infinite;
+    }
+    @keyframes type-hands {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-3.5px) rotate(-3deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    @keyframes typing-arm {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-2px) rotate(2deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    .human-hand-left.is-typing, .hands-typing {
+      transform-origin: 43px 82px;
+      animation: type-hands 0.24s infinite alternate ease-in-out;
+    }
+    .human-hand-right.is-typing {
+      transform-origin: 57px 82px;
+      animation: typing-arm 0.28s infinite alternate ease-in-out;
+    }
+    @keyframes human-nod {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.5px); }
+    }
+    .human-head-nod {
+      transform-origin: 50px 36px;
+      animation: human-nod 3.5s infinite ease-in-out;
+    }
+    @keyframes steam-rise {
+      0% { opacity: 0; transform: translateY(0) scaleX(1); }
+      50% { opacity: 0.6; transform: translateY(-4px) scaleX(1.3); }
+      100% { opacity: 0; transform: translateY(-8px) scaleX(1.8); }
+    }
+    .steam-wisp {
+      animation: steam-rise 2s infinite ease-out;
+      font-size: 8px;
+      line-height: 1;
+      color: #94a3b8;
+    }
+    .gather-character {
+      display: none;
     }
     .gather-worker-meta {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      line-height: 1.1;
+      align-items: center;
+      line-height: 1.2;
       overflow: hidden;
+      margin-top: 4px;
+      text-align: center;
     }
     .gather-worker-name {
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 800;
       color: var(--text);
       white-space: nowrap;
     }
+    .gather-worker-role {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
     .gather-worker-task {
-      font-size: 8px;
+      font-size: 9px;
       font-weight: 700;
       white-space: nowrap;
+      padding: 2px 6px;
+      border-radius: 6px;
     }
     .gather-bar-counter {
       display: flex;
@@ -3163,6 +3287,162 @@ export function getTeamUiHtml() {
       if (wrapPods) wrapPods.style.display = mode === 'pods' ? 'block' : 'none';
     }
 
+    function renderHumanDeveloperSvg(wId, isWorking, taskStatus) {
+      const typingClass = isWorking ? 'is-typing hands-typing' : '';
+
+      let skinColor = '#fed7aa'; // warm natural human skin tone
+      let hairColor = '#0f172a';
+      let clothesColor = '#1e3a8a';
+      let clothesColorSecondary = '#3b82f6';
+      let hairSvg = '';
+      let faceAccessories = '';
+      let headAccessories = '';
+
+      if (wId === 'architect') {
+        skinColor = '#fed7aa';
+        hairColor = '#0f172a';
+        clothesColor = '#1e3a8a'; // navy turtleneck
+        clothesColorSecondary = '#e2e8f0';
+        // Neat side-parted hair with soft contour
+        hairSvg =
+          '<path d="M 32 36 C 30 20, 44 14, 55 14 C 68 14, 76 22, 74 36 C 72 24, 60 20, 52 21 C 42 22, 36 28, 32 36 Z" fill="#0f172a"/>' +
+          '<path d="M 32 36 C 30 42, 33 46, 35 48 C 34 40, 36 32, 40 28 Z" fill="#0f172a"/>';
+        // Designer round glasses + headphones around neck
+        faceAccessories =
+          '<circle cx="43" cy="38" r="6.5" fill="none" stroke="#0f172a" stroke-width="1.6"/>' +
+          '<circle cx="57" cy="38" r="6.5" fill="none" stroke="#0f172a" stroke-width="1.6"/>' +
+          '<line x1="49.5" y1="38" x2="50.5" y2="38" stroke="#0f172a" stroke-width="1.6"/>' +
+          '<path d="M 40 36 A 3 3 0 0 1 44 36" stroke="rgba(255,255,255,0.7)" stroke-width="1" fill="none"/>';
+        headAccessories =
+          '<path d="M 34 54 C 36 60, 64 60, 66 54" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>';
+      } else if (wId === 'frontend-dev') {
+        skinColor = '#fed7aa';
+        hairColor = '#b45309'; // auburn caramel
+        clothesColor = '#0d9488'; // teal hoodie
+        clothesColorSecondary = '#14b8a6';
+        // High ponytail + fringe bangs
+        hairSvg =
+          '<path d="M 33 36 C 32 20, 48 13, 62 16 C 74 19, 75 32, 73 38 C 67 22, 54 20, 46 22 C 38 24, 34 30, 33 36 Z" fill="#b45309"/>' +
+          '<path d="M 72 26 C 82 22, 88 32, 85 45 C 82 48, 76 42, 74 34 Z" fill="#92400e"/>' +
+          '<circle cx="73" cy="27" r="3" fill="#2dd4bf"/>';
+        // Cheerful blush + mint headphones
+        faceAccessories =
+          '<circle cx="38" cy="42" r="3.5" fill="#f43f5e" opacity="0.3"/>' +
+          '<circle cx="62" cy="42" r="3.5" fill="#f43f5e" opacity="0.3"/>';
+        headAccessories =
+          '<path d="M 32 38 C 30 22, 70 22, 68 38" fill="none" stroke="#2dd4bf" stroke-width="3.2"/>' +
+          '<rect x="29" y="34" width="4.5" height="9" rx="2" fill="#14b8a6"/>' +
+          '<rect x="66" y="34" width="4.5" height="9" rx="2" fill="#14b8a6"/>';
+      } else if (wId === 'backend-dev') {
+        skinColor = '#fed7aa';
+        hairColor = '#1e293b';
+        clothesColor = '#1e293b'; // charcoal tech hoodie
+        clothesColorSecondary = '#7c3aed';
+        // Textured curly hair + beard/stubble
+        hairSvg =
+          '<path d="M 32 34 C 30 18, 44 14, 52 14 C 64 13, 76 18, 74 34 C 70 20, 58 18, 48 20 C 38 22, 34 26, 32 34 Z" fill="#1e293b"/>' +
+          '<circle cx="36" cy="20" r="4" fill="#1e293b"/>' +
+          '<circle cx="48" cy="16" r="4.5" fill="#1e293b"/>' +
+          '<circle cx="62" cy="18" r="4" fill="#1e293b"/>';
+        faceAccessories =
+          '<path d="M 38 43 C 38 52, 62 52, 62 43 C 62 48, 56 52, 50 52 C 44 52, 38 48, 38 43 Z" fill="#1e293b" opacity="0.45"/>' +
+          '<rect x="36" y="34" width="11" height="8" rx="1.5" fill="none" stroke="#475569" stroke-width="1.5"/>' +
+          '<rect x="53" y="34" width="11" height="8" rx="1.5" fill="none" stroke="#475569" stroke-width="1.5"/>' +
+          '<line x1="47" y1="38" x2="53" y2="38" stroke="#475569" stroke-width="1.5"/>';
+      } else if (wId === 'tester-qa') {
+        skinColor = '#fed7aa';
+        hairColor = '#18181b';
+        clothesColor = '#6d28d9'; // violet blazer
+        clothesColorSecondary = '#94a3b8';
+        // Asymmetric bob with purple streak
+        hairSvg =
+          '<path d="M 32 36 C 30 18, 50 14, 66 16 C 75 22, 75 36, 74 46 C 72 38, 70 28, 64 24 C 54 20, 42 22, 35 28 C 33 34, 32 40, 31 46 Z" fill="#18181b"/>' +
+          '<path d="M 34 26 C 40 22, 46 23, 44 32 C 42 36, 36 34, 34 26 Z" fill="#a855f7" opacity="0.8"/>';
+        headAccessories =
+          '<path d="M 31 38 C 30 20, 70 20, 69 38" fill="none" stroke="#059669" stroke-width="2.5"/>' +
+          '<circle cx="31" cy="38" r="4" fill="#059669"/>' +
+          '<path d="M 31 38 C 31 46, 42 48, 44 46" fill="none" stroke="#059669" stroke-width="1.6" stroke-linecap="round"/>' +
+          '<circle cx="45" cy="46" r="1.8" fill="#10b981"/>';
+      } else if (wId === 'git-ops') {
+        skinColor = '#fed7aa';
+        hairColor = '#0f172a';
+        clothesColor = '#ea580c'; // orange track jacket
+        clothesColorSecondary = '#18181b';
+        // Backwards cap
+        hairSvg =
+          '<path d="M 33 30 C 33 20, 67 20, 67 30 Z" fill="#ea580c"/>' +
+          '<path d="M 31 30 C 31 33, 22 34, 20 31 C 22 28, 29 28, 31 30 Z" fill="#c2410c"/>' +
+          '<circle cx="50" cy="20" r="2" fill="#fff"/>' +
+          '<path d="M 34 32 C 34 38, 32 42, 31 45 C 33 42, 35 38, 36 34 Z" fill="#0f172a"/>';
+      } else {
+        skinColor = '#fed7aa';
+        hairColor = '#475569';
+        clothesColor = '#0284c7';
+        clothesColorSecondary = '#e2e8f0';
+        hairSvg =
+          '<path d="M 32 32 C 32 16, 68 16, 68 32 C 64 22, 54 20, 48 20 C 40 20, 34 24, 32 32 Z" fill="#475569"/>';
+      }
+
+      return (
+        '<svg class="human-avatar-svg" viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">' +
+          '<defs>' +
+            '<linearGradient id="grad-shirt-' + wId + '" x1="0" y1="0" x2="0" y2="1">' +
+              '<stop offset="0%" stop-color="' + clothesColorSecondary + '"/>' +
+              '<stop offset="100%" stop-color="' + clothesColor + '"/>' +
+            '</linearGradient>' +
+          '</defs>' +
+
+          '<!-- Office Chair Backrest & Headrest -->' +
+          '<g class="chair-mesh">' +
+            '<rect x="36" y="2" width="28" height="12" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>' +
+            '<path d="M 32 14 C 28 32, 28 54, 33 66 L 67 66 C 72 54, 72 32, 68 14 Z" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>' +
+            '<path d="M 37 20 L 63 20 M 36 28 L 64 28 M 36 36 L 64 36 M 37 44 L 63 44" stroke="#1e293b" stroke-width="1.2" stroke-linecap="round"/>' +
+          '</g>' +
+
+          '<!-- Human Body / Torso -->' +
+          '<g class="human-torso">' +
+            '<path d="M 26 76 C 26 58, 40 54, 50 54 C 60 54, 74 58, 74 76 L 26 76 Z" fill="url(#grad-shirt-' + wId + ')"/>' +
+            '<path d="M 44 54 L 50 62 L 56 54 Z" fill="' + clothesColorSecondary + '"/>' +
+          '</g>' +
+
+          '<!-- Head & Face (with subtle nod motion) -->' +
+          '<g class="human-head-nod">' +
+            '<rect x="45" y="47" width="10" height="9" rx="2" fill="' + skinColor + '"/>' +
+            '<circle cx="33" cy="38" r="3.5" fill="' + skinColor + '"/>' +
+            '<circle cx="67" cy="38" r="3.5" fill="' + skinColor + '"/>' +
+            '<ellipse cx="50" cy="36" rx="17" ry="19" fill="' + skinColor + '"/>' +
+            '<g class="human-eye">' +
+              '<ellipse cx="43" cy="37" rx="2.5" ry="3" fill="#0f172a"/>' +
+              '<circle cx="44" cy="36" r="0.9" fill="#ffffff"/>' +
+              '<ellipse cx="57" cy="37" rx="2.5" ry="3" fill="#0f172a"/>' +
+              '<circle cx="58" cy="36" r="0.9" fill="#ffffff"/>' +
+            '</g>' +
+            '<path d="M 40 32 Q 43 31 46 32" stroke="#0f172a" stroke-width="1.4" fill="none" stroke-linecap="round"/>' +
+            '<path d="M 54 32 Q 57 31 60 32" stroke="#0f172a" stroke-width="1.4" fill="none" stroke-linecap="round"/>' +
+            '<path d="M 50 38 L 49.5 41 L 51 41" stroke="#d97706" stroke-width="0.8" fill="none" stroke-linecap="round"/>' +
+            '<path d="M 47 44 Q 50 46 53 44" stroke="#92400e" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
+            faceAccessories +
+            headAccessories +
+            hairSvg +
+          '</g>' +
+
+          '<!-- Real Arms & Hands on Keyboard -->' +
+          '<g class="human-arms">' +
+            '<path d="M 28 68 C 28 76, 36 80, 42 81" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+            '<path d="M 72 68 C 72 76, 64 80, 58 81" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+            '<g class="human-hand-left ' + typingClass + '">' +
+              '<circle cx="43" cy="82" r="3.8" fill="' + skinColor + '"/>' +
+              '<rect x="42" y="81" width="3" height="4" rx="1" fill="' + skinColor + '"/>' +
+            '</g>' +
+            '<g class="human-hand-right ' + typingClass + '">' +
+              '<circle cx="57" cy="82" r="3.8" fill="' + skinColor + '"/>' +
+              '<rect x="55" y="81" width="3" height="4" rx="1" fill="' + skinColor + '"/>' +
+            '</g>' +
+          '</g>' +
+        '</svg>'
+      );
+    }
+
     function renderOffice() {
       if (!currentData || !currentData.tasks) return;
       const tasks = currentData.tasks;
@@ -3214,11 +3494,11 @@ export function getTeamUiHtml() {
 
       // 2. Prepare team members & desks
       const teamArchetypes = {
-        'architect': { role: 'Lead Architect', icon: '📐', bg: 'linear-gradient(135deg, #0284c7, #38bdf8)' },
-        'frontend-dev': { role: 'Frontend Engineer', icon: '🎨', bg: 'linear-gradient(135deg, #0d9488, #2dd4bf)' },
-        'backend-dev': { role: 'Backend Engineer', icon: '⚙️', bg: 'linear-gradient(135deg, #7c3aed, #a855f7)' },
-        'tester-qa': { role: 'QA & Browser Agent', icon: '🧪', bg: 'linear-gradient(135deg, #059669, #34d399)' },
-        'git-ops': { role: 'Git Ops Coordinator', icon: '🔀', bg: 'linear-gradient(135deg, #ea580c, #fb923c)' }
+        'architect': { name: 'Alex Trần', role: 'Lead Architect', icon: '📐', bg: 'linear-gradient(135deg, #0284c7, #38bdf8)' },
+        'frontend-dev': { name: 'Emma Nguyễn', role: 'Frontend Engineer', icon: '🎨', bg: 'linear-gradient(135deg, #0d9488, #2dd4bf)' },
+        'backend-dev': { name: 'David Lê', role: 'Backend Engineer', icon: '⚙️', bg: 'linear-gradient(135deg, #7c3aed, #a855f7)' },
+        'tester-qa': { name: 'Sarah Phạm', role: 'QA & Browser Agent', icon: '🧪', bg: 'linear-gradient(135deg, #059669, #34d399)' },
+        'git-ops': { name: 'Marcus Đỗ', role: 'Git Ops Coordinator', icon: '🔀', bg: 'linear-gradient(135deg, #ea580c, #fb923c)' }
       };
 
       const workerDeskMap = new Map();
@@ -3356,32 +3636,79 @@ export function getTeamUiHtml() {
           fpWsContainer.appendChild(fpWs);
         }
 
-        // --- Gather.town 2.5D RPG Workstation ---
+        const isWorking = !!(task && (task.status === 'claimed' || task.status === 'red_tested'));
+
+        // --- Gather.town 2.5D RPG Workstation with Realistic Human ---
         if (gatherWsContainer) {
           const gatherWs = document.createElement('div');
           gatherWs.className = 'gather-desk ' + deskStateClass;
+          const memberName = archetype.name || ('@' + wId);
           if (task) {
             gatherWs.onclick = () => openTaskModal(task.id);
             gatherWs.title = 'Click để xem task ' + task.id;
           } else {
-            gatherWs.onclick = () => showToast('info', 'Thành viên @' + wId + ' (' + archetype.role + ') đang ở chế độ chờ.');
-            gatherWs.title = '@' + wId + ' đang sẵn sàng';
+            gatherWs.onclick = () => showToast('info', 'Thành viên ' + memberName + ' (' + archetype.role + ') đang ở chế độ chờ.');
+            gatherWs.title = memberName + ' đang sẵn sàng';
+          }
+
+          let thoughtBubble = '☕ Sẵn sàng';
+          if (task) {
+            if (task.status === 'claimed') thoughtBubble = '💻 Đang code...';
+            else if (task.status === 'red_tested') thoughtBubble = '🚨 TDD RED';
+            else if (task.status === 'green') thoughtBubble = '🟢 TDD GREEN';
+            else if (task.status === 'merged') thoughtBubble = '🔀 Đã merge';
           }
 
           gatherWs.innerHTML =
+            '<!-- Dual Tech Monitors -->' +
             '<div class="gather-monitors">' +
-              '<div class="gather-monitor">' + (task ? (task.status === 'red_tested' ? 'ERR!' : task.status === 'green' ? 'PASS' : 'DEV') : 'IDLE') + '</div>' +
-              '<div class="gather-monitor" style="color:#a855f7;">' + (task ? escapeHtml(task.id.slice(0, 7)) : '---') + '</div>' +
-            '</div>' +
-            '<div class="gather-desk-surface">' +
-              '<div class="gather-keyboard"></div>' +
-            '</div>' +
-            '<div class="gather-character-area">' +
-              '<div class="gather-character ' + (task && (task.status === 'claimed' || task.status === 'red_tested') ? 'typing' : '') + '" style="background:' + archetype.bg + ';">' +
-                archetype.icon +
+              '<div class="gather-monitor" title="Code Editor">' +
+                '<div class="mon-header"><span>IDE</span><span>' + codeScreenTab + '</span></div>' +
+                '<div class="mon-code">' +
+                  '<div class="code-bar" style="width:75%; background:#a855f7;"></div>' +
+                  '<div class="code-bar" style="width:90%; background:#38bdf8;"></div>' +
+                  '<div class="code-bar" style="width:60%; background:#fbbf24;"></div>' +
+                  '<div class="code-bar" style="width:80%; background:#34d399;"></div>' +
+                '</div>' +
               '</div>' +
+              '<div class="gather-monitor" title="Test / Terminal">' +
+                '<div class="mon-header"><span>BASH</span><span style="color:' + (task && task.status === 'red_tested' ? '#ef4444' : '#10b981') + ';">●</span></div>' +
+                '<div style="font-size:7px; margin-top:2px; font-weight:800; color:' + (task ? (task.status === 'red_tested' ? '#ef4444' : task.status === 'green' ? '#10b981' : '#38bdf8') : '#64748b') + ';">' +
+                  (task ? (task.status === 'red_tested' ? 'ERR!' : task.status === 'green' ? 'PASS' : 'DEV') : 'IDLE') +
+                '</div>' +
+                '<div style="font-size:6px; color:#a855f7; overflow:hidden; text-overflow:ellipsis;">' + (task ? escapeHtml(task.id.slice(0, 10)) : 'ready') + '</div>' +
+              '</div>' +
+            '</div>' +
+
+            '<!-- Scandinavian Wood Desk Surface with Keyboard, Mug & Mat -->' +
+            '<div class="gather-desk-surface">' +
+              '<div class="desk-mat">' +
+                '<div class="gather-keyboard">' +
+                  '<div class="keycap" style="background:#38bdf8;"></div>' +
+                  '<div class="keycap"></div>' +
+                  '<div class="keycap"></div>' +
+                  '<div class="keycap" style="background:#a855f7;"></div>' +
+                  '<div class="keycap"></div>' +
+                  '<div class="keycap"></div>' +
+                '</div>' +
+                '<div class="gather-mouse"></div>' +
+              '</div>' +
+              '<div class="gather-coffee-mug" title="Coffee">' +
+                '<div class="coffee-cup-body">☕</div>' +
+                (isWorking ? '<div class="steam-wisp">~</div>' : '') +
+              '</div>' +
+            '</div>' +
+
+            '<!-- Human Character Seated at Desk -->' +
+            '<div class="gather-character-area">' +
+              '<div class="human-speech-bubble">' + thoughtBubble + '</div>' +
+              '<div class="human-character-container">' +
+                renderHumanDeveloperSvg(wId, isWorking, task ? task.status : null) +
+              '</div>' +
+              '<div class="gather-character ' + (isWorking ? 'typing' : '') + '" style="display:none;"></div>' +
               '<div class="gather-worker-meta">' +
-                '<span class="gather-worker-name">@' + escapeHtml(wId) + '</span>' +
+                '<span class="gather-worker-name">' + memberName + '</span>' +
+                '<span class="gather-worker-role">' + archetype.role + '</span>' +
                 '<span class="gather-worker-task badge-' + (task ? (task.status === 'merged' ? 'merged' : task.status === 'green' ? 'green' : task.status === 'red_tested' ? 'red' : 'claimed') : 'claimed') + '">' +
                   (task ? escapeHtml(task.id) : 'Standby') +
                 '</span>' +
