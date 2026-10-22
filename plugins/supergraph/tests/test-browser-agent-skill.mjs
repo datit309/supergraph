@@ -82,4 +82,31 @@ assert.ok(
   'SKILL.md must guide video reproduction with --cursor for interactive defects'
 )
 
-console.log('✔ browser-agent SKILL.md satisfies all contracts')
+// 2. Verify QA Templates contracts
+const matrixTpl = fs.readFileSync(matrixTplPath, 'utf8')
+assert.ok(
+  matrixTpl.includes('Accessibility') || matrixTpl.includes('A11y') || matrixTpl.includes('WCAG'),
+  'test-matrix-template.md must include Accessibility testcase'
+)
+assert.ok(
+  matrixTpl.includes('Responsive') || matrixTpl.includes('Mobile'),
+  'test-matrix-template.md must include Responsive/Mobile testcase'
+)
+assert.ok(
+  matrixTpl.includes('Vitals') || matrixTpl.includes('LCP') || matrixTpl.includes('CLS'),
+  'test-matrix-template.md must include Web Vitals checklist'
+)
+
+const fullstackTpl = fs.readFileSync(fullstackTplPath, 'utf8')
+assert.ok(
+  fullstackTpl.includes('WebMCP') || fullstackTpl.includes('Accessibility') || fullstackTpl.includes('Vitals'),
+  'test-matrix-fullstack-template.md must include WebMCP or A11y & Vitals'
+)
+
+const bugReportTpl = fs.readFileSync(bugReportTplPath, 'utf8')
+assert.ok(
+  bugReportTpl.includes('Video') || bugReportTpl.includes('.webm'),
+  'bug-report-template.md must include Video Reproduction evidence field'
+)
+
+console.log('✔ browser-agent SKILL.md and QA templates satisfy all contracts')
