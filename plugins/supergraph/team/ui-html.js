@@ -1080,6 +1080,578 @@ export function getTeamUiHtml() {
       font-size: 11px;
       font-weight: 600;
     }
+
+    /* ========================================================
+       🗺️ REALISTIC 2D ARCHITECTURAL FLOORPLAN STYLES
+       ======================================================== */
+    .office-view-toggle {
+      display: inline-flex;
+      background: var(--nav-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .view-toggle-btn {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .view-toggle-btn:hover {
+      color: var(--text);
+    }
+    .view-toggle-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .floorplan-container {
+      position: relative;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 20px;
+      min-height: 680px;
+      box-shadow: var(--card-shadow);
+      background-image: 
+        linear-gradient(var(--card-subtle-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--card-subtle-border) 1px, transparent 1px);
+      background-size: 28px 28px;
+      margin-bottom: 24px;
+      overflow: hidden;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    /* Corridors / Lối đi */
+    .floorplan-hallway {
+      position: absolute;
+      background: rgba(148, 163, 184, 0.08);
+      z-index: 1;
+    }
+    .floorplan-hallway-h {
+      top: 295px;
+      left: 0;
+      right: 0;
+      height: 70px;
+      border-top: 1.5px dashed var(--card-border);
+      border-bottom: 1.5px dashed var(--card-border);
+    }
+    .floorplan-hallway-v {
+      left: calc(52% - 35px);
+      top: 0;
+      bottom: 0;
+      width: 70px;
+      border-left: 1.5px dashed var(--card-border);
+      border-right: 1.5px dashed var(--card-border);
+    }
+    .hallway-carpet {
+      position: absolute;
+      top: 15px; bottom: 15px; left: 0; right: 0;
+      background: rgba(2, 132, 199, 0.04);
+      border-radius: 4px;
+    }
+    .hallway-guide-line {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 2px;
+      border-top: 2px dashed rgba(2, 132, 199, 0.25);
+    }
+    .hallway-direction-arrow {
+      position: absolute;
+      color: rgba(148, 163, 184, 0.5);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    /* Walking Personnel along corridors */
+    .walking-agent {
+      position: absolute;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      animation: walk-corridor 24s infinite linear;
+    }
+    .walking-agent-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+      border: 1.5px solid #fff;
+      position: relative;
+    }
+    .walking-agent-avatar::after {
+      content: "☕";
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      font-size: 10px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .walking-agent-tag {
+      background: var(--nav-bg);
+      border: 1px solid var(--card-border);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      margin-top: 3px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    @keyframes walk-corridor {
+      0% { left: 40px; top: 312px; }
+      35% { left: calc(52% - 15px); top: 312px; }
+      40% { left: calc(52% - 15px); top: 312px; }
+      50% { left: calc(52% - 15px); top: 580px; }
+      55% { left: calc(52% - 15px); top: 580px; }
+      65% { left: calc(52% - 15px); top: 312px; }
+      70% { left: calc(52% - 15px); top: 120px; }
+      80% { left: calc(52% - 15px); top: 312px; }
+      100% { left: 40px; top: 312px; }
+    }
+
+    /* War Room / Meeting Room 2D */
+    .floorplan-meeting-room {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: calc(52% - 65px);
+      height: 255px;
+      background: rgba(2, 132, 199, 0.03);
+      border: 2px solid rgba(2, 132, 199, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+      z-index: 2;
+    }
+    .meeting-room-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .meeting-table-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .meeting-table {
+      width: 170px;
+      height: 80px;
+      background: linear-gradient(135deg, #334155, #1e293b);
+      border: 2px solid #64748b;
+      border-radius: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      color: #cbd5e1;
+      font-size: 10px;
+      font-weight: 700;
+      position: relative;
+    }
+    .meeting-chairs-top, .meeting-chairs-bottom {
+      display: flex;
+      gap: 24px;
+    }
+    .meeting-chair {
+      width: 20px;
+      height: 18px;
+      background: #475569;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .smart-board {
+      background: #0f172a;
+      border: 1.5px solid #38bdf8;
+      border-radius: 8px;
+      padding: 6px 12px;
+      color: #38bdf8;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* QA & Server Lab 2D */
+    .floorplan-qa-lab {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: calc(48% - 50px);
+      height: 255px;
+      background: rgba(5, 150, 105, 0.03);
+      border: 2px solid rgba(5, 150, 105, 0.35);
+      border-radius: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+      z-index: 2;
+    }
+    .qa-lab-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--success);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .server-racks-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .server-rack {
+      width: 55px;
+      height: 65px;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 6px;
+      padding: 4px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .rack-unit {
+      height: 10px;
+      background: #1e293b;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 4px;
+      gap: 3px;
+    }
+    .led-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      animation: blink-led 1.2s infinite alternate ease-in-out;
+    }
+    .led-dot.blue { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; animation-delay: 0.3s; }
+    .led-dot.red { background: #ef4444; box-shadow: 0 0 6px #ef4444; animation-delay: 0.6s; }
+    @keyframes blink-led {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    /* Engineering Bays 2D Floorplan */
+    .floorplan-engineering-bay {
+      position: absolute;
+      top: 385px;
+      left: 20px;
+      width: calc(60% - 65px);
+      height: 275px;
+      background: rgba(124, 58, 237, 0.03);
+      border: 2px solid rgba(124, 58, 237, 0.3);
+      border-radius: 16px;
+      padding: 14px;
+      box-sizing: border-box;
+      z-index: 2;
+    }
+    .engineering-bay-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--purple);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .workstations-grid-2d {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 14px;
+    }
+
+    /* 2D Workstation */
+    .floorplan-workstation {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .floorplan-workstation:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.2);
+    }
+    .floorplan-workstation.status-coding {
+      border-color: rgba(2, 132, 199, 0.6);
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.2);
+    }
+    .floorplan-workstation.status-red_tested {
+      border-color: rgba(220, 38, 38, 0.7);
+      animation: desk-alert-pulse 1.8s infinite;
+    }
+    .floorplan-workstation.status-green {
+      border-color: rgba(5, 150, 105, 0.6);
+      box-shadow: 0 0 12px rgba(5, 150, 105, 0.2);
+    }
+    .floorplan-workstation.status-merged {
+      border-color: rgba(124, 58, 237, 0.4);
+    }
+
+    /* Top-Down Desk Components */
+    .workstation-desk-surface {
+      width: 100%;
+      height: 36px;
+      background: linear-gradient(180deg, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.25));
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+      margin-bottom: 6px;
+    }
+    .topdown-monitors {
+      display: flex;
+      gap: 4px;
+    }
+    .topdown-screen {
+      width: 36px;
+      height: 8px;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 2px;
+      position: relative;
+    }
+    .status-coding .topdown-screen {
+      border-color: #38bdf8;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+    }
+    .status-red_tested .topdown-screen {
+      border-color: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    }
+    .status-green .topdown-screen {
+      border-color: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+    }
+    .topdown-keyboard {
+      width: 22px;
+      height: 9px;
+      background: #334155;
+      border-radius: 2px;
+      border: 1px solid #475569;
+    }
+    .topdown-mouse {
+      width: 5px;
+      height: 8px;
+      background: #64748b;
+      border-radius: 3px;
+    }
+
+    /* Top-Down Person Avatar */
+    .floorplan-person {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin-top: -8px;
+      z-index: 3;
+    }
+    .person-head {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0284c7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      border: 1.5px solid rgba(255,255,255,0.7);
+    }
+    .person-headphones {
+      position: absolute;
+      top: -3px; left: -3px; right: -3px; bottom: -3px;
+      border: 2px solid #1e293b;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .person-shoulders {
+      width: 36px;
+      height: 12px;
+      background: #38bdf8;
+      border-radius: 6px;
+      margin-top: -4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .person-chair {
+      width: 42px;
+      height: 14px;
+      background: #334155;
+      border-radius: 8px;
+      margin-top: -3px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+    .person-typing {
+      animation: person-typing-motion 1.2s infinite alternate ease-in-out;
+    }
+    @keyframes person-typing-motion {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-2px); }
+    }
+
+    .workstation-nametag {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text);
+      margin-top: 6px;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+    .workstation-status-pill {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    /* Breakroom / Pantry Lounge 2D */
+    .floorplan-pantry {
+      position: absolute;
+      top: 385px;
+      right: 20px;
+      width: calc(40% - 50px);
+      height: 275px;
+      background: rgba(234, 88, 12, 0.03);
+      border: 2px solid rgba(234, 88, 12, 0.35);
+      border-radius: 16px;
+      padding: 14px;
+      box-sizing: border-box;
+      z-index: 2;
+    }
+    .pantry-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .pantry-bar-counter {
+      width: 100%;
+      height: 38px;
+      background: linear-gradient(135deg, #78350f, #92400e);
+      border: 1.5px solid #b45309;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      color: #fff;
+      font-size: 14px;
+    }
+    .pantry-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .coffee-machine-steam {
+      font-size: 14px;
+      animation: steam-rise 1.5s infinite ease-out;
+    }
+    @keyframes steam-rise {
+      0% { opacity: 0.2; transform: translateY(0); }
+      50% { opacity: 0.9; transform: translateY(-3px); }
+      100% { opacity: 0.1; transform: translateY(-6px); }
+    }
+    .pantry-stools-row {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+    .pantry-stool {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #64748b;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .pantry-break-agents {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .pantry-break-agent-chip {
+      background: var(--nav-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .potted-plant {
+      font-size: 16px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
   </style>
 </head>
 <body>
@@ -1169,48 +1741,180 @@ export function getTeamUiHtml() {
       </div>
     </div>
 
-    <!-- Office Floor -->
-    <div class="office-floor" id="office-floor">
-      <div class="office-section-header">
-        <h2>💻 Khu Bàn Làm Việc Team (Engineering Pods)</h2>
-        <span class="office-tagline" id="office-active-count">Đang hiển thị các bàn làm việc</span>
+    <!-- Office View Mode Toggle -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="office-view-toggle">
+        <button id="btn-view-floorplan" class="view-toggle-btn active" onclick="setOfficeView('floorplan')">🗺️ Bản Vẽ Mặt Bằng 2D</button>
+        <button id="btn-view-pods" class="view-toggle-btn" onclick="setOfficeView('pods')">💻 Bàn Làm Việc Chi Tiết</button>
       </div>
-      
-      <!-- Desks Grid -->
-      <div class="office-desks-grid" id="office-desks-grid">
-        <!-- Injected dynamically by renderOffice() -->
-      </div>
+      <span class="office-tagline" id="office-active-count">Đang hiển thị không gian văn phòng ảo</span>
+    </div>
 
-      <!-- Lower Office Zones: QA Lab & Coffee Lounge -->
-      <div class="office-lower-grid">
-        <div class="office-qa-zone" id="office-qa-zone">
-          <div class="zone-title">🧪 Phòng Kiểm Thử &amp; Browser Agent QA</div>
-          <div class="qa-spec-grid">
-            <div class="qa-metric-card">
-              <div class="qa-metric-val" id="qa-stat-cdp">Native CDP</div>
-              <div class="qa-metric-lbl">Rust Core (No Playwright)</div>
+    <!-- VIEW 1: REALISTIC 2D ARCHITECTURAL FLOORPLAN -->
+    <div id="office-floorplan-wrapper" style="display: block;">
+      <div class="floorplan-container" id="floorplan-container">
+        <!-- Corridors / Lối đi -->
+        <div class="floorplan-hallway floorplan-hallway-h">
+          <div class="hallway-carpet"></div>
+          <div class="hallway-guide-line"></div>
+          <span class="hallway-direction-arrow" style="left: 20px; top: 25px;">➜ LỐI ĐI CHÍNH</span>
+          <span class="hallway-direction-arrow" style="right: 20px; top: 25px;">➜ KHU CAFE &amp; GIẢI LAO</span>
+        </div>
+        <div class="floorplan-hallway floorplan-hallway-v">
+          <div class="hallway-carpet" style="top:0; bottom:0; left:15px; right:15px;"></div>
+          <div class="hallway-guide-line" style="top:0; bottom:0; left:50%; width:2px; border-left:2px dashed rgba(2,132,199,0.25); border-top:none;"></div>
+        </div>
+
+        <!-- Walking Agent along corridor -->
+        <div class="walking-agent" id="corridor-walking-agent">
+          <div class="walking-agent-avatar">🏃</div>
+          <div class="walking-agent-tag">Tuần tra &amp; Thư giãn</div>
+        </div>
+
+        <!-- Corner Foliage / Plants -->
+        <div style="position: absolute; top: 275px; left: calc(52% - 55px); z-index: 3;" class="potted-plant">🪴</div>
+        <div style="position: absolute; top: 370px; left: calc(52% - 55px); z-index: 3;" class="potted-plant">🪴</div>
+        <div style="position: absolute; top: 275px; right: calc(48% - 55px); z-index: 3;" class="potted-plant">🪴</div>
+        <div style="position: absolute; top: 370px; right: calc(48% - 55px); z-index: 3;" class="potted-plant">🪴</div>
+
+        <!-- 1. War Room / Conference Room -->
+        <div class="floorplan-meeting-room">
+          <div class="meeting-room-title">🎯 Phòng Chỉ Huy Chiến Lược (War Room)</div>
+          <div class="smart-board">
+            <span id="fp-smartboard-title">Sprint Strategic Board</span>
+            <span id="fp-smartboard-wave" style="color:#f59e0b;">Wave 1</span>
+          </div>
+          <div class="meeting-table-wrapper">
+            <div class="meeting-chairs-top">
+              <div class="meeting-chair"></div>
+              <div class="meeting-chair"></div>
+              <div class="meeting-chair"></div>
             </div>
-            <div class="qa-metric-card">
-              <div class="qa-metric-val" id="qa-stat-a11y">WCAG 2.2 AA</div>
-              <div class="qa-metric-lbl">Axe-core Audit Gate</div>
+            <div class="meeting-table">
+              <span>BOARDROOM</span>
+              <span id="fp-meeting-percent" style="font-size:9px; color:#38bdf8;">0% Hoàn thành</span>
             </div>
-            <div class="qa-metric-card">
-              <div class="qa-metric-val" id="qa-stat-vitals">Core Vitals</div>
-              <div class="qa-metric-lbl">LCP / CLS / INP Pass</div>
+            <div class="meeting-chairs-bottom" style="margin-top:4px;">
+              <div class="meeting-chair"></div>
+              <div class="meeting-chair"></div>
+              <div class="meeting-chair"></div>
             </div>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
-            <span>🤖 Trạng thái:</span> <strong style="color:var(--success);" id="qa-engine-status">Sẵn sàng chạy test suite</strong>
+          <!-- Lead Architect seated at the top -->
+          <div style="position: absolute; top: 58px; left: 24px; display:flex; align-items:center; gap:8px;">
+            <div class="person-head" style="background:#0284c7;">📐</div>
+            <div style="font-size:9px; font-weight:800; color:var(--text);">@architect<br><span style="color:var(--text-muted); font-size:8px;">Lead Architect</span></div>
           </div>
         </div>
 
-        <div class="office-lounge-zone" id="office-lounge-zone">
-          <div class="zone-title">☕ Khu Căng-tin &amp; Nghỉ Ngơi (Standby Lounge)</div>
-          <div class="lounge-avatars-row" id="lounge-avatars-container">
-            <!-- Idle members populated by renderOffice() -->
+        <!-- 2. QA & Server Lab -->
+        <div class="floorplan-qa-lab">
+          <div class="qa-lab-title">🧪 Phòng Kiểm Thử &amp; Server Rack (QA Lab)</div>
+          <div class="server-racks-row">
+            <div class="server-rack">
+              <div class="rack-unit"><span class="led-dot"></span></div>
+              <div class="rack-unit"><span class="led-dot blue"></span></div>
+              <div class="rack-unit"><span class="led-dot red"></span></div>
+              <div class="rack-unit"><span class="led-dot"></span></div>
+            </div>
+            <div class="server-rack">
+              <div class="rack-unit"><span class="led-dot blue"></span></div>
+              <div class="rack-unit"><span class="led-dot"></span></div>
+              <div class="rack-unit"><span class="led-dot"></span></div>
+              <div class="rack-unit"><span class="led-dot blue"></span></div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:4px; font-size:10px;">
+              <div><strong>Core:</strong> Rust Native CDP</div>
+              <div><strong>Audit:</strong> Axe-core 2.2 AA</div>
+              <div><strong>Vitals:</strong> LCP / CLS Pass</div>
+            </div>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
-            Các AI Agent dự bị đang nghỉ giải lao và sẵn sàng nhận task khi Wave phụ thuộc mở khóa.
+          <!-- QA Agent Station -->
+          <div style="display:flex; align-items:center; gap:10px; background:var(--nav-bg); padding:6px 10px; border-radius:8px; border:1px solid var(--card-border);">
+            <div class="person-head" style="background:#059669;">🧪</div>
+            <div style="font-size:10px; font-weight:800;">
+              @tester-qa <span style="font-size:9px; color:var(--success); font-weight:600;">(QA &amp; Browser Agent)</span>
+              <div id="fp-qa-status-text" style="font-size:9px; color:var(--text-muted); font-weight:normal;">Sẵn sàng chạy test suite</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Engineering Bays (Workstations Grid) -->
+        <div class="floorplan-engineering-bay">
+          <div class="engineering-bay-title">💻 Cụm Bàn Kỹ Thuật (Workstation Desks)</div>
+          <div class="workstations-grid-2d" id="floorplan-workstations-container">
+            <!-- Dynamically populated workstations -->
+          </div>
+        </div>
+
+        <!-- 4. Pantry & Coffee Lounge -->
+        <div class="floorplan-pantry">
+          <div class="pantry-title">☕ Khu Căng-tin &amp; Cafe (Breakroom Lounge)</div>
+          <div class="pantry-bar-counter">
+            <div class="pantry-item"><span class="coffee-machine-steam">☕</span> Espresso Bar</div>
+            <div class="pantry-item">🧊 Tủ lạnh</div>
+            <div class="pantry-item">💧 Bình lọc nước</div>
+          </div>
+          <div class="pantry-stools-row">
+            <div class="pantry-stool"></div>
+            <div class="pantry-stool"></div>
+            <div class="pantry-stool"></div>
+            <div class="pantry-stool"></div>
+          </div>
+          <div style="font-size:10px; font-weight:700; color:var(--text-muted); margin-top:12px;">
+            Nhân sự đang nghỉ ngơi (Standby Pool):
+          </div>
+          <div class="pantry-break-agents" id="floorplan-break-agents">
+            <!-- Dynamically populated idle members -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: DETAILED PODS LIST -->
+    <div id="office-pods-wrapper" style="display: none;">
+      <!-- Office Floor -->
+      <div class="office-floor" id="office-floor">
+        <div class="office-section-header">
+          <h2>💻 Khu Bàn Làm Việc Team (Engineering Pods)</h2>
+        </div>
+        
+        <!-- Desks Grid -->
+        <div class="office-desks-grid" id="office-desks-grid">
+          <!-- Injected dynamically by renderOffice() -->
+        </div>
+
+        <!-- Lower Office Zones: QA Lab & Coffee Lounge -->
+        <div class="office-lower-grid">
+          <div class="office-qa-zone" id="office-qa-zone">
+            <div class="zone-title">🧪 Phòng Kiểm Thử &amp; Browser Agent QA</div>
+            <div class="qa-spec-grid">
+              <div class="qa-metric-card">
+                <div class="qa-metric-val" id="qa-stat-cdp">Native CDP</div>
+                <div class="qa-metric-lbl">Rust Core (No Playwright)</div>
+              </div>
+              <div class="qa-metric-card">
+                <div class="qa-metric-val" id="qa-stat-a11y">WCAG 2.2 AA</div>
+                <div class="qa-metric-lbl">Axe-core Audit Gate</div>
+              </div>
+              <div class="qa-metric-card">
+                <div class="qa-metric-val" id="qa-stat-vitals">Core Vitals</div>
+                <div class="qa-metric-lbl">LCP / CLS / INP Pass</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
+              <span>🤖 Trạng thái:</span> <strong style="color:var(--success);" id="qa-engine-status">Sẵn sàng chạy test suite</strong>
+            </div>
+          </div>
+
+          <div class="office-lounge-zone" id="office-lounge-zone">
+            <div class="zone-title">☕ Khu Căng-tin &amp; Nghỉ Ngơi (Standby Lounge)</div>
+            <div class="lounge-avatars-row" id="lounge-avatars-container">
+              <!-- Idle members populated by renderOffice() -->
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+              Các AI Agent dự bị đang nghỉ giải lao và sẵn sàng nhận task khi Wave phụ thuộc mở khóa.
+            </div>
           </div>
         </div>
       </div>
@@ -1468,6 +2172,19 @@ export function getTeamUiHtml() {
       }
     }
 
+    let currentOfficeView = 'floorplan';
+    function setOfficeView(mode) {
+      currentOfficeView = mode;
+      const btnFp = document.getElementById('btn-view-floorplan');
+      const btnPods = document.getElementById('btn-view-pods');
+      const wrapFp = document.getElementById('office-floorplan-wrapper');
+      const wrapPods = document.getElementById('office-pods-wrapper');
+      if (btnFp) btnFp.classList.toggle('active', mode === 'floorplan');
+      if (btnPods) btnPods.classList.toggle('active', mode === 'pods');
+      if (wrapFp) wrapFp.style.display = mode === 'floorplan' ? 'block' : 'none';
+      if (wrapPods) wrapPods.style.display = mode === 'pods' ? 'block' : 'none';
+    }
+
     function renderOffice() {
       if (!currentData || !currentData.tasks) return;
       const tasks = currentData.tasks;
@@ -1492,6 +2209,14 @@ export function getTeamUiHtml() {
       const activeWave = activeTasks.length > 0 ? activeTasks[0].wave : (tasks.find(t => t.status === 'pending')?.wave || 1);
       const waveEl = document.getElementById('office-current-wave');
       if (waveEl) waveEl.textContent = 'Wave ' + (activeWave || 1);
+
+      // Update 2D Floorplan War Room Smartboard
+      const fpSbTitle = document.getElementById('fp-smartboard-title');
+      if (fpSbTitle) fpSbTitle.textContent = mission.objective ? (mission.objective.length > 36 ? mission.objective.slice(0, 36) + '...' : mission.objective) : 'Sprint Strategic Board';
+      const fpSbWave = document.getElementById('fp-smartboard-wave');
+      if (fpSbWave) fpSbWave.textContent = 'Wave ' + (activeWave || 1);
+      const fpMeetingPercent = document.getElementById('fp-meeting-percent');
+      if (fpMeetingPercent) fpMeetingPercent.textContent = percent + '% Hoàn thành';
 
       // 2. Prepare team members & desks
       const teamArchetypes = {
@@ -1524,8 +2249,10 @@ export function getTeamUiHtml() {
       }
 
       const desksGrid = document.getElementById('office-desks-grid');
-      if (!desksGrid) return;
-      desksGrid.innerHTML = '';
+      if (desksGrid) desksGrid.innerHTML = '';
+
+      const fpWsContainer = document.getElementById('floorplan-workstations-container');
+      if (fpWsContainer) fpWsContainer.innerHTML = '';
 
       let displayedDeskCount = 0;
       const idleMembers = [];
@@ -1592,74 +2319,130 @@ export function getTeamUiHtml() {
           idleMembers.push({ id: wId, archetype });
         }
 
-        const deskCard = document.createElement('div');
-        deskCard.className = 'office-desk ' + deskStateClass;
-        if (task) {
-          deskCard.onclick = () => openTaskModal(task.id);
-          deskCard.title = 'Click để xem chi tiết task ' + task.id;
-        } else {
-          deskCard.onclick = () => showToast('info', 'Thành viên @' + wId + ' (' + archetype.role + ') đang ở chế độ chờ.');
-          deskCard.title = 'Thành viên đang sẵn sàng';
+        // --- 2D Architectural Workstation ---
+        if (fpWsContainer) {
+          const fpWs = document.createElement('div');
+          fpWs.className = 'floorplan-workstation ' + deskStateClass;
+          if (task) {
+            fpWs.onclick = () => openTaskModal(task.id);
+            fpWs.title = 'Click để xem task ' + task.id;
+          } else {
+            fpWs.onclick = () => showToast('info', 'Thành viên @' + wId + ' (' + archetype.role + ') đang ở chế độ chờ.');
+            fpWs.title = '@' + wId + ' đang sẵn sàng';
+          }
+
+          fpWs.innerHTML =
+            '<div class="workstation-desk-surface">' +
+              '<div class="topdown-monitors">' +
+                '<div class="topdown-screen"></div>' +
+                '<div class="topdown-screen"></div>' +
+              '</div>' +
+              '<div class="topdown-keyboard"></div>' +
+              '<div class="topdown-mouse"></div>' +
+            '</div>' +
+            '<div class="floorplan-person ' + (task && (task.status === 'claimed' || task.status === 'red_tested') ? 'person-typing' : '') + '">' +
+              '<div class="person-head" style="background:' + archetype.bg + ';">' +
+                archetype.icon +
+                '<div class="person-headphones"></div>' +
+              '</div>' +
+              '<div class="person-shoulders" style="background:' + (wId === 'architect' ? '#38bdf8' : wId === 'frontend-dev' ? '#2dd4bf' : wId === 'backend-dev' ? '#a855f7' : wId === 'tester-qa' ? '#34d399' : '#fb923c') + ';"></div>' +
+              '<div class="person-chair"></div>' +
+            '</div>' +
+            '<div class="workstation-nametag">@' + escapeHtml(wId) + '</div>' +
+            '<div class="workstation-status-pill ' + (task ? ('badge-' + (task.status === 'merged' ? 'merged' : task.status === 'green' ? 'green' : task.status === 'red_tested' ? 'red' : 'claimed')) : 'badge-claimed') + '" style="font-size:8px;">' +
+              (task ? escapeHtml(task.id) : 'Standby') +
+            '</div>';
+
+          fpWsContainer.appendChild(fpWs);
         }
 
-        deskCard.innerHTML =
-          '<div class="desk-lamp-cone"></div>' +
-          '<div class="desk-header">' +
-            '<div class="desk-member-info">' +
-              '<div class="desk-avatar-wrapper">' +
-                '<div class="desk-avatar" style="background:' + archetype.bg + '; color:#fff;">' + archetype.icon + '</div>' +
-                '<span class="desk-avatar-indicator ' + avatarIndicatorClass + '"></span>' +
-              '</div>' +
-              '<div class="desk-member-names">' +
-                '<h3>@' + escapeHtml(wId) + '</h3>' +
-                '<div class="desk-member-role">' + escapeHtml(archetype.role) + '</div>' +
-              '</div>' +
-            '</div>' +
-            statusBadgeHtml +
-          '</div>' +
-          '<div class="desk-surface">' +
-            '<div class="desk-dual-monitors">' +
-              '<div class="desk-screen">' +
-                '<div class="desk-screen-titlebar">' +
-                  '<div class="desk-screen-dots">' +
-                    '<span class="desk-screen-dot red"></span>' +
-                    '<span class="desk-screen-dot yellow"></span>' +
-                    '<span class="desk-screen-dot green"></span>' +
-                  '</div>' +
-                  '<span class="desk-screen-tab">' + codeScreenTab + '</span>' +
-                '</div>' +
-                '<div class="desk-code-lines">' +
-                  '<div class="desk-code-line ' + activeLineClass + '"></div>' +
-                  '<div class="desk-code-line" style="width:70%;"></div>' +
-                  '<div class="desk-code-line" style="width:50%;"></div>' +
-                  '<div class="desk-code-line" style="width:80%;"></div>' +
-                '</div>' +
-              '</div>' +
-              '<div class="desk-screen desk-status-screen">' +
-                (task ?
-                  '<span class="desk-status-badge badge-' + (task.status === 'merged' ? 'merged' : task.status === 'green' ? 'green' : task.status === 'red_tested' ? 'red' : 'claimed') + '">' + escapeHtml(task.id) + '</span>' +
-                  '<div style="font-size:9px; color:#cbd5e1; font-weight:600; line-height:1.2; overflow:hidden; max-height:24px;">' + (task.worktreeBranch ? escapeHtml(task.worktreeBranch) : 'Worktree') + '</div>'
-                  :
-                  '<span style="font-size:16px;">💤</span><span style="font-size:10px; color:#94a3b8;">Chế độ nghỉ</span>'
-                ) +
-              '</div>' +
-            '</div>' +
-            '<div style="font-size:11px; font-weight:600; color:var(--text); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
-              taskTitlePreview +
-            '</div>' +
-            '<div class="desk-accessories">' +
-              '<div class="desk-coffee">☕ <span class="steam-icon">~</span> <span style="font-size:10px;">Cafe nóng</span></div>' +
-              '<span class="desk-note">' + noteText + '</span>' +
-            '</div>' +
-          '</div>';
+        // --- Detailed Pods Card ---
+        if (desksGrid) {
+          const deskCard = document.createElement('div');
+          deskCard.className = 'office-desk ' + deskStateClass;
+          if (task) {
+            deskCard.onclick = () => openTaskModal(task.id);
+            deskCard.title = 'Click để xem chi tiết task ' + task.id;
+          } else {
+            deskCard.onclick = () => showToast('info', 'Thành viên @' + wId + ' (' + archetype.role + ') đang ở chế độ chờ.');
+            deskCard.title = 'Thành viên đang sẵn sàng';
+          }
 
-        desksGrid.appendChild(deskCard);
+          deskCard.innerHTML =
+            '<div class="desk-lamp-cone"></div>' +
+            '<div class="desk-header">' +
+              '<div class="desk-member-info">' +
+                '<div class="desk-avatar-wrapper">' +
+                  '<div class="desk-avatar" style="background:' + archetype.bg + '; color:#fff;">' + archetype.icon + '</div>' +
+                  '<span class="desk-avatar-indicator ' + avatarIndicatorClass + '"></span>' +
+                '</div>' +
+                '<div class="desk-member-names">' +
+                  '<h3>@' + escapeHtml(wId) + '</h3>' +
+                  '<div class="desk-member-role">' + escapeHtml(archetype.role) + '</div>' +
+                '</div>' +
+              '</div>' +
+              statusBadgeHtml +
+            '</div>' +
+            '<div class="desk-surface">' +
+              '<div class="desk-dual-monitors">' +
+                '<div class="desk-screen">' +
+                  '<div class="desk-screen-titlebar">' +
+                    '<div class="desk-screen-dots">' +
+                      '<span class="desk-screen-dot red"></span>' +
+                      '<span class="desk-screen-dot yellow"></span>' +
+                      '<span class="desk-screen-dot green"></span>' +
+                    '</div>' +
+                    '<span class="desk-screen-tab">' + codeScreenTab + '</span>' +
+                  '</div>' +
+                  '<div class="desk-code-lines">' +
+                    '<div class="desk-code-line ' + activeLineClass + '"></div>' +
+                    '<div class="desk-code-line" style="width:70%;"></div>' +
+                    '<div class="desk-code-line" style="width:50%;"></div>' +
+                    '<div class="desk-code-line" style="width:80%;"></div>' +
+                  '</div>' +
+                '</div>' +
+                '<div class="desk-screen desk-status-screen">' +
+                  (task ?
+                    '<span class="desk-status-badge badge-' + (task.status === 'merged' ? 'merged' : task.status === 'green' ? 'green' : task.status === 'red_tested' ? 'red' : 'claimed') + '">' + escapeHtml(task.id) + '</span>' +
+                    '<div style="font-size:9px; color:#cbd5e1; font-weight:600; line-height:1.2; overflow:hidden; max-height:24px;">' + (task.worktreeBranch ? escapeHtml(task.worktreeBranch) : 'Worktree') + '</div>'
+                    :
+                    '<span style="font-size:16px;">💤</span><span style="font-size:10px; color:#94a3b8;">Chế độ nghỉ</span>'
+                  ) +
+                '</div>' +
+              '</div>' +
+              '<div style="font-size:11px; font-weight:600; color:var(--text); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
+                taskTitlePreview +
+              '</div>' +
+              '<div class="desk-accessories">' +
+                '<div class="desk-coffee">☕ <span class="steam-icon">~</span> <span style="font-size:10px;">Cafe nóng</span></div>' +
+                '<span class="desk-note">' + noteText + '</span>' +
+              '</div>' +
+            '</div>';
+
+          desksGrid.appendChild(deskCard);
+        }
       }
 
       const activeDeskCount = tasks.filter(t => t.assignedTo && t.status !== 'merged').length;
       const countEl = document.getElementById('office-active-count');
       if (countEl) {
         countEl.textContent = 'Đang có ' + activeDeskCount + ' nhân sự đang tập trung xử lý nhiệm vụ';
+      }
+
+      // Update 2D Pantry Break Agents
+      const fpBreakContainer = document.getElementById('floorplan-break-agents');
+      if (fpBreakContainer) {
+        fpBreakContainer.innerHTML = '';
+        if (idleMembers.length === 0) {
+          fpBreakContainer.innerHTML = '<span style="font-size:10px; color:var(--text-muted); font-style:italic;">Toàn bộ team đang làm việc tại bàn.</span>';
+        } else {
+          for (const m of idleMembers) {
+            const chip = document.createElement('div');
+            chip.className = 'pantry-break-agent-chip';
+            chip.innerHTML = '<span style="font-size:12px;">' + m.archetype.icon + '</span> <span>@' + escapeHtml(m.id) + '</span>';
+            fpBreakContainer.appendChild(chip);
+          }
+        }
       }
 
       const loungeContainer = document.getElementById('lounge-avatars-container');
@@ -1680,17 +2463,20 @@ export function getTeamUiHtml() {
       const redTasks = tasks.filter(t => t.status === 'red_tested').length;
       const greenTasks = tasks.filter(t => t.status === 'green').length;
       const qaStatusEl = document.getElementById('qa-engine-status');
-      if (qaStatusEl) {
-        if (redTasks > 0) {
-          qaStatusEl.textContent = 'Đang theo dõi ' + redTasks + ' bài test RED';
-          qaStatusEl.style.color = 'var(--danger)';
-        } else if (greenTasks > 0) {
-          qaStatusEl.textContent = greenTasks + ' test suite đã GREEN - Sẵn sàng merge';
-          qaStatusEl.style.color = 'var(--success)';
-        } else {
-          qaStatusEl.textContent = 'Hệ thống kiểm thử native CDP sẵn sàng';
-          qaStatusEl.style.color = 'var(--success)';
-        }
+      const fpQaStatusEl = document.getElementById('fp-qa-status-text');
+
+      if (redTasks > 0) {
+        const text = 'Đang theo dõi ' + redTasks + ' bài test RED';
+        if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--danger)'; }
+        if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--danger)'; }
+      } else if (greenTasks > 0) {
+        const text = greenTasks + ' test suite đã GREEN - Sẵn sàng merge';
+        if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--success)'; }
+        if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--success)'; }
+      } else {
+        const text = 'Hệ thống kiểm thử native CDP sẵn sàng';
+        if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--success)'; }
+        if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--success)'; }
       }
     }
 

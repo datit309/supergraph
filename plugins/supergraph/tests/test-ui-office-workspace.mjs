@@ -19,6 +19,16 @@ test('Supergraph Team UI Virtual Office Workspace Contract', async (t) => {
     assert.match(html, /\.desk-status/, 'Should define .desk-status styles')
   })
 
+  await t.test('defines 2D architectural floorplan layout and corridor styles', () => {
+    assert.match(html, /\.floorplan-container/, 'Should define .floorplan-container for 2D architectural map')
+    assert.match(html, /\.floorplan-hallway/, 'Should define .floorplan-hallway for office corridors')
+    assert.match(html, /\.floorplan-workstation/, 'Should define .floorplan-workstation for 2D desks')
+    assert.match(html, /\.floorplan-person/, 'Should define .floorplan-person for top-down avatars')
+    assert.match(html, /\.floorplan-meeting-room/, 'Should define .floorplan-meeting-room for War Room')
+    assert.match(html, /\.floorplan-pantry/, 'Should define .floorplan-pantry for coffee & lounge area')
+    assert.match(html, /@keyframes\s+walk-corridor|\.walking-agent/, 'Should define walking animation for personnel on corridors')
+  })
+
   await t.test('includes renderOffice logic in client script', () => {
     assert.match(html, /function\s+renderOffice\s*\(/, 'Should define renderOffice function')
     assert.match(html, /renderOffice\(\)/, 'Should call renderOffice on update or tab switch')
