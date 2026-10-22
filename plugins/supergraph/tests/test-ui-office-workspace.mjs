@@ -85,4 +85,19 @@ test('Supergraph Team UI Virtual Office Workspace Contract', async (t) => {
   await t.test('supports interactive workbench modal opening on desk click', () => {
     assert.match(html, /openTaskModal\(/, 'Desk cards should link to openTaskModal')
   })
+
+  await t.test('ensures developer avatar figures at workstations are visibly rendered and not hidden by display:none', () => {
+    assert.doesNotMatch(html, /\.gather-character\s*\{\s*display:\s*none;?\s*\}/, 'Character avatars must not be globally hidden with display:none')
+    assert.match(html, /workstation-human-figure|\.human-avatar-svg/, 'Should define visible human figure at workstation')
+  })
+
+  await t.test('supports idle relaxing posture (headphones, coffee sip, chill posture) when worker has no task', () => {
+    assert.match(html, /headphone-pulse|headphone-lofi|chill-listening|\.is-relaxing/, 'Should define relaxing animations for idle workers')
+    assert.match(html, /chillThought|lofi|nghỉ ngơi|nghe nhạc/i, 'Should provide relaxing thoughts for idle personnel')
+  })
+
+  await t.test('renders idle team members relaxing or roaming in the Pantry and Corridors', () => {
+    assert.match(html, /gather-roaming-agent|\.roaming-agent-walker/, 'Should define corridor roaming agent walkers')
+    assert.match(html, /pantry-lounge-person|\.pantry-seated-agent/, 'Should render seated/relaxing avatars in the Pantry bar')
+  })
 })

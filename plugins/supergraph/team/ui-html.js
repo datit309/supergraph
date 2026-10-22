@@ -2180,8 +2180,25 @@ export function getTeamUiHtml() {
       line-height: 1;
       color: #94a3b8;
     }
-    .gather-character {
-      display: none;
+    .gather-character, .workstation-human-figure {
+      display: inline-block;
+      transition: transform 0.25s ease;
+    }
+    .is-relaxing .human-head-nod {
+      animation: chill-sway 3.5s infinite ease-in-out;
+      transform-origin: 50px 48px;
+    }
+    @keyframes chill-sway {
+      0%, 100% { transform: rotate(0deg); }
+      30% { transform: rotate(-3deg) translateY(-0.5px); }
+      70% { transform: rotate(3deg) translateY(0.5px); }
+    }
+    .headphone-pulse {
+      animation: pulse-lofi-glow 2.5s infinite alternate ease-in-out;
+    }
+    @keyframes pulse-lofi-glow {
+      0% { stroke: #38bdf8; filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.4)); }
+      100% { stroke: #c084fc; filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.8)); }
     }
     .gather-worker-meta {
       display: flex;
@@ -2221,7 +2238,7 @@ export function getTeamUiHtml() {
       color: #fef3c7;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    .gather-walking-agent {
+    .gather-walking-agent, .gather-roaming-agent, .roaming-agent-walker {
       position: absolute;
       z-index: 10;
       display: flex;
@@ -2234,14 +2251,61 @@ export function getTeamUiHtml() {
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
-      animation: gather-patrol 20s ease-in-out infinite;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.2s ease;
     }
-    @keyframes gather-patrol {
-      0%   { top: 275px; left: 60px; }
-      25%  { top: 275px; left: 460px; }
-      50%  { top: 80px;  left: 460px; }
-      75%  { top: 275px; left: 460px; }
-      100% { top: 275px; left: 60px; }
+    .gather-roaming-agent:hover {
+      transform: scale(1.08);
+      border-color: #38bdf8;
+    }
+    .roaming-route-1 {
+      animation: gather-patrol-route1 22s ease-in-out infinite;
+    }
+    .roaming-route-2 {
+      animation: gather-patrol-route2 26s ease-in-out infinite 5s;
+    }
+    @keyframes gather-patrol-route1 {
+      0%   { top: 275px; left: 80px; transform: scaleX(1); }
+      35%  { top: 275px; left: 450px; transform: scaleX(1); }
+      48%  { top: 80px;  left: 450px; transform: scaleX(1); }
+      52%  { top: 80px;  left: 450px; transform: scaleX(-1); }
+      80%  { top: 275px; left: 450px; transform: scaleX(-1); }
+      100% { top: 275px; left: 80px; transform: scaleX(-1); }
+    }
+    @keyframes gather-patrol-route2 {
+      0%   { top: 275px; left: 850px; transform: scaleX(-1); }
+      30%  { top: 275px; left: 520px; transform: scaleX(-1); }
+      48%  { top: 80px;  left: 520px; transform: scaleX(-1); }
+      52%  { top: 80px;  left: 520px; transform: scaleX(1); }
+      80%  { top: 275px; left: 520px; transform: scaleX(1); }
+      100% { top: 275px; left: 850px; transform: scaleX(1); }
+    }
+
+    /* Pantry Seated Lounge Agents */
+    .pantry-seated-agent, .pantry-lounge-person {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: var(--card-bg);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      animation: gentle-bob 3s infinite ease-in-out;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .pantry-seated-agent:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    @keyframes gentle-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
     }
 
     /* ==========================================================================
@@ -2724,10 +2788,12 @@ export function getTeamUiHtml() {
             <div class="gather-carpet-runner-v"></div>
           </div>
 
-          <!-- Animated Walking Personnel -->
-          <div class="gather-walking-agent">
-            <span>🏃</span>
-            <span>Sprint Runner</span>
+          <!-- Animated Roaming & Walking Personnel along Corridors -->
+          <div id="gather-roaming-agents-container">
+            <div class="gather-roaming-agent roaming-agent-walker roaming-route-1" title="Nhân sự tuần tra hành lang">
+              <span>🚶</span>
+              <span>@alex (Đi dạo hành lang)</span>
+            </div>
           </div>
 
           <!-- Room 1: War Room (Top-Left) -->
@@ -3551,22 +3617,49 @@ export function getTeamUiHtml() {
             '<path d="M 47 44 Q 50 46 53 44" stroke="#92400e" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
             faceAccessories +
             headAccessories +
+            (!isWorking ? (
+              '<!-- Over-ear Lofi Headphones -->' +
+              '<g class="human-headphones headphone-lofi headphone-pulse">' +
+                '<path d="M 28 36 C 28 14, 72 14, 72 36" stroke="#38bdf8" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+                '<rect x="25" y="30" width="6" height="13" rx="3" fill="#0284c7" stroke="#38bdf8" stroke-width="1"/>' +
+                '<rect x="69" y="30" width="6" height="13" rx="3" fill="#0284c7" stroke="#38bdf8" stroke-width="1"/>' +
+                '<circle cx="28" cy="36" r="1.5" fill="#38bdf8" class="headphone-pulse"/>' +
+                '<circle cx="72" cy="36" r="1.5" fill="#38bdf8" class="headphone-pulse"/>' +
+              '</g>'
+            ) : '') +
             hairSvg +
           '</g>' +
 
-          '<!-- Real Arms & Hands on Keyboard -->' +
-          '<g class="human-arms">' +
-            '<path d="M 28 68 C 28 76, 36 80, 42 81" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
-            '<path d="M 72 68 C 72 76, 64 80, 58 81" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
-            '<g class="human-hand-left ' + typingClass + '">' +
-              '<circle cx="43" cy="82" r="3.8" fill="' + skinColor + '"/>' +
-              '<rect x="42" y="81" width="3" height="4" rx="1" fill="' + skinColor + '"/>' +
-            '</g>' +
-            '<g class="human-hand-right ' + typingClass + '">' +
-              '<circle cx="57" cy="82" r="3.8" fill="' + skinColor + '"/>' +
-              '<rect x="55" y="81" width="3" height="4" rx="1" fill="' + skinColor + '"/>' +
-            '</g>' +
-          '</g>' +
+          (isWorking ? (
+            '<!-- Real Arms & Hands on Keyboard (Active Work) -->' +
+            '<g class="human-arms">' +
+              '<path d="M 28 68 C 28 76, 36 80, 42 81" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+              '<path d="M 72 68 C 72 76, 64 80, 58 81" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+              '<g class="human-hand-left ' + typingClass + '">' +
+                '<circle cx="43" cy="82" r="3.8" fill="' + skinColor + '"/>' +
+                '<rect x="42" y="81" width="3" height="4" rx="1" fill="' + skinColor + '"/>' +
+              '</g>' +
+              '<g class="human-hand-right ' + typingClass + '">' +
+                '<circle cx="57" cy="82" r="3.8" fill="' + skinColor + '"/>' +
+                '<rect x="55" y="81" width="3" height="4" rx="1" fill="' + skinColor + '"/>' +
+              '</g>' +
+            '</g>'
+          ) : (
+            '<!-- Relaxed Chill Arms & Steaming Mug (Idle / Standby) -->' +
+            '<g class="human-arms chill-listening">' +
+              '<!-- Left arm resting on chair armrest -->' +
+              '<path d="M 28 68 C 26 78, 30 84, 38 83" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+              '<circle cx="38" cy="83" r="3.5" fill="' + skinColor + '"/>' +
+              '<!-- Right arm holding steaming coffee mug -->' +
+              '<path d="M 72 68 C 72 78, 62 76, 56 70" stroke="' + clothesColor + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+              '<g class="relaxing-cup" transform="translate(50, 60)">' +
+                '<rect x="0" y="0" width="9" height="11" rx="2" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.8"/>' +
+                '<path d="M 9 2 C 12 2, 12 8, 9 8" stroke="#94a3b8" stroke-width="1.2" fill="none"/>' +
+                '<path d="M 3 -3 Q 5 -7 7 -4" stroke="#94a3b8" stroke-width="0.8" fill="none" class="steam-wisp"/>' +
+              '</g>' +
+              '<circle cx="55" cy="67" r="3.5" fill="' + skinColor + '"/>' +
+            '</g>'
+          )) +
         '</svg>'
       );
     }
@@ -3828,7 +3921,7 @@ export function getTeamUiHtml() {
           '<path d="M 50 135 C 70 148, 210 148, 230 135" fill="none" stroke="#334155" stroke-width="3" stroke-dasharray="4,4"/>' +
 
           '<!-- 3. Herman Miller Style Ergonomic Mesh Chair (Backrest & Casters) - Behind Table -->' +
-          '<g class="gather-chair ergonomic-chair" transform="translate(90, 95)">' +
+          '<g class="gather-chair ergonomic-chair" transform="translate(90, 75)">' +
             '<circle cx="50" cy="86" r="4" fill="#0f172a"/>' +
             '<line x1="50" y1="86" x2="30" y2="92" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
             '<line x1="50" y1="86" x2="70" y2="92" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
@@ -3850,8 +3943,8 @@ export function getTeamUiHtml() {
             '<path d="M 32 36 C 42 40, 58 40, 68 36" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8"/>' +
           '</g>' +
 
-          '<!-- 4. Seated Human Developer (Behind Desk Surface) -->' +
-          '<g class="gather-character ' + (isWorking ? 'typing' : '') + '" transform="translate(90, 36)">' +
+          '<!-- 4. Seated Human Developer (Elevated in Center - 100% Visible) -->' +
+          '<g class="workstation-human-figure gather-character ' + (isWorking ? 'typing' : 'is-relaxing') + '" transform="translate(90, 14)">' +
             renderHumanDeveloperSvg(wId, isWorking, taskStatus) +
           '</g>' +
 
@@ -3863,59 +3956,66 @@ export function getTeamUiHtml() {
           '<!-- 6. Monitor Arm & Desk Clamp Mount -->' +
           '<rect x="135" y="74" width="10" height="12" rx="2" fill="#0f172a"/>' +
           '<path d="M 140 76 L 140 54" stroke="#334155" stroke-width="5" stroke-linecap="round"/>' +
-          '<path d="M 140 54 L 80 44" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>' +
-          '<path d="M 140 54 L 200 44" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>' +
+          '<path d="M 140 54 L 60 48" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>' +
+          '<path d="M 140 54 L 220 48" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>' +
 
-          '<!-- 7. Dual Frameless IPS Screens -->' +
+          '<!-- 7. Dual Frameless IPS Screens (Flanking Center Window) -->' +
           '<g class="gather-monitors">' +
             '<!-- Screen 1: VS Code IDE (Left) -->' +
-            '<g class="gather-monitor" transform="translate(18, 12)">' +
-              '<rect x="0" y="0" width="116" height="68" rx="4" fill="#090d16" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
-              '<rect x="2" y="2" width="112" height="10" rx="2" fill="#111827"/>' +
-              '<rect x="6" y="3" width="40" height="8" rx="1" fill="#1e293b"/>' +
-              '<text x="9" y="9" font-size="5" fill="#38bdf8" font-family="monospace" font-weight="bold">' + activeFile + '</text>' +
-              '<line x1="6" y1="11" x2="46" y2="11" stroke="#38bdf8" stroke-width="1"/>' +
-              '<rect x="2" y="12" width="12" height="46" fill="#0f172a"/>' +
-              '<text x="5" y="19" font-size="4.5" fill="#475569" font-family="monospace">1</text>' +
-              '<text x="5" y="27" font-size="4.5" fill="#475569" font-family="monospace">2</text>' +
-              '<text x="5" y="35" font-size="4.5" fill="#475569" font-family="monospace">3</text>' +
-              '<text x="5" y="43" font-size="4.5" fill="#475569" font-family="monospace">4</text>' +
-              '<text x="5" y="51" font-size="4.5" fill="#475569" font-family="monospace">5</text>' +
-              '<g transform="translate(16, 14)">' +
-                '<rect x="0" y="3" width="14" height="2.5" rx="1" fill="#c084fc"/>' +
-                '<rect x="16" y="3" width="28" height="2.5" rx="1" fill="#38bdf8"/>' +
-                '<rect x="46" y="3" width="22" height="2.5" rx="1" fill="#fbbf24"/>' +
-                '<rect x="0" y="11" width="18" height="2.5" rx="1" fill="#c084fc"/>' +
-                '<rect x="20" y="11" width="34" height="2.5" rx="1" fill="#2dd4bf"/>' +
-                '<rect x="0" y="19" width="48" height="2.5" rx="1" fill="#94a3b8"/>' +
-                '<rect x="8" y="27" width="26" height="2.5" rx="1" fill="#34d399"/>' +
-                '<rect x="36" y="27" width="24" height="2.5" rx="1" fill="#f43f5e"/>' +
-                '<rect x="0" y="35" width="20" height="2.5" rx="1" fill="#c084fc"/>' +
+            '<g class="gather-monitor" transform="translate(10, 16)">' +
+              '<rect x="0" y="0" width="88" height="62" rx="4" fill="#090d16" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
+              '<rect x="2" y="2" width="84" height="10" rx="2" fill="#111827"/>' +
+              '<rect x="5" y="3" width="34" height="8" rx="1" fill="#1e293b"/>' +
+              '<text x="7" y="9" font-size="4.5" fill="#38bdf8" font-family="monospace" font-weight="bold">' + activeFile.slice(0, 14) + '</text>' +
+              '<line x1="5" y1="11" x2="39" y2="11" stroke="#38bdf8" stroke-width="1"/>' +
+              '<rect x="2" y="12" width="10" height="42" fill="#0f172a"/>' +
+              '<text x="4" y="18" font-size="4" fill="#475569" font-family="monospace">1</text>' +
+              '<text x="4" y="25" font-size="4" fill="#475569" font-family="monospace">2</text>' +
+              '<text x="4" y="32" font-size="4" fill="#475569" font-family="monospace">3</text>' +
+              '<text x="4" y="39" font-size="4" fill="#475569" font-family="monospace">4</text>' +
+              '<text x="4" y="46" font-size="4" fill="#475569" font-family="monospace">5</text>' +
+              '<g transform="translate(14, 14)">' +
+                '<rect x="0" y="3" width="12" height="2" rx="1" fill="#c084fc"/>' +
+                '<rect x="14" y="3" width="22" height="2" rx="1" fill="#38bdf8"/>' +
+                '<rect x="38" y="3" width="16" height="2" rx="1" fill="#fbbf24"/>' +
+                '<rect x="0" y="10" width="14" height="2" rx="1" fill="#c084fc"/>' +
+                '<rect x="16" y="10" width="26" height="2" rx="1" fill="#2dd4bf"/>' +
+                '<rect x="0" y="17" width="36" height="2" rx="1" fill="#94a3b8"/>' +
+                '<rect x="6" y="24" width="20" height="2" rx="1" fill="#34d399"/>' +
+                '<rect x="28" y="24" width="18" height="2" rx="1" fill="#f43f5e"/>' +
               '</g>' +
-              '<rect x="104" y="13" width="8" height="44" fill="#0b0f19" opacity="0.8"/>' +
-              '<rect x="105" y="15" width="6" height="1.5" fill="#38bdf8" opacity="0.6"/>' +
-              '<rect x="105" y="18" width="5" height="1.5" fill="#c084fc" opacity="0.6"/>' +
-              '<rect x="105" y="21" width="6" height="1.5" fill="#2dd4bf" opacity="0.6"/>' +
-              '<rect x="2" y="58" width="112" height="7" rx="1" fill="#0284c7"/>' +
-              '<text x="5" y="63" font-size="4.5" fill="#ffffff" font-family="sans-serif" font-weight="bold">⎇ master  ✓ 0  ⚠ 0</text>' +
-              '<text x="86" y="63" font-size="4.5" fill="#ffffff" font-family="sans-serif">UTF-8</text>' +
+              '<rect x="78" y="13" width="6" height="40" fill="#0b0f19" opacity="0.8"/>' +
+              '<rect x="79" y="15" width="4" height="1.5" fill="#38bdf8" opacity="0.6"/>' +
+              '<rect x="79" y="18" width="3.5" height="1.5" fill="#c084fc" opacity="0.6"/>' +
+              '<rect x="2" y="54" width="84" height="6" rx="1" fill="#0284c7"/>' +
+              '<text x="4" y="58.5" font-size="4" fill="#ffffff" font-family="sans-serif" font-weight="bold">⎇ master  ✓ 0</text>' +
+              '<text x="64" y="58.5" font-size="4" fill="#ffffff" font-family="sans-serif">UTF-8</text>' +
             '</g>' +
 
             '<!-- Screen 2: Interactive Terminal / Test Runner (Right) -->' +
-            '<g class="gather-monitor" transform="translate(146, 12)">' +
-              '<rect x="0" y="0" width="116" height="68" rx="4" fill="#070a13" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
-              '<rect x="2" y="2" width="112" height="9" rx="2" fill="#111827"/>' +
-              '<circle cx="8" cy="6.5" r="2" fill="#ef4444"/>' +
-              '<circle cx="14" cy="6.5" r="2" fill="#f59e0b"/>' +
-              '<circle cx="20" cy="6.5" r="2" fill="#10b981"/>' +
-              '<text x="40" y="7" font-size="4.5" fill="#94a3b8" font-family="monospace">zsh - node --test</text>' +
-              '<text x="6" y="18" font-size="5" fill="#38bdf8" font-family="monospace" font-weight="bold">~/supergraph (master) $</text>' +
-              '<text x="6" y="26" font-size="5" fill="#94a3b8" font-family="monospace">node --test runner.mjs</text>' +
-              '<rect x="6" y="31" width="104" height="16" rx="2" fill="rgba(0,0,0,0.4)" stroke="' + termStatusColor + '" stroke-width="0.8"/>' +
-              '<circle cx="13" cy="39" r="3" fill="' + termStatusColor + '"/>' +
-              '<text x="20" y="41" font-size="5.5" fill="' + termStatusColor + '" font-family="monospace" font-weight="bold">' + termStatusText + '</text>' +
-              '<text x="6" y="55" font-size="5" fill="#64748b" font-family="monospace">task: ' + activeTaskId.slice(0, 16) + '</text>' +
-              '<rect x="6" y="60" width="4" height="2" fill="' + (isWorking ? '#10b981' : '#64748b') + '">' +
+            '<g class="gather-monitor" transform="translate(182, 16)">' +
+              '<rect x="0" y="0" width="88" height="62" rx="4" fill="#070a13" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
+              '<rect x="2" y="2" width="84" height="9" rx="2" fill="#111827"/>' +
+              '<circle cx="6" cy="6.5" r="1.8" fill="#ef4444"/>' +
+              '<circle cx="11" cy="6.5" r="1.8" fill="#f59e0b"/>' +
+              '<circle cx="16" cy="6.5" r="1.8" fill="#10b981"/>' +
+              '<text x="24" y="7" font-size="4" fill="#94a3b8" font-family="monospace">zsh - test</text>' +
+              (isWorking ? (
+                '<text x="5" y="17" font-size="4.5" fill="#38bdf8" font-family="monospace" font-weight="bold">~/supergraph $</text>' +
+                '<text x="5" y="24" font-size="4" fill="#94a3b8" font-family="monospace">node --test runner.mjs</text>' +
+                '<rect x="5" y="28" width="78" height="14" rx="2" fill="rgba(0,0,0,0.4)" stroke="' + termStatusColor + '" stroke-width="0.8"/>' +
+                '<circle cx="11" cy="35" r="2.5" fill="' + termStatusColor + '"/>' +
+                '<text x="17" y="37" font-size="4.8" fill="' + termStatusColor + '" font-family="monospace" font-weight="bold">' + termStatusText + '</text>' +
+                '<text x="5" y="48" font-size="4" fill="#64748b" font-family="monospace">task: ' + activeTaskId.slice(0, 12) + '</text>'
+              ) : (
+                '<!-- Retro Screensaver / Lofi Vibes -->' +
+                '<text x="5" y="17" font-size="4.5" fill="#10b981" font-family="monospace" font-weight="bold">> STANDBY // IDLE</text>' +
+                '<text x="5" y="24" font-size="4" fill="#34d399" font-family="monospace">01010110 01101001</text>' +
+                '<text x="5" y="32" font-size="4" fill="#059669" font-family="monospace">🎧 Lo-Fi Beats On</text>' +
+                '<text x="5" y="40" font-size="4" fill="#38bdf8" font-family="monospace">Spotify: Deep Work</text>' +
+                '<text x="5" y="49" font-size="4" fill="#c084fc" font-family="monospace">Ready for next sprint</text>'
+              )) +
+              '<rect x="5" y="54" width="4" height="2" fill="' + (isWorking ? '#10b981' : '#38bdf8') + '">' +
                 '<animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>' +
               '</rect>' +
             '</g>' +
@@ -4253,12 +4353,22 @@ export function getTeamUiHtml() {
             gatherWs.title = memberName + ' đang sẵn sàng';
           }
 
-          let thoughtBubble = '☕ Sẵn sàng';
+          let thoughtBubble = '☕ Nghỉ ngơi & Lofi';
           if (task) {
             if (task.status === 'claimed') thoughtBubble = '💻 Đang code...';
             else if (task.status === 'red_tested') thoughtBubble = '🚨 TDD RED';
             else if (task.status === 'green') thoughtBubble = '🟢 TDD GREEN';
             else if (task.status === 'merged') thoughtBubble = '🔀 Đã merge';
+          } else {
+            const chillThoughts = [
+              '☕ Nhâm nhi latte & lofi chill',
+              '🎧 Đang nghe nhạc & đọc RFC',
+              '📱 Lướt tin tech radar & Dribbble',
+              '🧘 Thư giãn nạp năng lượng sprint',
+              '🍵 Trà nóng & chuẩn bị kiến trúc'
+            ];
+            const tIdx = Math.abs((wId.charCodeAt(0) * 7 + (wId.charCodeAt(1) || 0)) % chillThoughts.length);
+            thoughtBubble = chillThoughts[tIdx];
           }
 
           gatherWs.innerHTML =
@@ -4419,11 +4529,35 @@ export function getTeamUiHtml() {
           gatherBreakContainer.innerHTML = '<span style="font-size:10px; color:var(--text-muted); font-style:italic;">Toàn bộ team đang làm việc tại bàn.</span>';
         } else {
           for (const m of idleMembers) {
-            const chip = document.createElement('div');
-            chip.className = 'pantry-break-agent-chip';
-            chip.innerHTML = '<span style="font-size:12px;">' + m.archetype.icon + '</span> <span>@' + escapeHtml(m.id) + '</span>';
-            gatherBreakContainer.appendChild(chip);
+            const loungePerson = document.createElement('div');
+            loungePerson.className = 'pantry-seated-agent pantry-lounge-person';
+            loungePerson.title = '@' + m.id + ' (' + m.archetype.name + ') đang nghỉ ngơi uống nước tại quầy bar Pantry';
+            loungePerson.innerHTML =
+              '<span style="font-size:13px;">' + m.archetype.icon + '</span>' +
+              '<span>@' + escapeHtml(m.id) + '</span>' +
+              '<span style="font-size:9.5px; color:var(--primary); font-weight:normal;">☕ latte</span>';
+            gatherBreakContainer.appendChild(loungePerson);
           }
+        }
+      }
+
+      // Update Roaming Agents in Corridors
+      const roamingContainer = document.getElementById('gather-roaming-agents-container');
+      if (roamingContainer) {
+        roamingContainer.innerHTML = '';
+        if (idleMembers.length > 0) {
+          // Select up to 2 idle members to roam the corridors
+          const roamers = idleMembers.slice(0, 2);
+          roamers.forEach((m, idx) => {
+            const walker = document.createElement('div');
+            walker.className = 'gather-roaming-agent roaming-agent-walker ' + (idx === 0 ? 'roaming-route-1' : 'roaming-route-2');
+            walker.title = '@' + m.id + ' đang dạo quanh hành lang văn phòng';
+            walker.innerHTML =
+              '<span style="font-size:13px;">' + (idx === 0 ? '🚶' : '☕') + '</span>' +
+              '<span>@' + escapeHtml(m.id) + '</span>' +
+              '<span style="font-size:9px; color:var(--primary); font-weight:normal;">' + (idx === 0 ? 'dạo hành lang' : 'pha cafe') + '</span>';
+            roamingContainer.appendChild(walker);
+          });
         }
       }
 
