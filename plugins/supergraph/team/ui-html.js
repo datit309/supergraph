@@ -1652,6 +1652,375 @@ export function getTeamUiHtml() {
       font-size: 16px;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
     }
+
+    /* ==========================================================================
+       2.5D ISOMETRIC VIRTUAL OFFICE ARCHITECTURAL STYLES
+       ========================================================================== */
+    .iso-scene {
+      position: relative;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 20px;
+      min-height: 720px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+      overflow: hidden;
+      perspective: 1400px;
+      perspective-origin: 50% 30%;
+      transform-style: preserve-3d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 10px;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    .iso-controls {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: var(--nav-bg);
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .iso-ctrl-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .iso-ctrl-btn:hover {
+      background: var(--card-hover);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .iso-stage {
+      position: relative;
+      width: 860px;
+      height: 580px;
+      background: var(--card-subtle-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 14px;
+      transform: rotateX(56deg) rotateZ(-38deg) scale(0.92);
+      transform-style: preserve-3d;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 
+        -25px 25px 50px rgba(0, 0, 0, 0.25),
+        -5px 5px 15px rgba(0, 0, 0, 0.15),
+        0 0 0 1px var(--card-border);
+      background-image:
+        linear-gradient(var(--card-subtle-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--card-subtle-border) 1px, transparent 1px);
+      background-size: 30px 30px;
+      margin: 40px auto;
+    }
+
+    /* 3D Elevated Room Zones */
+    .iso-room {
+      position: absolute;
+      border-radius: 14px;
+      transform-style: preserve-3d;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    .iso-room-war {
+      top: 15px;
+      left: 15px;
+      width: 440px;
+      height: 240px;
+      background: rgba(2, 132, 199, 0.04);
+      border: 2px solid rgba(2, 132, 199, 0.4);
+      transform: translateZ(8px);
+      box-shadow: -4px 6px 14px rgba(0,0,0,0.12);
+      padding: 12px;
+    }
+
+    .iso-room-qa {
+      top: 15px;
+      right: 15px;
+      width: 360px;
+      height: 240px;
+      background: rgba(5, 150, 105, 0.04);
+      border: 2px solid rgba(5, 150, 105, 0.4);
+      transform: translateZ(8px);
+      box-shadow: -4px 6px 14px rgba(0,0,0,0.12);
+      padding: 12px;
+    }
+
+    .iso-room-eng {
+      bottom: 15px;
+      left: 15px;
+      width: 520px;
+      height: 270px;
+      background: rgba(124, 58, 237, 0.04);
+      border: 2px solid rgba(124, 58, 237, 0.35);
+      transform: translateZ(8px);
+      box-shadow: -4px 6px 14px rgba(0,0,0,0.12);
+      padding: 12px;
+    }
+
+    .iso-room-pantry {
+      bottom: 15px;
+      right: 15px;
+      width: 280px;
+      height: 270px;
+      background: rgba(234, 88, 12, 0.04);
+      border: 2px solid rgba(234, 88, 12, 0.4);
+      transform: translateZ(8px);
+      box-shadow: -4px 6px 14px rgba(0,0,0,0.12);
+      padding: 12px;
+    }
+
+    /* 3D Corridors */
+    .iso-hallway-h {
+      position: absolute;
+      top: 268px;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: rgba(148, 163, 184, 0.08);
+      border-top: 1px dashed var(--card-border);
+      border-bottom: 1px dashed var(--card-border);
+      transform: translateZ(2px);
+    }
+    .iso-hallway-v {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 470px;
+      width: 48px;
+      background: rgba(148, 163, 184, 0.08);
+      border-left: 1px dashed var(--card-border);
+      border-right: 1px dashed var(--card-border);
+      transform: translateZ(2px);
+    }
+
+    /* 3D Meeting Table in War Room */
+    .iso-meeting-table {
+      position: absolute;
+      top: 75px;
+      left: 110px;
+      width: 220px;
+      height: 100px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid #475569;
+      border-radius: 50px;
+      transform: translateZ(24px);
+      transform-style: preserve-3d;
+      box-shadow: -8px 12px 20px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .iso-smartboard-3d {
+      position: absolute;
+      top: 8px;
+      left: 100px;
+      width: 240px;
+      height: 28px;
+      background: #0f172a;
+      border: 1.5px solid #38bdf8;
+      border-radius: 6px;
+      transform: translateZ(32px) rotateX(-20deg);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+
+    /* 3D Server Racks in QA Lab */
+    .iso-server-cluster {
+      display: flex;
+      gap: 16px;
+      transform: translateZ(10px);
+      transform-style: preserve-3d;
+    }
+    .iso-server-rack-3d {
+      width: 58px;
+      height: 90px;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 6px;
+      transform: translateZ(28px) rotateX(-25deg);
+      box-shadow: -6px 10px 18px rgba(0,0,0,0.35);
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* 3D Workstation Desks */
+    .iso-workstations-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      transform-style: preserve-3d;
+    }
+    .iso-workstation {
+      position: relative;
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 8px;
+      transform: translateZ(22px);
+      transform-style: preserve-3d;
+      box-shadow: -6px 8px 16px rgba(0,0,0,0.18);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .iso-workstation:hover {
+      transform: translateZ(35px) scale(1.05);
+      box-shadow: -10px 16px 28px rgba(2, 132, 199, 0.35);
+      border-color: var(--primary);
+    }
+    .iso-desk-3d {
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.35));
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      transform-style: preserve-3d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* 3D Monitors standing upright */
+    .iso-monitors-row {
+      display: flex;
+      gap: 6px;
+      transform: translateZ(16px) rotateX(-50deg);
+      transform-origin: bottom center;
+      transform-style: preserve-3d;
+    }
+    .iso-screen-3d {
+      width: 44px;
+      height: 22px;
+      background: #090d16;
+      border: 1.5px solid #334155;
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: #38bdf8;
+      font-family: monospace;
+      position: relative;
+    }
+    .status-coding .iso-screen-3d {
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+    }
+    .status-red_tested .iso-screen-3d {
+      border-color: #ef4444;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+    }
+    .status-green .iso-screen-3d {
+      border-color: #22c55e;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+    }
+    .status-merged .iso-screen-3d {
+      border-color: #a855f7;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+    }
+
+    /* 3D Seated Personnel Avatar */
+    .iso-person-3d {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateZ(26px);
+      transform-style: preserve-3d;
+      margin-top: -6px;
+    }
+    .iso-person-head {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #0284c7;
+      border: 2px solid rgba(255,255,255,0.8);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: relative;
+      transform: rotateX(-35deg);
+    }
+    .iso-person-body {
+      width: 32px;
+      height: 14px;
+      background: #38bdf8;
+      border-radius: 6px;
+      margin-top: -3px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .iso-chair-3d {
+      width: 28px;
+      height: 18px;
+      background: #334155;
+      border-radius: 8px;
+      margin-top: -6px;
+      transform: translateZ(-8px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Walking Personnel 2.5D */
+    .iso-walking-agent {
+      position: absolute;
+      transform: translateZ(18px);
+      transform-style: preserve-3d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      animation: iso-walk 24s infinite linear;
+      z-index: 50;
+    }
+    @keyframes iso-walk {
+      0% { left: 40px; top: 280px; }
+      35% { left: 480px; top: 280px; }
+      40% { left: 480px; top: 280px; }
+      50% { left: 480px; top: 480px; }
+      55% { left: 480px; top: 480px; }
+      65% { left: 480px; top: 280px; }
+      70% { left: 480px; top: 60px; }
+      80% { left: 480px; top: 280px; }
+      100% { left: 40px; top: 280px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1744,14 +2113,127 @@ export function getTeamUiHtml() {
     <!-- Office View Mode Toggle -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
       <div class="office-view-toggle">
-        <button id="btn-view-floorplan" class="view-toggle-btn active" onclick="setOfficeView('floorplan')">🗺️ Bản Vẽ Mặt Bằng 2D</button>
+        <button id="btn-view-iso" class="view-toggle-btn active" onclick="setOfficeView('iso')">🏛️ Phối Cảnh 2.5D Isometric</button>
+        <button id="btn-view-floorplan" class="view-toggle-btn" onclick="setOfficeView('floorplan')">🗺️ Mặt Bằng 2D</button>
         <button id="btn-view-pods" class="view-toggle-btn" onclick="setOfficeView('pods')">💻 Bàn Làm Việc Chi Tiết</button>
       </div>
       <span class="office-tagline" id="office-active-count">Đang hiển thị không gian văn phòng ảo</span>
     </div>
 
+    <!-- VIEW 0: 2.5D ISOMETRIC VIRTUAL OFFICE ARCHITECTURAL SCENE -->
+    <div id="office-iso-wrapper" style="display: block;">
+      <div class="iso-scene" id="iso-scene">
+        <!-- Interactive 3D Camera / Angle Controls -->
+        <div class="iso-controls">
+          <button class="iso-ctrl-btn" onclick="adjustIso('tilt', 5)" title="Tăng góc nghiêng">📐 Nghiêng +</button>
+          <button class="iso-ctrl-btn" onclick="adjustIso('tilt', -5)" title="Giảm góc nghiêng">📐 Nghiêng -</button>
+          <button class="iso-ctrl-btn" onclick="adjustIso('rot', 10)" title="Xoay góc trái">🔄 Xoay Trái</button>
+          <button class="iso-ctrl-btn" onclick="adjustIso('rot', -10)" title="Xoay góc phải">🔄 Xoay Phải</button>
+          <button class="iso-ctrl-btn" onclick="adjustIso('zoom', 0.08)" title="Phóng to">🔍 Phóng to</button>
+          <button class="iso-ctrl-btn" onclick="adjustIso('zoom', -0.08)" title="Thu nhỏ">🔎 Thu nhỏ</button>
+          <button class="iso-ctrl-btn" onclick="adjustIso('reset')" title="Về góc mặc định">🎯 Mặc định</button>
+        </div>
+
+        <div class="iso-stage" id="iso-stage">
+          <!-- 3D Corridors with depth -->
+          <div class="iso-hallway-h">
+            <div class="hallway-carpet" style="top:8px; bottom:8px;"></div>
+          </div>
+          <div class="iso-hallway-v">
+            <div class="hallway-carpet" style="top:0; bottom:0; left:8px; right:8px;"></div>
+          </div>
+
+          <!-- 2.5D Walking Personnel along corridor -->
+          <div class="iso-walking-agent" id="iso-walking-agent">
+            <div class="walking-agent-avatar" style="transform: rotateX(-35deg);">🏃</div>
+            <div class="walking-agent-tag" style="transform: rotateX(-35deg);">Tuần tra Sprint</div>
+          </div>
+
+          <!-- Corner Foliage in 3D -->
+          <div style="position: absolute; top: 250px; left: 440px; transform: translateZ(20px); z-index: 10;" class="potted-plant">🪴</div>
+          <div style="position: absolute; top: 320px; left: 440px; transform: translateZ(20px); z-index: 10;" class="potted-plant">🪴</div>
+          <div style="position: absolute; top: 250px; left: 525px; transform: translateZ(20px); z-index: 10;" class="potted-plant">🪴</div>
+          <div style="position: absolute; top: 320px; left: 525px; transform: translateZ(20px); z-index: 10;" class="potted-plant">🪴</div>
+
+          <!-- Room 1: War Room (Phòng Chỉ Huy Chiến Lược) 2.5D -->
+          <div class="iso-room iso-room-war">
+            <div class="meeting-room-title" style="transform: translateZ(14px);">🎯 Phòng Chiến Lược (War Room 2.5D)</div>
+            <div class="iso-smartboard-3d">
+              <span id="iso-smartboard-title">Sprint Strategic Board</span>
+              <span id="iso-smartboard-wave" style="color:#f59e0b;">Wave 1</span>
+            </div>
+            <div class="iso-meeting-table">
+              <span>BOARDROOM 2.5D</span>
+              <span id="iso-meeting-percent" style="font-size:9px; color:#38bdf8;">0% Hoàn thành</span>
+            </div>
+            <!-- Seated Lead Architect in 2.5D -->
+            <div style="position: absolute; top: 40px; left: 24px; transform: translateZ(22px); display:flex; align-items:center; gap:8px;">
+              <div class="iso-person-head" style="background:#0284c7;">📐</div>
+              <div style="font-size:9px; font-weight:800; color:var(--text); transform: rotateX(-35deg);">@architect<br><span style="color:var(--text-muted); font-size:8px;">Lead Architect</span></div>
+            </div>
+          </div>
+
+          <!-- Room 2: QA & Server Lab 2.5D -->
+          <div class="iso-room iso-room-qa">
+            <div class="qa-lab-title" style="transform: translateZ(14px);">🧪 Phòng Kiểm Thử &amp; Server (QA Lab 2.5D)</div>
+            <div class="iso-server-cluster">
+              <div class="iso-server-rack-3d">
+                <div class="rack-unit"><span class="led-dot"></span></div>
+                <div class="rack-unit"><span class="led-dot blue"></span></div>
+                <div class="rack-unit"><span class="led-dot red"></span></div>
+                <div class="rack-unit"><span class="led-dot"></span></div>
+              </div>
+              <div class="iso-server-rack-3d">
+                <div class="rack-unit"><span class="led-dot blue"></span></div>
+                <div class="rack-unit"><span class="led-dot"></span></div>
+                <div class="rack-unit"><span class="led-dot"></span></div>
+                <div class="rack-unit"><span class="led-dot blue"></span></div>
+              </div>
+              <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:4px; font-size:10px; transform: translateZ(16px);">
+                <div><strong>Rust CDP:</strong> Active</div>
+                <div><strong>Axe-core:</strong> AA Pass</div>
+                <div><strong>Vitals:</strong> 60 FPS</div>
+              </div>
+            </div>
+            <!-- QA Tester seated in 2.5D -->
+            <div style="display:flex; align-items:center; gap:10px; background:var(--nav-bg); padding:6px 10px; border-radius:8px; border:1px solid var(--card-border); margin-top:16px; transform: translateZ(20px);">
+              <div class="iso-person-head" style="background:#059669;">🧪</div>
+              <div style="font-size:10px; font-weight:800; transform: rotateX(-35deg);">
+                @tester-qa <span style="font-size:9px; color:var(--success); font-weight:600;">(QA Lead)</span>
+                <div id="iso-qa-status-text" style="font-size:9px; color:var(--text-muted); font-weight:normal;">Sẵn sàng chạy test suite</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Room 3: Engineering Bay 2.5D -->
+          <div class="iso-room iso-room-eng">
+            <div class="engineering-bay-title" style="transform: translateZ(14px);">💻 Cụm Bàn Kỹ Thuật 2.5D (Engineering Workstations)</div>
+            <div class="iso-workstations-grid" id="iso-workstations-container">
+              <!-- Dynamically populated 2.5D workstations -->
+            </div>
+          </div>
+
+          <!-- Room 4: Pantry & Coffee Bar 2.5D -->
+          <div class="iso-room iso-room-pantry">
+            <div class="pantry-title" style="transform: translateZ(14px);">☕ Căng-tin &amp; Cafe (Pantry 2.5D)</div>
+            <div class="pantry-bar-counter" style="transform: translateZ(20px);">
+              <div class="pantry-item"><span class="coffee-machine-steam">☕</span> Barista</div>
+              <div class="pantry-item">🧊 Tủ mát</div>
+              <div class="pantry-item">💧 Bình lọc</div>
+            </div>
+            <div style="font-size:10px; font-weight:700; color:var(--text-muted); margin-top:14px; transform: translateZ(14px);">
+              Standby Pool:
+            </div>
+            <div class="pantry-break-agents" id="iso-break-agents" style="transform: translateZ(16px); margin-top:8px;">
+              <!-- Dynamically populated standby personnel -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- VIEW 1: REALISTIC 2D ARCHITECTURAL FLOORPLAN -->
-    <div id="office-floorplan-wrapper" style="display: block;">
+    <div id="office-floorplan-wrapper" style="display: none;">
       <div class="floorplan-container" id="floorplan-container">
         <!-- Corridors / Lối đi -->
         <div class="floorplan-hallway floorplan-hallway-h">
@@ -2172,15 +2654,38 @@ export function getTeamUiHtml() {
       }
     }
 
-    let currentOfficeView = 'floorplan';
+    let currentOfficeView = 'iso';
+    let isoRotX = 56;
+    let isoRotZ = -38;
+    let isoScale = 0.92;
+
+    function updateIsoTransform() {
+      const stage = document.getElementById('iso-stage');
+      if (stage) {
+        stage.style.transform = 'rotateX(' + isoRotX + 'deg) rotateZ(' + isoRotZ + 'deg) scale(' + isoScale + ')';
+      }
+    }
+
+    function adjustIso(action, val) {
+      if (action === 'tilt') isoRotX = Math.max(25, Math.min(80, isoRotX + val));
+      if (action === 'rot') isoRotZ = (isoRotZ + val) % 360;
+      if (action === 'zoom') isoScale = Math.max(0.6, Math.min(1.5, Math.round((isoScale + val) * 100) / 100));
+      if (action === 'reset') { isoRotX = 56; isoRotZ = -38; isoScale = 0.92; }
+      updateIsoTransform();
+    }
+
     function setOfficeView(mode) {
       currentOfficeView = mode;
+      const btnIso = document.getElementById('btn-view-iso');
       const btnFp = document.getElementById('btn-view-floorplan');
       const btnPods = document.getElementById('btn-view-pods');
+      const wrapIso = document.getElementById('office-iso-wrapper');
       const wrapFp = document.getElementById('office-floorplan-wrapper');
       const wrapPods = document.getElementById('office-pods-wrapper');
+      if (btnIso) btnIso.classList.toggle('active', mode === 'iso');
       if (btnFp) btnFp.classList.toggle('active', mode === 'floorplan');
       if (btnPods) btnPods.classList.toggle('active', mode === 'pods');
+      if (wrapIso) wrapIso.style.display = mode === 'iso' ? 'block' : 'none';
       if (wrapFp) wrapFp.style.display = mode === 'floorplan' ? 'block' : 'none';
       if (wrapPods) wrapPods.style.display = mode === 'pods' ? 'block' : 'none';
     }
@@ -2218,6 +2723,14 @@ export function getTeamUiHtml() {
       const fpMeetingPercent = document.getElementById('fp-meeting-percent');
       if (fpMeetingPercent) fpMeetingPercent.textContent = percent + '% Hoàn thành';
 
+      // Update 2.5D Isometric War Room Smartboard
+      const isoSbTitle = document.getElementById('iso-smartboard-title');
+      if (isoSbTitle) isoSbTitle.textContent = mission.objective ? (mission.objective.length > 36 ? mission.objective.slice(0, 36) + '...' : mission.objective) : 'Sprint Strategic Board';
+      const isoSbWave = document.getElementById('iso-smartboard-wave');
+      if (isoSbWave) isoSbWave.textContent = 'Wave ' + (activeWave || 1);
+      const isoMeetingPercent = document.getElementById('iso-meeting-percent');
+      if (isoMeetingPercent) isoMeetingPercent.textContent = percent + '% Hoàn thành';
+
       // 2. Prepare team members & desks
       const teamArchetypes = {
         'architect': { role: 'Lead Architect', icon: '📐', bg: 'linear-gradient(135deg, #0284c7, #38bdf8)' },
@@ -2253,6 +2766,9 @@ export function getTeamUiHtml() {
 
       const fpWsContainer = document.getElementById('floorplan-workstations-container');
       if (fpWsContainer) fpWsContainer.innerHTML = '';
+
+      const isoWsContainer = document.getElementById('iso-workstations-container');
+      if (isoWsContainer) isoWsContainer.innerHTML = '';
 
       let displayedDeskCount = 0;
       const idleMembers = [];
@@ -2356,6 +2872,40 @@ export function getTeamUiHtml() {
           fpWsContainer.appendChild(fpWs);
         }
 
+        // --- 2.5D Isometric Workstation ---
+        if (isoWsContainer) {
+          const isoWs = document.createElement('div');
+          isoWs.className = 'iso-workstation ' + deskStateClass;
+          if (task) {
+            isoWs.onclick = () => openTaskModal(task.id);
+            isoWs.title = 'Click để xem task ' + task.id;
+          } else {
+            isoWs.onclick = () => showToast('info', 'Thành viên @' + wId + ' (' + archetype.role + ') đang ở chế độ chờ.');
+            isoWs.title = '@' + wId + ' đang sẵn sàng';
+          }
+
+          isoWs.innerHTML =
+            '<div class="iso-desk-3d">' +
+              '<div class="iso-monitors-row">' +
+                '<div class="iso-screen-3d">' + (task ? (task.status === 'red_tested' ? 'ERR!' : task.status === 'green' ? 'PASS' : 'DEV') : 'IDLE') + '</div>' +
+                '<div class="iso-screen-3d" style="color:#a855f7;">' + (task ? escapeHtml(task.id.slice(0, 7)) : '---') + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="iso-person-3d ' + (task && (task.status === 'claimed' || task.status === 'red_tested') ? 'person-typing' : '') + '">' +
+              '<div class="iso-person-head" style="background:' + archetype.bg + ';">' +
+                archetype.icon +
+              '</div>' +
+              '<div class="iso-person-body" style="background:' + (wId === 'architect' ? '#38bdf8' : wId === 'frontend-dev' ? '#2dd4bf' : wId === 'backend-dev' ? '#a855f7' : wId === 'tester-qa' ? '#34d399' : '#fb923c') + ';"></div>' +
+              '<div class="iso-chair-3d"></div>' +
+            '</div>' +
+            '<div class="workstation-nametag" style="transform:translateZ(18px);">@' + escapeHtml(wId) + '</div>' +
+            '<div class="workstation-status-pill ' + (task ? ('badge-' + (task.status === 'merged' ? 'merged' : task.status === 'green' ? 'green' : task.status === 'red_tested' ? 'red' : 'claimed')) : 'badge-claimed') + '" style="font-size:8px; transform:translateZ(18px);">' +
+              (task ? escapeHtml(task.id) : 'Standby') +
+            '</div>';
+
+          isoWsContainer.appendChild(isoWs);
+        }
+
         // --- Detailed Pods Card ---
         if (desksGrid) {
           const deskCard = document.createElement('div');
@@ -2445,6 +2995,22 @@ export function getTeamUiHtml() {
         }
       }
 
+      // Update 2.5D Pantry Break Agents
+      const isoBreakContainer = document.getElementById('iso-break-agents');
+      if (isoBreakContainer) {
+        isoBreakContainer.innerHTML = '';
+        if (idleMembers.length === 0) {
+          isoBreakContainer.innerHTML = '<span style="font-size:10px; color:var(--text-muted); font-style:italic;">Toàn bộ team đang làm việc tại bàn.</span>';
+        } else {
+          for (const m of idleMembers) {
+            const chip = document.createElement('div');
+            chip.className = 'pantry-break-agent-chip';
+            chip.innerHTML = '<span style="font-size:12px;">' + m.archetype.icon + '</span> <span>@' + escapeHtml(m.id) + '</span>';
+            isoBreakContainer.appendChild(chip);
+          }
+        }
+      }
+
       const loungeContainer = document.getElementById('lounge-avatars-container');
       if (loungeContainer) {
         loungeContainer.innerHTML = '';
@@ -2464,19 +3030,23 @@ export function getTeamUiHtml() {
       const greenTasks = tasks.filter(t => t.status === 'green').length;
       const qaStatusEl = document.getElementById('qa-engine-status');
       const fpQaStatusEl = document.getElementById('fp-qa-status-text');
+      const isoQaStatusEl = document.getElementById('iso-qa-status-text');
 
       if (redTasks > 0) {
         const text = 'Đang theo dõi ' + redTasks + ' bài test RED';
         if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--danger)'; }
         if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--danger)'; }
+        if (isoQaStatusEl) { isoQaStatusEl.textContent = text; isoQaStatusEl.style.color = 'var(--danger)'; }
       } else if (greenTasks > 0) {
         const text = greenTasks + ' test suite đã GREEN - Sẵn sàng merge';
         if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--success)'; }
         if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--success)'; }
+        if (isoQaStatusEl) { isoQaStatusEl.textContent = text; isoQaStatusEl.style.color = 'var(--success)'; }
       } else {
         const text = 'Hệ thống kiểm thử native CDP sẵn sàng';
         if (qaStatusEl) { qaStatusEl.textContent = text; qaStatusEl.style.color = 'var(--success)'; }
         if (fpQaStatusEl) { fpQaStatusEl.textContent = text; fpQaStatusEl.style.color = 'var(--success)'; }
+        if (isoQaStatusEl) { isoQaStatusEl.textContent = text; isoQaStatusEl.style.color = 'var(--success)'; }
       }
     }
 
