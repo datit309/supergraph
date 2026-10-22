@@ -109,4 +109,44 @@ assert.ok(
   'bug-report-template.md must include Video Reproduction evidence field'
 )
 
-console.log('✔ browser-agent SKILL.md and QA templates satisfy all contracts')
+// 3. Verify init-qa.sh script contracts
+const initQaScript = fs.readFileSync(initQaScriptPath, 'utf8')
+assert.ok(
+  initQaScript.includes('detect_dev_server') || initQaScript.includes('5173'),
+  'init-qa.sh must contain dev server auto-detection logic (e.g. port 5173)'
+)
+assert.ok(
+  initQaScript.includes('AGENT_BROWSER_SESSION'),
+  'init-qa.sh must populate AGENT_BROWSER_SESSION in generated templates'
+)
+
+// 4. Test execution of init-qa.sh in a clean temp directory
+import { execSync } from 'node:child_process'
+import os from 'node:os'
+
+const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'supergraph-qa-test-'))
+try {
+  execSync(`bash "${initQaScriptPath}" matrix test-checkout ui http://localhost:5173`, {
+    cwd: tmpDir,
+    stdio: 'pipe',
+  })
+  const generatedMatrix = fs.readFileSync(path.join(tmpDir, 'docs/qa/test-matrix-test-checkout.md'), 'utf8')
+  assert.ok(generatedMatrix.includes('TC-TEST_CHECKOUT-008'), 'Generated matrix must include TC-008 for a11y')
+  assert.ok(generatedMatrix.includes('TC-TEST_CHECKOUT-009'), 'Generated matrix must include TC-009 for responsive')
+  assert.ok(generatedMatrix.includes('http://localhost:5173'), 'Generated matrix must preserve custom target url')
+  assert.ok(generatedMatrix.includes('sg-qa-test-checkout-'), 'Generated matrix must contain dynamic session ID')
+
+  execSync(`bash "${initQaScriptPath}" bug test-checkout BUG-CHK-001 "Cart crash on submit" UI`, {
+    cwd: tmpDir,
+    stdio: 'pipe',
+  })
+  const bugFiles = fs.readdirSync(path.join(tmpDir, 'docs/qa')).filter(f => f.startsWith('bug-report-bug-chk-001'))
+  assert.strictEqual(bugFiles.length, 1, 'Bug report file must be generated')
+  const generatedBug = fs.readFileSync(path.join(tmpDir, 'docs/qa', bugFiles[0]), 'utf8')
+  assert.ok(generatedBug.includes('BUG-CHK-001-repro.webm'), 'Bug report must reference webm video repro')
+  assert.ok(generatedBug.includes('sg-qa-test-checkout-'), 'Bug report must contain dynamic session ID')
+} finally {
+  fs.rmSync(tmpDir, { recursive: true, force: true })
+}
+
+console.log('✔ browser-agent SKILL.md, QA templates, and init-qa.sh satisfy all contracts')
