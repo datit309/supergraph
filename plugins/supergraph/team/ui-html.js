@@ -645,6 +645,440 @@ export function getTeamUiHtml() {
       .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
       .tab-group, .filter-group { flex-wrap: wrap; }
+      .desk-dual-monitors { grid-template-columns: 1fr; }
+    }
+
+    /* ========================================================
+       🏢 VIRTUAL OFFICE WORKSPACE STYLES
+       ======================================================== */
+    .office-floor {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--card-shadow);
+      background-image: radial-gradient(var(--card-border) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      position: relative;
+    }
+
+    .office-war-room {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.06), rgba(124, 58, 237, 0.06));
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .office-war-room::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: linear-gradient(180deg, var(--primary), var(--purple));
+    }
+    .war-room-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .war-room-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .war-room-stats {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .war-stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .office-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .office-section-header h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .office-tagline {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Desk Grid */
+    .office-desks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    /* Interactive Desk Card */
+    .office-desk {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--card-shadow);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .office-desk:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: var(--card-shadow-hover), 0 12px 28px -6px rgba(2, 132, 199, 0.15);
+    }
+
+    /* State-based Desk Light Cones / Indicators */
+    .office-desk.status-coding {
+      border-color: rgba(2, 132, 199, 0.5);
+    }
+    .office-desk.status-coding .desk-lamp-cone {
+      background: radial-gradient(circle at 85% 15%, rgba(2, 132, 199, 0.2) 0%, transparent 60%);
+    }
+
+    .office-desk.status-red_tested {
+      border-color: rgba(220, 38, 38, 0.6);
+      animation: desk-alert-pulse 1.8s infinite;
+    }
+    .office-desk.status-red_tested .desk-lamp-cone {
+      background: radial-gradient(circle at 85% 15%, rgba(220, 38, 38, 0.25) 0%, transparent 60%);
+    }
+    @keyframes desk-alert-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.2); }
+      50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
+    }
+
+    .office-desk.status-green {
+      border-color: rgba(5, 150, 105, 0.5);
+    }
+    .office-desk.status-green .desk-lamp-cone {
+      background: radial-gradient(circle at 85% 15%, rgba(5, 150, 105, 0.2) 0%, transparent 60%);
+    }
+
+    .office-desk.status-merged {
+      border-color: rgba(124, 58, 237, 0.4);
+    }
+
+    .office-desk.status-idle {
+      opacity: 0.9;
+    }
+
+    .desk-lamp-cone {
+      position: absolute;
+      top: 0; right: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      transition: background 0.3s ease;
+      z-index: 1;
+    }
+
+    /* Desk Header: Member & Status */
+    .desk-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      z-index: 2;
+    }
+    .desk-member-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .desk-avatar-wrapper {
+      position: relative;
+    }
+    .desk-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--nav-bg);
+      border: 1.5px solid var(--card-border);
+      font-size: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+    .desk-avatar-indicator {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--card-bg);
+    }
+    .desk-avatar-indicator.active {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+    .desk-avatar-indicator.warning {
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+      animation: pulse 1s infinite;
+    }
+    .desk-avatar-indicator.idle {
+      background: var(--text-muted);
+    }
+
+    .desk-member-names h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .desk-member-role {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .desk-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    /* Desk Surface & Dual Screens */
+    .desk-surface {
+      background: var(--card-subtle-bg);
+      border: 1px solid var(--card-subtle-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .desk-dual-monitors {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 8px;
+    }
+    .desk-screen {
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 8px;
+      padding: 8px;
+      min-height: 74px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+    .desk-screen-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .desk-screen-dots {
+      display: flex;
+      gap: 3px;
+    }
+    .desk-screen-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+    .desk-screen-dot.red { background: #ef4444; }
+    .desk-screen-dot.yellow { background: #f59e0b; }
+    .desk-screen-dot.green { background: #10b981; }
+    .desk-screen-tab {
+      font-size: 9px;
+      color: #94a3b8;
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90px;
+    }
+
+    .desk-code-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .desk-code-line {
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .desk-code-line.active {
+      background: var(--primary);
+      box-shadow: 0 0 6px var(--primary);
+      animation: code-pulse 1.2s infinite alternate;
+    }
+    @keyframes code-pulse {
+      from { opacity: 0.4; width: 40%; }
+      to { opacity: 1; width: 85%; }
+    }
+
+    .desk-status-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 4px;
+      background: #1e293b;
+      border-color: #475569;
+    }
+    .desk-status-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    /* Desk Accessories Bar */
+    .desk-accessories {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-top: 4px;
+      border-top: 1px dashed var(--card-border);
+    }
+    .desk-coffee {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .steam-icon {
+      display: inline-block;
+      animation: steam 1.5s infinite ease-out;
+    }
+    @keyframes steam {
+      0% { transform: translateY(0) scaleX(1); opacity: 0.8; }
+      50% { transform: translateY(-3px) scaleX(1.2); opacity: 0.5; }
+      100% { transform: translateY(-6px) scaleX(0.8); opacity: 0; }
+    }
+    .desk-note {
+      background: #fef08a;
+      color: #854d0e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      transform: rotate(-2deg);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Lower Office Zones: QA Lab & Lounge */
+    .office-lower-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+    .office-qa-zone, .office-lounge-zone {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .zone-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qa-spec-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .qa-metric-card {
+      background: var(--card-subtle-bg);
+      border: 1px solid var(--card-subtle-border);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+    }
+    .qa-metric-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .qa-metric-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .lounge-avatars-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .lounge-avatar-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--nav-bg);
+      border: 1px solid var(--card-border);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -697,7 +1131,8 @@ export function getTeamUiHtml() {
   <!-- Navigation & Toolbar -->
   <div class="toolbar" id="toolbar" style="display: none;">
     <div class="nav-tabs">
-      <button class="tab-btn active" id="tab-btn-dag" onclick="switchTab('dag')">🌊 Sóng DAG</button>
+      <button class="tab-btn active" id="tab-btn-office" onclick="switchTab('office')">🏢 Văn Phòng Team</button>
+      <button class="tab-btn" id="tab-btn-dag" onclick="switchTab('dag')">🌊 Sóng DAG</button>
       <button class="tab-btn" id="tab-btn-workers" onclick="switchTab('workers')">🤖 Agents &amp; Worktrees</button>
       <button class="tab-btn" id="tab-btn-logs" onclick="switchTab('logs')">📜 Dòng Nhật Ký</button>
     </div>
@@ -707,9 +1142,9 @@ export function getTeamUiHtml() {
         id="search-input"
         class="search-input"
         placeholder="Tìm kiếm theo mã task, tên, worker..."
-        oninput="renderDag()"
+        oninput="renderActiveTab()"
       />
-      <select id="status-filter" class="status-select" onchange="renderDag()">
+      <select id="status-filter" class="status-select" onchange="renderActiveTab()">
         <option value="ALL">Tất cả trạng thái</option>
         <option value="ready">Sẵn sàng (Ready)</option>
         <option value="claimed">Đang làm (Claimed)</option>
@@ -720,8 +1155,70 @@ export function getTeamUiHtml() {
     </div>
   </div>
 
+  <!-- Tab Content: Virtual Office -->
+  <div id="content-office">
+    <!-- War Room Strategy Board -->
+    <div class="office-war-room" id="office-war-room">
+      <div>
+        <div class="war-room-title">🎯 PHÒNG CHỈ HUY CHIẾN LƯỢC SPRINT</div>
+        <div class="war-room-meta" id="office-objective-text">Đang đồng bộ mục tiêu sứ mệnh...</div>
+      </div>
+      <div class="war-room-stats" id="office-quick-stats">
+        <span class="war-stat-badge" style="color:var(--primary);"><span class="live-dot"></span> Sóng Hiện Tại: <span id="office-current-wave">Wave 1</span></span>
+        <span class="war-stat-badge" style="color:var(--success);">✅ Đã Hoàn Thành: <span id="office-progress-percent">0%</span></span>
+      </div>
+    </div>
+
+    <!-- Office Floor -->
+    <div class="office-floor" id="office-floor">
+      <div class="office-section-header">
+        <h2>💻 Khu Bàn Làm Việc Team (Engineering Pods)</h2>
+        <span class="office-tagline" id="office-active-count">Đang hiển thị các bàn làm việc</span>
+      </div>
+      
+      <!-- Desks Grid -->
+      <div class="office-desks-grid" id="office-desks-grid">
+        <!-- Injected dynamically by renderOffice() -->
+      </div>
+
+      <!-- Lower Office Zones: QA Lab & Coffee Lounge -->
+      <div class="office-lower-grid">
+        <div class="office-qa-zone" id="office-qa-zone">
+          <div class="zone-title">🧪 Phòng Kiểm Thử &amp; Browser Agent QA</div>
+          <div class="qa-spec-grid">
+            <div class="qa-metric-card">
+              <div class="qa-metric-val" id="qa-stat-cdp">Native CDP</div>
+              <div class="qa-metric-lbl">Rust Core (No Playwright)</div>
+            </div>
+            <div class="qa-metric-card">
+              <div class="qa-metric-val" id="qa-stat-a11y">WCAG 2.2 AA</div>
+              <div class="qa-metric-lbl">Axe-core Audit Gate</div>
+            </div>
+            <div class="qa-metric-card">
+              <div class="qa-metric-val" id="qa-stat-vitals">Core Vitals</div>
+              <div class="qa-metric-lbl">LCP / CLS / INP Pass</div>
+            </div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); display:flex; align-items:center; gap:6px;">
+            <span>🤖 Trạng thái:</span> <strong style="color:var(--success);" id="qa-engine-status">Sẵn sàng chạy test suite</strong>
+          </div>
+        </div>
+
+        <div class="office-lounge-zone" id="office-lounge-zone">
+          <div class="zone-title">☕ Khu Căng-tin &amp; Nghỉ Ngơi (Standby Lounge)</div>
+          <div class="lounge-avatars-row" id="lounge-avatars-container">
+            <!-- Idle members populated by renderOffice() -->
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+            Các AI Agent dự bị đang nghỉ giải lao và sẵn sàng nhận task khi Wave phụ thuộc mở khóa.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Tab Content: DAG -->
-  <div id="content-dag">
+  <div id="content-dag" style="display: none;">
     <div class="dag-grid" id="dag-container"></div>
   </div>
 
@@ -867,22 +1364,30 @@ export function getTeamUiHtml() {
 
   <script>
     let currentData = null;
-    let currentTab = 'dag';
+    let currentTab = 'office';
     let currentModalTaskId = null;
+
+    function renderActiveTab() {
+      if (currentTab === 'office') renderOffice();
+      else if (currentTab === 'dag') renderDag();
+      else if (currentTab === 'workers') renderWorkers();
+      else if (currentTab === 'logs') renderLogs();
+    }
 
     function switchTab(tab) {
       currentTab = tab;
+      document.getElementById('tab-btn-office').classList.toggle('active', tab === 'office');
       document.getElementById('tab-btn-dag').classList.toggle('active', tab === 'dag');
       document.getElementById('tab-btn-workers').classList.toggle('active', tab === 'workers');
       document.getElementById('tab-btn-logs').classList.toggle('active', tab === 'logs');
 
+      document.getElementById('content-office').style.display = tab === 'office' ? 'block' : 'none';
       document.getElementById('content-dag').style.display = tab === 'dag' ? 'block' : 'none';
       document.getElementById('content-workers').style.display = tab === 'workers' ? 'block' : 'none';
       document.getElementById('content-logs').style.display = tab === 'logs' ? 'block' : 'none';
-      document.getElementById('filter-area').style.display = tab === 'dag' ? 'flex' : 'none';
+      document.getElementById('filter-area').style.display = (tab === 'dag' || tab === 'office') ? 'flex' : 'none';
 
-      if (tab === 'workers') renderWorkers();
-      if (tab === 'logs') renderLogs();
+      renderActiveTab();
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -908,7 +1413,10 @@ export function getTeamUiHtml() {
           document.getElementById('empty-state').style.display = 'block';
           document.getElementById('kpi-row').style.display = 'none';
           document.getElementById('toolbar').style.display = 'none';
+          document.getElementById('content-office').style.display = 'none';
           document.getElementById('content-dag').style.display = 'none';
+          document.getElementById('content-workers').style.display = 'none';
+          document.getElementById('content-logs').style.display = 'none';
           document.getElementById('btn-init-demo').style.display = currentSessionId ? 'none' : 'inline-flex';
           document.getElementById('btn-reset').style.display = 'none';
           const sessionHint = currentSessionId ? (' &bull; Session: <code>' + escapeHtml(currentSessionId.slice(0, 8)) + '...</code>') : '';
@@ -921,6 +1429,11 @@ export function getTeamUiHtml() {
         document.getElementById('toolbar').style.display = 'flex';
         document.getElementById('btn-init-demo').style.display = 'none';
         document.getElementById('btn-reset').style.display = 'inline-flex';
+
+        document.getElementById('content-office').style.display = currentTab === 'office' ? 'block' : 'none';
+        document.getElementById('content-dag').style.display = currentTab === 'dag' ? 'block' : 'none';
+        document.getElementById('content-workers').style.display = currentTab === 'workers' ? 'block' : 'none';
+        document.getElementById('content-logs').style.display = currentTab === 'logs' ? 'block' : 'none';
 
         document.getElementById('mission-text').innerHTML =
           '<strong>Mục tiêu:</strong> ' + escapeHtml(data.mission.objective) +
@@ -949,11 +1462,235 @@ export function getTeamUiHtml() {
         document.getElementById('kpi-ready').textContent = readyCount;
         document.getElementById('kpi-waves').textContent = waves.size;
 
-        if (currentTab === 'dag') renderDag();
-        else if (currentTab === 'workers') renderWorkers();
-        else if (currentTab === 'logs') renderLogs();
+        renderActiveTab();
       } catch (e) {
         console.error(e);
+      }
+    }
+
+    function renderOffice() {
+      if (!currentData || !currentData.tasks) return;
+      const tasks = currentData.tasks;
+      const mission = currentData.mission || {};
+      const query = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('status-filter')?.value || 'ALL';
+
+      // 1. Update War Room Strategy Wall
+      const objEl = document.getElementById('office-objective-text');
+      if (objEl) {
+        objEl.innerHTML = '<strong>Sứ mệnh:</strong> ' + escapeHtml(mission.objective || 'Chưa thiết lập') +
+          ' &bull; <strong>Nhánh cơ sở:</strong> <code style="color:var(--primary);">' + escapeHtml(mission.baseBranch || 'master') + '</code>';
+      }
+
+      const mergedCount = tasks.filter(t => t.status === 'merged').length;
+      const percent = tasks.length > 0 ? Math.round((mergedCount / tasks.length) * 100) : 0;
+      const percentEl = document.getElementById('office-progress-percent');
+      if (percentEl) percentEl.textContent = percent + '%';
+
+      // Compute current active wave
+      const activeTasks = tasks.filter(t => t.status === 'claimed' || t.status === 'red_tested' || t.status === 'green');
+      const activeWave = activeTasks.length > 0 ? activeTasks[0].wave : (tasks.find(t => t.status === 'pending')?.wave || 1);
+      const waveEl = document.getElementById('office-current-wave');
+      if (waveEl) waveEl.textContent = 'Wave ' + (activeWave || 1);
+
+      // 2. Prepare team members & desks
+      const teamArchetypes = {
+        'architect': { role: 'Lead Architect', icon: '📐', bg: 'linear-gradient(135deg, #0284c7, #38bdf8)' },
+        'frontend-dev': { role: 'Frontend Engineer', icon: '🎨', bg: 'linear-gradient(135deg, #0d9488, #2dd4bf)' },
+        'backend-dev': { role: 'Backend Engineer', icon: '⚙️', bg: 'linear-gradient(135deg, #7c3aed, #a855f7)' },
+        'tester-qa': { role: 'QA & Browser Agent', icon: '🧪', bg: 'linear-gradient(135deg, #059669, #34d399)' },
+        'git-ops': { role: 'Git Ops Coordinator', icon: '🔀', bg: 'linear-gradient(135deg, #ea580c, #fb923c)' }
+      };
+
+      const workerDeskMap = new Map();
+      for (const t of tasks) {
+        if (t.assignedTo) {
+          const wId = t.assignedTo;
+          if (!workerDeskMap.has(wId)) {
+            workerDeskMap.set(wId, { workerId: wId, task: t });
+          } else {
+            const existing = workerDeskMap.get(wId);
+            if (existing.task.status === 'merged' && t.status !== 'merged') {
+              workerDeskMap.set(wId, { workerId: wId, task: t });
+            }
+          }
+        }
+      }
+
+      for (const [key, meta] of Object.entries(teamArchetypes)) {
+        if (!workerDeskMap.has(key)) {
+          workerDeskMap.set(key, { workerId: key, task: null, archetype: meta });
+        }
+      }
+
+      const desksGrid = document.getElementById('office-desks-grid');
+      if (!desksGrid) return;
+      desksGrid.innerHTML = '';
+
+      let displayedDeskCount = 0;
+      const idleMembers = [];
+
+      for (const [wId, info] of workerDeskMap.entries()) {
+        const task = info.task;
+        const archetype = teamArchetypes[wId] || {
+          role: 'Fullstack Agent',
+          icon: '🤖',
+          bg: 'linear-gradient(135deg, #0284c7, #7c3aed)'
+        };
+
+        if (query) {
+          const matchWorker = wId.toLowerCase().includes(query);
+          const matchRole = archetype.role.toLowerCase().includes(query);
+          const matchTaskId = task ? task.id.toLowerCase().includes(query) : false;
+          const matchTitle = task ? (task.title || '').toLowerCase().includes(query) : false;
+          if (!matchWorker && !matchRole && !matchTaskId && !matchTitle) continue;
+        }
+
+        if (statusFilter !== 'ALL') {
+          if (!task && statusFilter !== 'ready') continue;
+          if (task && statusFilter !== task.status) continue;
+        }
+
+        displayedDeskCount++;
+
+        let deskStateClass = 'status-idle';
+        let statusBadgeHtml = '<span class="desk-status" style="background:var(--nav-bg); color:var(--text-muted); border:1px solid var(--card-border);">☕ Nghỉ giải lao</span>';
+        let avatarIndicatorClass = 'idle';
+        let codeScreenTab = 'standby.sh';
+        let activeLineClass = '';
+        let taskTitlePreview = 'Sẵn sàng nhận nhiệm vụ mới khi có phân công.';
+        let noteText = 'Standby Pool';
+
+        if (task) {
+          noteText = 'Wave ' + (task.wave || 1);
+          taskTitlePreview = escapeHtml(task.title || task.id);
+          codeScreenTab = (task.writeScopes && task.writeScopes[0]) ? escapeHtml(task.writeScopes[0].split('/').pop()) : (task.id + '.ts');
+
+          if (task.status === 'claimed') {
+            deskStateClass = 'status-coding';
+            avatarIndicatorClass = 'active';
+            activeLineClass = 'active';
+            statusBadgeHtml = '<span class="desk-status badge badge-claimed"><span class="live-dot" style="background:#0284c7;"></span> 💻 Đang code</span>';
+          } else if (task.status === 'red_tested') {
+            deskStateClass = 'status-red_tested';
+            avatarIndicatorClass = 'warning';
+            activeLineClass = 'active';
+            codeScreenTab = 'test-fail.log';
+            statusBadgeHtml = '<span class="desk-status badge badge-red"><span class="live-dot" style="background:#dc2626;"></span> 🚨 TDD RED</span>';
+          } else if (task.status === 'green') {
+            deskStateClass = 'status-green';
+            avatarIndicatorClass = 'active';
+            activeLineClass = 'active';
+            codeScreenTab = 'test-pass.log';
+            statusBadgeHtml = '<span class="desk-status badge badge-green"><span class="live-dot" style="background:#059669;"></span> 🟢 TDD GREEN</span>';
+          } else if (task.status === 'merged') {
+            deskStateClass = 'status-merged';
+            avatarIndicatorClass = 'idle';
+            statusBadgeHtml = '<span class="desk-status badge badge-merged">🔀 Đã Merge</span>';
+          }
+        } else {
+          idleMembers.push({ id: wId, archetype });
+        }
+
+        const deskCard = document.createElement('div');
+        deskCard.className = 'office-desk ' + deskStateClass;
+        if (task) {
+          deskCard.onclick = () => openTaskModal(task.id);
+          deskCard.title = 'Click để xem chi tiết task ' + task.id;
+        } else {
+          deskCard.onclick = () => showToast('info', 'Thành viên @' + wId + ' (' + archetype.role + ') đang ở chế độ chờ.');
+          deskCard.title = 'Thành viên đang sẵn sàng';
+        }
+
+        deskCard.innerHTML =
+          '<div class="desk-lamp-cone"></div>' +
+          '<div class="desk-header">' +
+            '<div class="desk-member-info">' +
+              '<div class="desk-avatar-wrapper">' +
+                '<div class="desk-avatar" style="background:' + archetype.bg + '; color:#fff;">' + archetype.icon + '</div>' +
+                '<span class="desk-avatar-indicator ' + avatarIndicatorClass + '"></span>' +
+              '</div>' +
+              '<div class="desk-member-names">' +
+                '<h3>@' + escapeHtml(wId) + '</h3>' +
+                '<div class="desk-member-role">' + escapeHtml(archetype.role) + '</div>' +
+              '</div>' +
+            '</div>' +
+            statusBadgeHtml +
+          '</div>' +
+          '<div class="desk-surface">' +
+            '<div class="desk-dual-monitors">' +
+              '<div class="desk-screen">' +
+                '<div class="desk-screen-titlebar">' +
+                  '<div class="desk-screen-dots">' +
+                    '<span class="desk-screen-dot red"></span>' +
+                    '<span class="desk-screen-dot yellow"></span>' +
+                    '<span class="desk-screen-dot green"></span>' +
+                  '</div>' +
+                  '<span class="desk-screen-tab">' + codeScreenTab + '</span>' +
+                '</div>' +
+                '<div class="desk-code-lines">' +
+                  '<div class="desk-code-line ' + activeLineClass + '"></div>' +
+                  '<div class="desk-code-line" style="width:70%;"></div>' +
+                  '<div class="desk-code-line" style="width:50%;"></div>' +
+                  '<div class="desk-code-line" style="width:80%;"></div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="desk-screen desk-status-screen">' +
+                (task ?
+                  '<span class="desk-status-badge badge-' + (task.status === 'merged' ? 'merged' : task.status === 'green' ? 'green' : task.status === 'red_tested' ? 'red' : 'claimed') + '">' + escapeHtml(task.id) + '</span>' +
+                  '<div style="font-size:9px; color:#cbd5e1; font-weight:600; line-height:1.2; overflow:hidden; max-height:24px;">' + (task.worktreeBranch ? escapeHtml(task.worktreeBranch) : 'Worktree') + '</div>'
+                  :
+                  '<span style="font-size:16px;">💤</span><span style="font-size:10px; color:#94a3b8;">Chế độ nghỉ</span>'
+                ) +
+              '</div>' +
+            '</div>' +
+            '<div style="font-size:11px; font-weight:600; color:var(--text); line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' +
+              taskTitlePreview +
+            '</div>' +
+            '<div class="desk-accessories">' +
+              '<div class="desk-coffee">☕ <span class="steam-icon">~</span> <span style="font-size:10px;">Cafe nóng</span></div>' +
+              '<span class="desk-note">' + noteText + '</span>' +
+            '</div>' +
+          '</div>';
+
+        desksGrid.appendChild(deskCard);
+      }
+
+      const activeDeskCount = tasks.filter(t => t.assignedTo && t.status !== 'merged').length;
+      const countEl = document.getElementById('office-active-count');
+      if (countEl) {
+        countEl.textContent = 'Đang có ' + activeDeskCount + ' nhân sự đang tập trung xử lý nhiệm vụ';
+      }
+
+      const loungeContainer = document.getElementById('lounge-avatars-container');
+      if (loungeContainer) {
+        loungeContainer.innerHTML = '';
+        if (idleMembers.length === 0) {
+          loungeContainer.innerHTML = '<span style="font-size:11px; color:var(--text-muted); font-style:italic;">Toàn bộ team đang tích cực làm việc tại bàn.</span>';
+        } else {
+          for (const m of idleMembers) {
+            const item = document.createElement('div');
+            item.className = 'lounge-avatar-item';
+            item.innerHTML = '<span style="font-size:14px;">' + m.archetype.icon + '</span> <span>@' + escapeHtml(m.id) + '</span>';
+            loungeContainer.appendChild(item);
+          }
+        }
+      }
+
+      const redTasks = tasks.filter(t => t.status === 'red_tested').length;
+      const greenTasks = tasks.filter(t => t.status === 'green').length;
+      const qaStatusEl = document.getElementById('qa-engine-status');
+      if (qaStatusEl) {
+        if (redTasks > 0) {
+          qaStatusEl.textContent = 'Đang theo dõi ' + redTasks + ' bài test RED';
+          qaStatusEl.style.color = 'var(--danger)';
+        } else if (greenTasks > 0) {
+          qaStatusEl.textContent = greenTasks + ' test suite đã GREEN - Sẵn sàng merge';
+          qaStatusEl.style.color = 'var(--success)';
+        } else {
+          qaStatusEl.textContent = 'Hệ thống kiểm thử native CDP sẵn sàng';
+          qaStatusEl.style.color = 'var(--success)';
+        }
       }
     }
 
