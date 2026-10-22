@@ -57,6 +57,20 @@ test('Supergraph Team UI Virtual Office Workspace Contract', async (t) => {
     assert.match(html, /@keyframes\s+typing-arm|@keyframes\s+type-hands|\.hands-typing|\.typing-hands-anim/, 'Should define animated typing hands')
   })
 
+  await t.test('defines ultra-realistic developer workstation SVG with dual screens, keyboard, mouse, and ergonomic chair', () => {
+    assert.match(html, /renderTechWorkstationSvg/, 'Should define renderTechWorkstationSvg function')
+    assert.match(html, /tech-workstation-svg|\.tech-workstation/, 'Should define tech workstation SVG or container')
+    assert.match(html, /screenbar-light|monitor-light-bar|\.screen-bar/, 'Should include ScreenBar monitor light bar')
+    assert.match(html, /mechanical-keyboard|custom-keyboard|\.gather-keyboard/, 'Should include mechanical keyboard')
+    assert.match(html, /ergonomic-chair|mesh-chair|\.gather-chair/, 'Should include ergonomic mesh chair')
+  })
+
+  await t.test('defines architectural interior zones for War Room, QA Lab server rack, and Pantry espresso station', () => {
+    assert.match(html, /\.gather-conf-table|\.conf-oval-table/, 'Should define conference table in War Room')
+    assert.match(html, /\.gather-server-rack|server-rack-42u|\.rack-cabinet/, 'Should define 42U server rack in QA Lab')
+    assert.match(html, /\.gather-bar-counter|espresso-machine|\.pantry-counter/, 'Should define barista espresso station in Pantry')
+  })
+
   await t.test('defines responsive fluid layout and avoids cramped fixed clipping in sidebar frames', () => {
     assert.match(html, /@media[^{]*max-width:\s*960px|@media[^{]*max-width:\s*768px/, 'Should define responsive media query for narrow sidebar viewports')
     assert.match(html, /\.gather-room-eng[\s\S]*?(?:height:\s*auto|min-height)/, 'Engineering room should have auto or min-height without fixed clipping')
