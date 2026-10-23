@@ -24,6 +24,7 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | `/supergraph:fix` | `/fix` | After all coding is complete |
 | `/supergraph:integration` | `/integration` | After unit tests pass |
 | `/supergraph:browser-agent` | `/browser-agent` | Autonomous human browser emulation & ISTQB QA testing (Rust CDP) |
+| `/supergraph:video-demo` | `/video-demo` | Films narrated, zooming, cursor-driven demo videos with retina screenshots |
 | `/supergraph:vibesec` | `/vibesec` | Security audit, vulnerability prevention (IDOR, XSS, CSRF, SSRF, SQLi, Auth/JWT) |
 | `/supergraph:verify` | `/verify` | Before claiming done/ready or committing |
 | `/supergraph:review` | `/review` | Before merging or when review is needed |

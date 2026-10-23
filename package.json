@@ -13,7 +13,8 @@
     "sg-team-mcp": "./plugins/supergraph/bin/sg-team-mcp.js",
     "sg-team-ui": "./plugins/supergraph/bin/sg-team-ui.js",
     "sg-team-status": "./plugins/supergraph/bin/sg-team-status.js",
-    "sg-browser-mcp": "./plugins/supergraph/bin/sg-browser-mcp.js"
+    "sg-browser-mcp": "./plugins/supergraph/bin/sg-browser-mcp.js",
+    "sg-video-demo": "./plugins/supergraph/skills/video-demo/scripts/demo"
   },
   "scripts": {
     "test": "node --test plugins/supergraph/tests/*.mjs"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# The command a person or an agent types. Everything it does is in
+# `engine/run.mjs`; this exists so the path you type is stable and short, and
+# so `demo` works from any directory.
+exec node "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/engine/run.mjs" "$@"

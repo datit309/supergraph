@@ -67,10 +67,19 @@ assert.ok(scanSkill, 'Should include "scan" skill')
 assert.strictEqual(scanSkill.provider, 'supergraph')
 assert.ok(scanSkill.description.length > 0, 'Scan skill must have description')
 
+const videoDemoSkill = candidates.find(s => s.name === 'video-demo')
+assert.ok(videoDemoSkill, 'Should include "video-demo" skill')
+assert.strictEqual(videoDemoSkill.provider, 'supergraph')
+assert.ok(videoDemoSkill.description.length > 0, 'video-demo skill must have description')
+
 // 5. Verify skill content retrieval
 const loaded = await registeredProvider.get(scanSkill)
 assert.strictEqual(loaded.name, 'scan')
 assert.ok(loaded.content.includes('/supergraph:scan'), 'Loaded content must contain skill body')
+
+const loadedVideoDemo = await registeredProvider.get(videoDemoSkill)
+assert.strictEqual(loadedVideoDemo.name, 'video-demo')
+assert.ok(loadedVideoDemo.content.includes('video-demo'), 'Loaded content must contain video-demo body')
 
 // 6. Verify client.js dynamic host contract and header action button
 const clientJs = fs.readFileSync(new URL('../client.js', import.meta.url), 'utf8')

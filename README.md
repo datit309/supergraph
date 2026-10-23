@@ -130,6 +130,7 @@ uv tool install -p 3.13 serena-agent
 | `/supergraph:fix` | Plan-aware auto-fix loop (tests, lint, format) | After code changes complete |
 | `/supergraph:integration`| Integration, contract, and DB test runs | After unit tests pass |
 | `/supergraph:browser-agent`| ISTQB QA testing & human browser emulation | E2E web/API testing, anti-bot bypass |
+| `/supergraph:video-demo`  | Narrated, zooming demo videos & Retina captures | Marketing videos, feature demos, visual repros |
 | `/supergraph:vibesec` | Security audit (OWASP Top 10, IDOR, SQLi) | Security reviews & sensitive endpoints |
 | `/supergraph:verify` | Fresh verification evidence gate | Before claiming done or committing |
 | `/supergraph:review` | Independent code review & merge verdict | Before merge |

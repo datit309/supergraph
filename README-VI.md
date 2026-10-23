@@ -117,6 +117,7 @@ uv tool install -p 3.13 serena-agent
 | `/supergraph:fix` | Vòng lặp tự động sửa lỗi (tests, lint, format) | Ngay sau khi code xong |
 | `/supergraph:integration`| Kiểm thử tích hợp, contract API, cơ sở dữ liệu | Sau khi unit test đã pass |
 | `/supergraph:browser-agent`| Kiểm thử QA ISTQB & lái browser như người thật | Test E2E web/API, vượt anti-bot |
+| `/supergraph:video-demo`  | Quay video demo web app có thuyết minh, zoom & retina | Video demo tính năng, marketing, tái hiện lỗi trực quan |
 | `/supergraph:vibesec` | Kiểm toán bảo mật chuyên sâu (OWASP, IDOR, SQLi) | Review bảo mật các endpoint nhạy cảm |
 | `/supergraph:verify` | Cổng nghiệm thu bằng chứng tươi mới | Trước khi tuyên bố xong hoặc commit |
 | `/supergraph:review` | Review code độc lập & đưa phán quyết merge | Trước khi merge |
