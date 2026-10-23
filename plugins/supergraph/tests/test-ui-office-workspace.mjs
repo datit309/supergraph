@@ -100,4 +100,13 @@ test('Supergraph Team UI Virtual Office Workspace Contract', async (t) => {
     assert.match(html, /gather-roaming-agent|\.roaming-agent-walker/, 'Should define corridor roaming agent walkers')
     assert.match(html, /pantry-lounge-person|\.pantry-seated-agent/, 'Should render seated/relaxing avatars in the Pantry bar')
   })
+
+  await t.test('guarantees developer avatar is completely unobstructed by monitors, mount bars, or desk slabs', () => {
+    // 1. Center opening between dual monitors must be wide (no monitor arm cutting through x=140 center face)
+    assert.doesNotMatch(html, /M\s*140\s+76\s+L\s*140\s+54/, 'Must not place monitor center mount pole through developer face axis (x=140)')
+    // 2. Light bar must not cut horizontally across developer forehead
+    assert.doesNotMatch(html, /x=["']28["']\s+y=["']10["']\s+width=["']96["']/, 'Must not place screenbar light across developer forehead')
+    // 3. Hands and arms must be rendered on top of desk/keyboard layer
+    assert.match(html, /desk-hands|human-hands-desk|hands-on-keyboard/, 'Must render developer hands and arms on top of desk surface')
+  })
 })

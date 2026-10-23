@@ -3910,168 +3910,151 @@ export function getTeamUiHtml() {
           '</defs>' +
 
           '<!-- 1. Ambient Floor Drop Shadow -->' +
-          '<ellipse cx="140" cy="188" rx="125" ry="32" fill="url(#floor-shadow-' + wId + ')"/>' +
+          '<ellipse cx="140" cy="192" rx="125" ry="30" fill="url(#floor-shadow-' + wId + ')"/>' +
 
           '<!-- 2. Dual Steel Heavy Desk Legs (T-frame with Feet) -->' +
-          '<rect x="28" y="125" width="8" height="52" rx="2" fill="#1e293b"/>' +
-          '<rect x="22" y="174" width="20" height="5" rx="2" fill="#0f172a"/>' +
-          '<rect x="244" y="125" width="8" height="52" rx="2" fill="#1e293b"/>' +
-          '<rect x="238" y="174" width="20" height="5" rx="2" fill="#0f172a"/>' +
+          '<rect x="24" y="120" width="8" height="58" rx="2" fill="#1e293b"/>' +
+          '<rect x="18" y="174" width="20" height="5" rx="2" fill="#0f172a"/>' +
+          '<rect x="248" y="120" width="8" height="58" rx="2" fill="#1e293b"/>' +
+          '<rect x="242" y="174" width="20" height="5" rx="2" fill="#0f172a"/>' +
           '<!-- Under-desk cable management spine -->' +
-          '<path d="M 50 135 C 70 148, 210 148, 230 135" fill="none" stroke="#334155" stroke-width="3" stroke-dasharray="4,4"/>' +
+          '<path d="M 45 140 C 70 152, 210 152, 235 140" fill="none" stroke="#334155" stroke-width="3" stroke-dasharray="4,4"/>' +
 
-          '<!-- 3. Herman Miller Style Ergonomic Mesh Chair (Backrest & Casters) - Behind Table -->' +
-          '<g class="gather-chair ergonomic-chair" transform="translate(90, 75)">' +
-            '<circle cx="50" cy="86" r="4" fill="#0f172a"/>' +
-            '<line x1="50" y1="86" x2="30" y2="92" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
-            '<line x1="50" y1="86" x2="70" y2="92" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
-            '<line x1="50" y1="86" x2="40" y2="78" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
-            '<line x1="50" y1="86" x2="60" y2="78" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
-            '<line x1="50" y1="86" x2="50" y2="95" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
-            '<circle cx="30" cy="92" r="2" fill="#0f172a"/>' +
-            '<circle cx="70" cy="92" r="2" fill="#0f172a"/>' +
-            '<circle cx="40" cy="78" r="2" fill="#0f172a"/>' +
-            '<circle cx="60" cy="78" r="2" fill="#0f172a"/>' +
-            '<circle cx="50" cy="95" r="2" fill="#0f172a"/>' +
-            '<line x1="50" y1="86" x2="50" y2="62" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>' +
-            '<ellipse cx="50" cy="60" rx="34" ry="11" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>' +
-            '<path d="M 18 56 C 18 42, 22 42, 22 36" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round"/>' +
-            '<rect x="15" y="34" width="10" height="4" rx="2" fill="#0f172a"/>' +
-            '<path d="M 82 56 C 82 42, 78 42, 78 36" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round"/>' +
-            '<rect x="75" y="34" width="10" height="4" rx="2" fill="#0f172a"/>' +
-            '<path d="M 28 50 C 26 15, 74 15, 72 50 Z" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8" opacity="0.95"/>' +
-            '<path d="M 32 36 C 42 40, 58 40, 68 36" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8"/>' +
-          '</g>' +
-
-          '<!-- 4. Seated Human Developer (Elevated in Center - 100% Visible) -->' +
-          '<g class="workstation-human-figure gather-character ' + (isWorking ? 'typing' : 'is-relaxing') + '" transform="translate(90, 14)">' +
-            renderHumanDeveloperSvg(wId, isWorking, taskStatus) +
-          '</g>' +
-
-          '<!-- 5. Heavy Beveled Oak Desktop (Depth: 74px) -->' +
-          '<rect x="12" y="80" width="256" height="74" rx="8" fill="url(#oak-desk-top-' + wId + ')" stroke="#3b1d07" stroke-width="1.5"/>' +
-          '<rect x="13.5" y="81.5" width="253" height="3" rx="1.5" fill="url(#desk-edge-highlight)"/>' +
-          '<rect x="12" y="148" width="256" height="6" rx="3" fill="#291003"/>' +
-
-          '<!-- 6. Monitor Arm & Desk Clamp Mount -->' +
-          '<rect x="135" y="74" width="10" height="12" rx="2" fill="#0f172a"/>' +
-          '<path d="M 140 76 L 140 54" stroke="#334155" stroke-width="5" stroke-linecap="round"/>' +
-          '<path d="M 140 54 L 60 48" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>' +
-          '<path d="M 140 54 L 220 48" stroke="#475569" stroke-width="3.5" stroke-linecap="round"/>' +
-
-          '<!-- 7. Dual Frameless IPS Screens (Flanking Center Window) -->' +
-          '<g class="gather-monitors">' +
-            '<!-- Screen 1: VS Code IDE (Left) -->' +
-            '<g class="gather-monitor" transform="translate(10, 16)">' +
-              '<rect x="0" y="0" width="88" height="62" rx="4" fill="#090d16" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
-              '<rect x="2" y="2" width="84" height="10" rx="2" fill="#111827"/>' +
-              '<rect x="5" y="3" width="34" height="8" rx="1" fill="#1e293b"/>' +
-              '<text x="7" y="9" font-size="4.5" fill="#38bdf8" font-family="monospace" font-weight="bold">' + activeFile.slice(0, 14) + '</text>' +
-              '<line x1="5" y1="11" x2="39" y2="11" stroke="#38bdf8" stroke-width="1"/>' +
-              '<rect x="2" y="12" width="10" height="42" fill="#0f172a"/>' +
-              '<text x="4" y="18" font-size="4" fill="#475569" font-family="monospace">1</text>' +
-              '<text x="4" y="25" font-size="4" fill="#475569" font-family="monospace">2</text>' +
-              '<text x="4" y="32" font-size="4" fill="#475569" font-family="monospace">3</text>' +
-              '<text x="4" y="39" font-size="4" fill="#475569" font-family="monospace">4</text>' +
-              '<text x="4" y="46" font-size="4" fill="#475569" font-family="monospace">5</text>' +
-              '<g transform="translate(14, 14)">' +
-                '<rect x="0" y="3" width="12" height="2" rx="1" fill="#c084fc"/>' +
-                '<rect x="14" y="3" width="22" height="2" rx="1" fill="#38bdf8"/>' +
-                '<rect x="38" y="3" width="16" height="2" rx="1" fill="#fbbf24"/>' +
-                '<rect x="0" y="10" width="14" height="2" rx="1" fill="#c084fc"/>' +
-                '<rect x="16" y="10" width="26" height="2" rx="1" fill="#2dd4bf"/>' +
-                '<rect x="0" y="17" width="36" height="2" rx="1" fill="#94a3b8"/>' +
-                '<rect x="6" y="24" width="20" height="2" rx="1" fill="#34d399"/>' +
-                '<rect x="28" y="24" width="18" height="2" rx="1" fill="#f43f5e"/>' +
+          '<!-- 3. Dual Frameless IPS Screens (Flanking Cockpit - 112px Wide Center Opening) -->' +
+          '<g class="gather-monitors desk-screen">' +
+            '<!-- Left Monitor Mount Stand (Independent - NOT at x=140) -->' +
+            '<path d="M 46 80 L 46 112" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>' +
+            '<rect x="36" y="110" width="20" height="4" rx="2" fill="#0f172a"/>' +
+            '<!-- Screen 1: VS Code IDE (Left Wing) -->' +
+            '<g class="gather-monitor" transform="translate(6, 24)">' +
+              '<rect x="0" y="0" width="78" height="56" rx="4" fill="#090d16" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
+              '<rect x="2" y="2" width="74" height="9" rx="2" fill="#111827"/>' +
+              '<rect x="4" y="3" width="30" height="7" rx="1" fill="#1e293b"/>' +
+              '<text x="6" y="8.5" font-size="4" fill="#38bdf8" font-family="monospace" font-weight="bold">' + activeFile.slice(0, 12) + '</text>' +
+              '<line x1="4" y1="10" x2="34" y2="10" stroke="#38bdf8" stroke-width="0.8"/>' +
+              '<rect x="2" y="11" width="8" height="38" fill="#0f172a"/>' +
+              '<text x="3.5" y="16" font-size="3.5" fill="#475569" font-family="monospace">1</text>' +
+              '<text x="3.5" y="22" font-size="3.5" fill="#475569" font-family="monospace">2</text>' +
+              '<text x="3.5" y="28" font-size="3.5" fill="#475569" font-family="monospace">3</text>' +
+              '<text x="3.5" y="34" font-size="3.5" fill="#475569" font-family="monospace">4</text>' +
+              '<g transform="translate(12, 12)">' +
+                '<rect x="0" y="3" width="10" height="2" rx="1" fill="#c084fc"/>' +
+                '<rect x="12" y="3" width="18" height="2" rx="1" fill="#38bdf8"/>' +
+                '<rect x="32" y="3" width="14" height="2" rx="1" fill="#fbbf24"/>' +
+                '<rect x="0" y="9" width="12" height="2" rx="1" fill="#c084fc"/>' +
+                '<rect x="14" y="9" width="22" height="2" rx="1" fill="#2dd4bf"/>' +
+                '<rect x="0" y="15" width="30" height="2" rx="1" fill="#94a3b8"/>' +
+                '<rect x="4" y="21" width="16" height="2" rx="1" fill="#34d399"/>' +
+                '<rect x="22" y="21" width="14" height="2" rx="1" fill="#f43f5e"/>' +
               '</g>' +
-              '<rect x="78" y="13" width="6" height="40" fill="#0b0f19" opacity="0.8"/>' +
-              '<rect x="79" y="15" width="4" height="1.5" fill="#38bdf8" opacity="0.6"/>' +
-              '<rect x="79" y="18" width="3.5" height="1.5" fill="#c084fc" opacity="0.6"/>' +
-              '<rect x="2" y="54" width="84" height="6" rx="1" fill="#0284c7"/>' +
-              '<text x="4" y="58.5" font-size="4" fill="#ffffff" font-family="sans-serif" font-weight="bold">⎇ master  ✓ 0</text>' +
-              '<text x="64" y="58.5" font-size="4" fill="#ffffff" font-family="sans-serif">UTF-8</text>' +
+              '<rect x="68" y="12" width="6" height="36" fill="#0b0f19" opacity="0.8"/>' +
+              '<rect x="2" y="49" width="74" height="5" rx="1" fill="#0284c7"/>' +
+              '<text x="4" y="53" font-size="3.5" fill="#ffffff" font-family="sans-serif" font-weight="bold">⎇ master  ✓ 0</text>' +
             '</g>' +
 
-            '<!-- Screen 2: Interactive Terminal / Test Runner (Right) -->' +
-            '<g class="gather-monitor" transform="translate(182, 16)">' +
-              '<rect x="0" y="0" width="88" height="62" rx="4" fill="#070a13" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
-              '<rect x="2" y="2" width="84" height="9" rx="2" fill="#111827"/>' +
-              '<circle cx="6" cy="6.5" r="1.8" fill="#ef4444"/>' +
-              '<circle cx="11" cy="6.5" r="1.8" fill="#f59e0b"/>' +
-              '<circle cx="16" cy="6.5" r="1.8" fill="#10b981"/>' +
-              '<text x="24" y="7" font-size="4" fill="#94a3b8" font-family="monospace">zsh - test</text>' +
+            '<!-- Right Monitor Mount Stand (Independent - NOT at x=140) -->' +
+            '<path d="M 234 80 L 234 112" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>' +
+            '<rect x="224" y="110" width="20" height="4" rx="2" fill="#0f172a"/>' +
+            '<!-- Screen 2: Interactive Terminal / Test Runner (Right Wing) -->' +
+            '<g class="gather-monitor" transform="translate(196, 24)">' +
+              '<rect x="0" y="0" width="78" height="56" rx="4" fill="#070a13" stroke="#1e293b" stroke-width="1.8" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.5))"/>' +
+              '<rect x="2" y="2" width="74" height="8" rx="2" fill="#111827"/>' +
+              '<circle cx="5" cy="6" r="1.5" fill="#ef4444"/>' +
+              '<circle cx="9.5" cy="6" r="1.5" fill="#f59e0b"/>' +
+              '<circle cx="14" cy="6" r="1.5" fill="#10b981"/>' +
+              '<text x="20" y="6.5" font-size="3.5" fill="#94a3b8" font-family="monospace">zsh - test</text>' +
               (isWorking ? (
-                '<text x="5" y="17" font-size="4.5" fill="#38bdf8" font-family="monospace" font-weight="bold">~/supergraph $</text>' +
-                '<text x="5" y="24" font-size="4" fill="#94a3b8" font-family="monospace">node --test runner.mjs</text>' +
-                '<rect x="5" y="28" width="78" height="14" rx="2" fill="rgba(0,0,0,0.4)" stroke="' + termStatusColor + '" stroke-width="0.8"/>' +
-                '<circle cx="11" cy="35" r="2.5" fill="' + termStatusColor + '"/>' +
-                '<text x="17" y="37" font-size="4.8" fill="' + termStatusColor + '" font-family="monospace" font-weight="bold">' + termStatusText + '</text>' +
-                '<text x="5" y="48" font-size="4" fill="#64748b" font-family="monospace">task: ' + activeTaskId.slice(0, 12) + '</text>'
+                '<text x="4" y="16" font-size="4" fill="#38bdf8" font-family="monospace" font-weight="bold">~/supergraph $</text>' +
+                '<text x="4" y="22" font-size="3.5" fill="#94a3b8" font-family="monospace">node --test runner.mjs</text>' +
+                '<rect x="4" y="26" width="70" height="13" rx="2" fill="rgba(0,0,0,0.4)" stroke="' + termStatusColor + '" stroke-width="0.8"/>' +
+                '<circle cx="9" cy="32.5" r="2" fill="' + termStatusColor + '"/>' +
+                '<text x="14" y="34" font-size="4.2" fill="' + termStatusColor + '" font-family="monospace" font-weight="bold">' + termStatusText + '</text>' +
+                '<text x="4" y="45" font-size="3.5" fill="#64748b" font-family="monospace">task: ' + activeTaskId.slice(0, 10) + '</text>'
               ) : (
                 '<!-- Retro Screensaver / Lofi Vibes -->' +
-                '<text x="5" y="17" font-size="4.5" fill="#10b981" font-family="monospace" font-weight="bold">> STANDBY // IDLE</text>' +
-                '<text x="5" y="24" font-size="4" fill="#34d399" font-family="monospace">01010110 01101001</text>' +
-                '<text x="5" y="32" font-size="4" fill="#059669" font-family="monospace">🎧 Lo-Fi Beats On</text>' +
-                '<text x="5" y="40" font-size="4" fill="#38bdf8" font-family="monospace">Spotify: Deep Work</text>' +
-                '<text x="5" y="49" font-size="4" fill="#c084fc" font-family="monospace">Ready for next sprint</text>'
+                '<text x="4" y="16" font-size="4" fill="#10b981" font-family="monospace" font-weight="bold">> STANDBY // IDLE</text>' +
+                '<text x="4" y="23" font-size="3.5" fill="#34d399" font-family="monospace">01010110 01101001</text>' +
+                '<text x="4" y="30" font-size="3.5" fill="#059669" font-family="monospace">🎧 Lo-Fi Beats On</text>' +
+                '<text x="4" y="38" font-size="3.5" fill="#38bdf8" font-family="monospace">Spotify: Deep Work</text>' +
+                '<text x="4" y="46" font-size="3.5" fill="#c084fc" font-family="monospace">Ready for next sprint</text>'
               )) +
-              '<rect x="5" y="54" width="4" height="2" fill="' + (isWorking ? '#10b981' : '#38bdf8') + '">' +
+              '<rect x="4" y="50" width="3.5" height="1.8" fill="' + (isWorking ? '#10b981' : '#38bdf8') + '">' +
                 '<animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>' +
               '</rect>' +
             '</g>' +
           '</g>' +
 
-          '<!-- 8. BenQ ScreenBar LED Light Bar -->' +
-          '<rect class="screen-bar screenbar-light" x="28" y="10" width="96" height="3" rx="1.5" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>' +
-          '<rect x="30" y="12" width="92" height="1" fill="#fef08a" opacity="0.9"/>' +
-          '<polygon points="30,13 124,13 185,115 15,115" fill="url(#screenbar-glow-' + wId + ')" pointer-events="none"/>' +
+          '<!-- 4. BenQ ScreenBar LED Light Bar (Mounted on Left Monitor ONLY - Zero Forehead Clipping) -->' +
+          '<rect class="screen-bar screenbar-light" x="12" y="21" width="66" height="3" rx="1.5" fill="#0f172a" stroke="#334155" stroke-width="0.8"/>' +
+          '<rect x="14" y="22.5" width="62" height="1" fill="#fef08a" opacity="0.9"/>' +
+          '<polygon points="14,23.5 76,23.5 82,80 8,80" fill="url(#screenbar-glow-' + wId + ')" pointer-events="none"/>' +
 
-          '<!-- 9. Premium Felt Stitched Desk Mat -->' +
-          '<rect x="35" y="90" width="210" height="58" rx="6" fill="url(#felt-mat-grad)" stroke="#334155" stroke-width="1.2" stroke-dasharray="3,2"/>' +
-
-          '<!-- 10. Custom Mechanical Keyboard & Aviator Cable -->' +
-          '<g class="gather-keyboard mechanical-keyboard" transform="translate(94, 98)">' +
-            '<path d="M 45 0 C 45 -6, 52 -6, 52 -10 C 52 -14, 58 -14, 58 -18" fill="none" stroke="#38bdf8" stroke-width="1.5"/>' +
-            '<rect x="0" y="0" width="92" height="32" rx="3" fill="#0f172a" stroke="#334155" stroke-width="1.2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.4))"/>' +
-            '<rect x="3" y="3" width="7" height="5" rx="1" fill="#38bdf8"/>' +
-            '<rect x="12" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="20" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="28" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="36" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="44" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="52" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="60" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="68" y="3" width="6" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="76" y="3" width="13" height="5" rx="1" fill="#64748b"/>' +
-            '<rect x="3" y="10" width="9" height="5" rx="1" fill="#64748b"/>' +
-            '<rect x="14" y="10" width="6" height="5" rx="1" fill="#334155"/>' +
-            '<rect x="22" y="10" width="6" height="5" rx="1" fill="#334155"/>' +
-            '<rect x="30" y="10" width="6" height="5" rx="1" fill="#334155"/>' +
-            '<rect x="38" y="10" width="6" height="5" rx="1" fill="#334155"/>' +
-            '<rect x="46" y="10" width="6" height="5" rx="1" fill="#334155"/>' +
-            '<rect x="54" y="10" width="6" height="5" rx="1" fill="#334155"/>' +
-            '<rect x="62" y="10" width="6" height="5" rx="1" fill="#334155"/>' +
-            '<rect x="70" y="10" width="19" height="5" rx="1" fill="#a855f7"/>' +
-            '<rect x="3" y="17" width="11" height="5" rx="1" fill="#64748b"/>' +
-            '<rect x="16" y="17" width="8" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="26" y="17" width="38" height="5" rx="1.5" fill="#e2e8f0"/>' +
-            '<rect x="66" y="17" width="8" height="5" rx="1" fill="#475569"/>' +
-            '<rect x="76" y="17" width="13" height="5" rx="1" fill="#64748b"/>' +
-            '<rect x="73" y="24" width="5" height="5" rx="1" fill="#38bdf8"/>' +
-            '<rect x="80" y="24" width="5" height="5" rx="1" fill="#38bdf8"/>' +
-            '<rect x="86" y="24" width="5" height="5" rx="1" fill="#38bdf8"/>' +
+          '<!-- 5. Herman Miller Style Ergonomic Chair (Backrest & Casters) -->' +
+          '<g class="gather-chair ergonomic-chair" transform="translate(90, 48)">' +
+            '<circle cx="50" cy="98" r="4" fill="#0f172a"/>' +
+            '<line x1="50" y1="98" x2="30" y2="105" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
+            '<line x1="50" y1="98" x2="70" y2="105" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
+            '<line x1="50" y1="98" x2="50" y2="108" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>' +
+            '<circle cx="30" cy="105" r="2" fill="#0f172a"/>' +
+            '<circle cx="70" cy="105" r="2" fill="#0f172a"/>' +
+            '<circle cx="50" cy="108" r="2" fill="#0f172a"/>' +
+            '<line x1="50" y1="98" x2="50" y2="68" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>' +
+            '<ellipse cx="50" cy="65" rx="34" ry="11" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>' +
+            '<path d="M 28 50 C 26 15, 74 15, 72 50 Z" fill="#0f172a" stroke="#38bdf8" stroke-width="1.8" opacity="0.95"/>' +
+            '<path d="M 32 36 C 42 40, 58 40, 68 36" fill="none" stroke="#38bdf8" stroke-width="3" opacity="0.8"/>' +
           '</g>' +
 
-          '<!-- 11. Ergonomic Wireless Mouse (Logitech MX Master style) -->' +
-          '<g transform="translate(196, 104)">' +
+          '<!-- 6. Heavy Beveled Oak Desktop (Depth: 64px, Elevated Desk Base) -->' +
+          '<rect x="12" y="106" width="256" height="66" rx="8" fill="url(#oak-desk-top-' + wId + ')" stroke="#3b1d07" stroke-width="1.5"/>' +
+          '<rect x="13.5" y="107.5" width="253" height="3" rx="1.5" fill="url(#desk-edge-highlight)"/>' +
+          '<rect x="12" y="166" width="256" height="6" rx="3" fill="#291003"/>' +
+
+          '<!-- 7. Premium Felt Stitched Desk Mat -->' +
+          '<rect x="65" y="116" width="150" height="48" rx="6" fill="url(#felt-mat-grad)" stroke="#334155" stroke-width="1.2" stroke-dasharray="3,2"/>' +
+
+          '<!-- 8. Custom Mechanical Keyboard & Aviator Cable -->' +
+          '<g class="gather-keyboard mechanical-keyboard" transform="translate(94, 122)">' +
+            '<path d="M 45 0 C 45 -5, 52 -5, 52 -9 C 52 -13, 58 -13, 58 -16" fill="none" stroke="#38bdf8" stroke-width="1.5"/>' +
+            '<rect x="0" y="0" width="92" height="30" rx="3" fill="#0f172a" stroke="#334155" stroke-width="1.2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.4))"/>' +
+            '<rect x="3" y="3" width="7" height="4.5" rx="1" fill="#38bdf8"/>' +
+            '<rect x="12" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="20" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="28" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="36" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="44" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="52" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="60" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="68" y="3" width="6" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="76" y="3" width="13" height="4.5" rx="1" fill="#64748b"/>' +
+            '<rect x="3" y="9.5" width="9" height="4.5" rx="1" fill="#64748b"/>' +
+            '<rect x="14" y="9.5" width="6" height="4.5" rx="1" fill="#334155"/>' +
+            '<rect x="22" y="9.5" width="6" height="4.5" rx="1" fill="#334155"/>' +
+            '<rect x="30" y="9.5" width="6" height="4.5" rx="1" fill="#334155"/>' +
+            '<rect x="38" y="9.5" width="6" height="4.5" rx="1" fill="#334155"/>' +
+            '<rect x="46" y="9.5" width="6" height="4.5" rx="1" fill="#334155"/>' +
+            '<rect x="54" y="9.5" width="6" height="4.5" rx="1" fill="#334155"/>' +
+            '<rect x="62" y="9.5" width="6" height="4.5" rx="1" fill="#334155"/>' +
+            '<rect x="70" y="9.5" width="19" height="4.5" rx="1" fill="#a855f7"/>' +
+            '<rect x="3" y="16" width="11" height="4.5" rx="1" fill="#64748b"/>' +
+            '<rect x="16" y="16" width="8" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="26" y="16" width="38" height="4.5" rx="1.5" fill="#e2e8f0"/>' +
+            '<rect x="66" y="16" width="8" height="4.5" rx="1" fill="#475569"/>' +
+            '<rect x="76" y="16" width="13" height="4.5" rx="1" fill="#64748b"/>' +
+            '<rect x="73" y="22.5" width="5" height="4.5" rx="1" fill="#38bdf8"/>' +
+            '<rect x="80" y="22.5" width="5" height="4.5" rx="1" fill="#38bdf8"/>' +
+            '<rect x="86" y="22.5" width="5" height="4.5" rx="1" fill="#38bdf8"/>' +
+          '</g>' +
+
+          '<!-- 9. Ergonomic Wireless Mouse (Logitech MX Master style) -->' +
+          '<g transform="translate(196, 126)">' +
             '<path d="M 4 2 C 12 -1, 18 4, 18 16 C 18 24, 14 27, 8 27 C 2 27, 0 22, 0 16 C 0 10, 1 3, 4 2 Z" fill="#1e293b" stroke="#334155" stroke-width="1.2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))"/>' +
             '<line x1="8" y1="2" x2="8" y2="12" stroke="#0f172a" stroke-width="1"/>' +
             '<rect x="6.5" y="4" width="3" height="6" rx="1" fill="#94a3b8"/>' +
             '<path d="M 0 14 C -3 16, -3 21, 1 23" fill="#0f172a"/>' +
           '</g>' +
 
-          '<!-- 12. Ceramic Coffee Mug with Cork Coaster & Animated Steam -->' +
-          '<g transform="translate(224, 96)">' +
+          '<!-- 10. Ceramic Coffee Mug with Cork Coaster & Animated Steam -->' +
+          '<g transform="translate(224, 116)">' +
             '<circle cx="10" cy="12" r="10" fill="#78350f" opacity="0.4"/>' +
             '<rect x="3" y="4" width="14" height="15" rx="3" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>' +
             '<path d="M 17 7 C 21 7, 21 14, 17 14" fill="none" stroke="#cbd5e1" stroke-width="2"/>' +
@@ -4089,8 +4072,8 @@ export function getTeamUiHtml() {
               '</g>' : '') +
           '</g>' +
 
-          '<!-- 13. Ceramic Geometric Pot with Succulent Desk Plant -->' +
-          '<g transform="translate(18, 96)">' +
+          '<!-- 11. Ceramic Geometric Pot with Succulent Desk Plant -->' +
+          '<g transform="translate(20, 116)">' +
             '<polygon points="4,16 16,16 18,7 2,7" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>' +
             '<circle cx="10" cy="5" r="4" fill="#10b981"/>' +
             '<circle cx="7" cy="6" r="3.5" fill="#059669"/>' +
@@ -4098,11 +4081,37 @@ export function getTeamUiHtml() {
             '<circle cx="10" cy="3" r="3" fill="#6ee7b7"/>' +
           '</g>' +
 
-          '<!-- 14. Apple Mac Studio / High-End Mini PC -->' +
-          '<g transform="translate(246, 96)">' +
+          '<!-- 12. Apple Mac Studio / High-End Mini PC -->' +
+          '<g transform="translate(244, 116)">' +
             '<rect x="0" y="0" width="22" height="17" rx="3" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1"/>' +
             '<rect x="0" y="14" width="22" height="3" rx="1" fill="#475569"/>' +
             '<circle cx="18" cy="11" r="1.2" fill="#38bdf8"/>' +
+          '</g>' +
+
+          '<!-- 13. SEATED HUMAN DEVELOPER (100% UNOBSTRUCTED HERO - FULL HEAD, BODY & SHIRT) -->' +
+          '<g class="workstation-human-figure gather-character ' + (isWorking ? 'typing' : 'is-relaxing') + '" transform="translate(90, 26)">' +
+            renderHumanDeveloperSvg(wId, isWorking, taskStatus) +
+          '</g>' +
+
+          '<!-- 14. DEVELOPER HANDS & ARMS ON TOP OF KEYBOARD / DESK SURFACE -->' +
+          '<g class="desk-hands human-hands-desk hands-on-keyboard" transform="translate(90, 26)">' +
+            (isWorking ? (
+              '<g class="hands-typing">' +
+                '<path d="M 32 78 C 34 88, 40 98, 44 100" stroke="' + (wId === 'architect' ? '#1e3a8a' : wId === 'frontend-dev' ? '#0d9488' : wId === 'backend-dev' ? '#1e293b' : wId === 'tester-qa' ? '#6d28d9' : '#ea580c') + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+                '<path d="M 68 78 C 66 88, 60 98, 56 100" stroke="' + (wId === 'architect' ? '#1e3a8a' : wId === 'frontend-dev' ? '#0d9488' : wId === 'backend-dev' ? '#1e293b' : wId === 'tester-qa' ? '#6d28d9' : '#ea580c') + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+                '<circle cx="44" cy="101" r="4" fill="#fed7aa"/>' +
+                '<rect x="42.5" y="100" width="3.5" height="4.5" rx="1.5" fill="#fed7aa"/>' +
+                '<circle cx="56" cy="101" r="4" fill="#fed7aa"/>' +
+                '<rect x="54" y="100" width="3.5" height="4.5" rx="1.5" fill="#fed7aa"/>' +
+              '</g>'
+            ) : (
+              '<g class="hands-chill">' +
+                '<path d="M 32 78 C 30 88, 36 96, 42 96" stroke="' + (wId === 'architect' ? '#1e3a8a' : wId === 'frontend-dev' ? '#0d9488' : wId === 'backend-dev' ? '#1e293b' : wId === 'tester-qa' ? '#6d28d9' : '#ea580c') + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+                '<circle cx="42" cy="96" r="4" fill="#fed7aa"/>' +
+                '<path d="M 68 78 C 72 88, 80 94, 88 92" stroke="' + (wId === 'architect' ? '#1e3a8a' : wId === 'frontend-dev' ? '#0d9488' : wId === 'backend-dev' ? '#1e293b' : wId === 'tester-qa' ? '#6d28d9' : '#ea580c') + '" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+                '<circle cx="88" cy="92" r="4" fill="#fed7aa"/>' +
+              '</g>'
+            )) +
           '</g>' +
         '</svg>'
       );
