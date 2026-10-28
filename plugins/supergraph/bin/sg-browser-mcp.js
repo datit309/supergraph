@@ -22,7 +22,9 @@ try {
   } catch {}
 }
 
-const args = ['mcp', '--tools', 'all']
+// Configurable tools profile (default to 'core,network,react' to save ~50k-70k tokens)
+const toolsProfile = process.env.SG_BROWSER_TOOLS || 'core,network,react'
+const args = ['mcp', '--tools', toolsProfile]
 
 // Human pointer movement by default (bypasses bot detection)
 const inputMode = process.env.SG_BROWSER_INPUT_MODE || 'human'
