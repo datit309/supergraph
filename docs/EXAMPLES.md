@@ -78,3 +78,24 @@ End-to-end walkthroughs demonstrating Supergraph engineering pipelines across co
 /supergraph:vibesec
 /supergraph:review
 ```
+
+---
+
+## 4. Mobile App Testing on Real Devices (`/supergraph:mobile-agent`)
+
+Testing Flutter, React Native, or Native apps on tethered iPhones/iPads or Android devices:
+
+```bash
+# 1. Inspect environment & connected devices
+bash plugins/supergraph/skills/mobile-agent/scripts/init-mobile-qa.sh doctor
+
+# 2. Run autonomous mobile test execution
+/supergraph:mobile-agent
+# AI auto-detects iOS (WDA on :8100) or Android (UiAutomator2 on :6790),
+# dumps compact @ref tree, executes taps/fills/swipes, handles alerts,
+# and captures device screenshots to docs/qa/evidence/
+
+# 3. Verification & evidence collection
+/supergraph:verify
+/supergraph:review
+```

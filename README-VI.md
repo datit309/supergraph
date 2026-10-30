@@ -17,6 +17,7 @@ Mọi thay đổi code đều tuân thủ nghiêm ngặt vòng đời kỹ thu�
 - **Đồ thị tri thức & Trí tuệ mã nguồn**: Vận hành bởi [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). Lập chỉ mục cục bộ vào `.codebase-memory/graph.db.zst` (cache tại `~/.cache/codebase-memory-mcp`) qua `index_repository`, cung cấp bán kính ảnh hưởng toán học (blast radius), cây gọi hàm, chu trình phụ thuộc và lỗ hổng kiểm thử. [Serena](https://github.com/oraios/serena) cung cấp điều hướng symbol và chẩn đoán LSP.
 - **Kiến trúc 7 Subagents chuyên biệt**: Phân tách trách nhiệm độc lập — `plan-writer` (lập kế hoạch), `plan-reviewer` (kiểm tra spec), `executor` (thực thi TDD), `qa-tester` (kiểm thử E2E browser/API), `security-auditor` (kiểm toán bảo mật AppSec), `diagnostician` (gỡ lỗi khoa học), và `code-reviewer` (phán quyết merge độc lập).
 - **Trình duyệt tự động hoá như người thật & QA Full-Stack (`browser-agent`)**: Nhân native Rust CDP (`agent-browser`, zero Playwright). Dùng cây trợ năng accessibility tree (`@ref`) siêu nhẹ token, vượt rào chống bot qua user profile thật, lập ma trận test ISTQB 5 chiều (UI + API + giả lập lỗi DB), xuất báo cáo sự cố chuyên nghiệp.
+- **Tự động hoá & Kiểm thử Mobile thiết bị thật đa nền tảng (`mobile-agent`)**: Điều khiển trực tiếp REST qua WebDriverAgent (iOS port 8100) và UiAutomator2 Server (Android port 6790), không cần cài đặt Appium Server cồng kềnh. Nén cây Accessibility dạng `@ref` tiết kiệm 95% token, xử lý phím Back/Home phần cứng, ẩn bàn phím ảo, tự động duyệt popup quyền hệ thống và chụp screenshot thực tế từ thiết bị.
 - **Điều phối Đa Agent Đẳng cấp (`supergraph-team`)**: Lập lịch nhiệm vụ DAG theo wave với git worktree cô lập tuyệt đối và dashboard giám sát thời gian thực (`:3333`).
 
 ### Hành vi Hook trên Windows
@@ -94,7 +95,8 @@ uv tool install -p 3.13 serena-agent
 /supergraph:plan           # 3. Tạo kế hoạch thực thi chi tiết
 /supergraph:execute        # 4. Thực thi song song qua git worktree & TDD
 /supergraph:fix            # 5. Vòng lặp tự sửa lỗi (test/lint)
-/supergraph:browser-agent  # 6. Kiểm thử E2E Browser & API (Rust CDP)
+/supergraph:browser-agent  # 6a. Kiểm thử E2E Browser & API (Rust CDP) cho Web
+/supergraph:mobile-agent   # 6b. Kiểm thử E2E Mobile trên iPhone/Android thật & giả lập
 /supergraph:verify         # 7. Thu thập bằng chứng nghiệm thu
 /supergraph:review         # 8. Review độc lập trước khi merge
 ```
@@ -117,6 +119,7 @@ uv tool install -p 3.13 serena-agent
 | `/supergraph:fix` | Vòng lặp tự động sửa lỗi (tests, lint, format) | Ngay sau khi code xong |
 | `/supergraph:integration`| Kiểm thử tích hợp, contract API, cơ sở dữ liệu | Sau khi unit test đã pass |
 | `/supergraph:browser-agent`| Kiểm thử QA ISTQB & lái browser như người thật | Test E2E web/API, vượt anti-bot |
+| `/supergraph:mobile-agent` | Kiểm thử tự động hoá Mobile trên iOS & Android | Test E2E trên thiết bị thật & giả lập (WDA & UiAutomator2) |
 | `/supergraph:video-demo`  | Quay video demo web app có thuyết minh, zoom & retina | Video demo tính năng, marketing, tái hiện lỗi trực quan |
 | `/supergraph:vibesec` | Kiểm toán bảo mật chuyên sâu (OWASP, IDOR, SQLi) | Review bảo mật các endpoint nhạy cảm |
 | `/supergraph:verify` | Cổng nghiệm thu bằng chứng tươi mới | Trước khi tuyên bố xong hoặc commit |
@@ -160,7 +163,7 @@ Supergraph Team điều phối luồng DAG đa worker không xung đột file:
 4. KHÔNG BAO GIỜ bỏ qua vòng lặp auto-fix.
 5. KHÔNG BAO GIỜ commit khi test hỏng hoặc review có lỗi CRITICAL.
 6. LUÔN LUÔN dùng công cụ đồ thị (`search_graph`, `trace_path`) trước khi suy đoán quan hệ.
-7. LUÔN LUÔN kiểm thử giao diện/API bằng `browser-agent` (Rust CDP, zero Playwright).
+7. LUÔN LUÔN kiểm thử giao diện/API bằng `browser-agent` (cho Web) và `mobile-agent` (cho Mobile iOS/Android).
 
 ---
 

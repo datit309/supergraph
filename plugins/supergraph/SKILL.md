@@ -31,6 +31,8 @@ Dispatch to the right skill. 1% rule: if it *might* apply, invoke it.
 | "test", "TDD", "add tests" | `/supergraph:tdd` |
 | "refactor", "clean up", "reorganize" | `/supergraph:plan` (then execute) |
 | integration/e2e tests, after unit green | `/supergraph:integration` |
+| "browser test", "e2e test web", "test UI web" | `/supergraph:browser-agent` |
+| "mobile test", "test ios", "test android", "test máy thật" | `/supergraph:mobile-agent` |
 | "video demo", "demo video", "walkthrough", "quay video demo" | `/supergraph:video-demo` |
 | "done?", "verify", before commit/PR | `/supergraph:verify` |
 | "review", "merge", "PR", before merge | `/supergraph:review` |

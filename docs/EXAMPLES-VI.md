@@ -43,3 +43,24 @@ Các kịch bản thực tế khi áp dụng pipeline Supergraph trong phát tri
 /supergraph:vibesec        # Kiểm toán an toàn bảo mật
 /supergraph:review         # Phán quyết merge
 ```
+
+---
+
+## 4. Kiểm thử Ứng dụng Mobile trên Thiết bị Thật (`/supergraph:mobile-agent`)
+
+Kiểm thử ứng dụng Flutter, React Native, iOS Swift hoặc Android Native trên thiết bị thật:
+
+```bash
+# 1. Kiểm tra môi trường & thiết bị đang cắm qua USB
+bash plugins/supergraph/skills/mobile-agent/scripts/init-mobile-qa.sh doctor
+
+# 2. Chạy kiểm thử tự động trên máy thật
+/supergraph:mobile-agent
+# AI tự động phát hiện thiết bị iOS (qua WDA cổng 8100) hoặc Android (qua UiAutomator2 cổng 6790),
+# nén cây Accessibility thành các mã @ref, thực hiện chạm/nhập liệu/vuốt,
+# tự động xử lý popup quyền Camera/GPS, và chụp ảnh bằng chứng lưu vào docs/qa/evidence/
+
+# 3. Nghiệm thu bằng chứng & review
+/supergraph:verify
+/supergraph:review
+```

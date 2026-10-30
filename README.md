@@ -17,6 +17,7 @@ Every non-trivial change follows the strict engineering lifecycle:
 - **Knowledge Graph & Code Intelligence**: Powered by [Codebase Memory MCP](https://github.com/DeusData/codebase-memory-mcp) (`>= 0.10.8,<0.11.0`). Indexes repository state locally into `.codebase-memory/graph.db.zst` (cache in `~/.cache/codebase-memory-mcp`) via `index_repository`, providing mathematical blast radius, call hierarchy, dependency cycles, and test gaps. [Serena](https://github.com/oraios/serena) provides LSP-level symbol navigation and diagnostics.
 - **7-Subagent Specialized Architecture**: Autonomous separation of concerns — `plan-writer` (planning), `plan-reviewer` (spec checks), `executor` (TDD execution), `qa-tester` (E2E browser/API testing), `security-auditor` (OWASP/Vibesec AppSec), `diagnostician` (root-cause debugging), and `code-reviewer` (independent merge verdict).
 - **Autonomous Human Browser Agent & QA (`browser-agent`)**: Native Rust CDP (`agent-browser`, zero Playwright). Uses compact accessibility tree snapshots (`@ref`), bypasses anti-bot walls via real user profiles, generates 5-dimension ISTQB test matrices (UI + API + DB fault injection), and exports structured bug reports.
+- **Unified Mobile Automation & Real Device QA (`mobile-agent`)**: Direct native REST control for iOS (via Appium `WebDriverAgent` / port 8100) and Android (via Appium `UiAutomator2 Server` / port 6790) without heavy Appium middleware. Generates compact token-efficient accessibility trees (`@ref`), handles hardware keys/back button, soft keyboards, permission dialogs, delta snapshots, and real device screenshots.
 - **Multi-Agent Orchestration (`supergraph-team`)**: Wave DAG task scheduling with isolated Git worktrees and live dashboard (`:3333`).
 
 ### Windows Hook Behavior
@@ -104,8 +105,9 @@ uv tool install -p 3.13 serena-agent
 # 5. Auto-fix loop
 /supergraph:fix
 
-# 6. E2E Browser & API verification (Rust CDP agent-browser)
-/supergraph:browser-agent
+# 6. E2E Browser & Mobile Verification
+/supergraph:browser-agent  # For Web / Browser apps (Rust CDP agent-browser)
+/supergraph:mobile-agent   # For Mobile apps on real iOS/Android devices & emulators
 
 # 7. Verification evidence & review
 /supergraph:verify
@@ -130,6 +132,7 @@ uv tool install -p 3.13 serena-agent
 | `/supergraph:fix` | Plan-aware auto-fix loop (tests, lint, format) | After code changes complete |
 | `/supergraph:integration`| Integration, contract, and DB test runs | After unit tests pass |
 | `/supergraph:browser-agent`| ISTQB QA testing & human browser emulation | E2E web/API testing, anti-bot bypass |
+| `/supergraph:mobile-agent` | Unified autonomous mobile testing across iOS & Android | Real device & emulator E2E testing (WDA & UiAutomator2) |
 | `/supergraph:video-demo`  | Narrated, zooming demo videos & Retina captures | Marketing videos, feature demos, visual repros |
 | `/supergraph:vibesec` | Security audit (OWASP Top 10, IDOR, SQLi) | Security reviews & sensitive endpoints |
 | `/supergraph:verify` | Fresh verification evidence gate | Before claiming done or committing |
@@ -175,7 +178,7 @@ Supergraph Team coordinates multi-agent DAG execution with zero file conflicts:
 4. NEVER skip the auto-fix loop.
 5. NEVER commit if tests fail or review has CRITICAL findings.
 6. ALWAYS query graph tools (`search_graph`, `trace_path`) before assuming relationships.
-7. ALWAYS verify browser/API features with `browser-agent` (Rust CDP, zero Playwright).
+7. ALWAYS verify browser/API features with `browser-agent` (Rust CDP, zero Playwright) and mobile features with `mobile-agent`.
 
 ---
 
