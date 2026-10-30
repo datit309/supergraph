@@ -1,53 +1,38 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { mkdirSync, writeFileSync, unlinkSync } from 'node:fs';
 import { access, mkdir, readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { VOICE_ENABLED, demo } from './config.ts';
 
 /**
- * The voice-over, spoken locally by Kokoro.
+ * The voice-over, spoken locally by Kokoro or Edge TTS.
  *
- * Every line a scene narrates through `actor.say` comes here. Nothing is sent
- * anywhere: Kokoro-82M runs as ONNX on the CPU out of a cache directory, so a
- * corpus can be re-cut on a train and the audio for a private app never
- * leaves the machine. That is the same bargain the rest of the studio keeps
- * with the seeded data, and it would be strange to break it for the
- * narration.
- *
- * Two things make this cheap enough to leave switched on. Lines are cached by
- * the hash of their own text, so the dark pass of a scene speaks nothing at
- * all: it says exactly what the light pass said, and the wav is already
- * there. And synthesis for a whole scene happens in one process, because
- * loading the model costs about four seconds and saying a sentence costs
- * about one.
- *
- * Install is deliberately not automatic. A studio that silently pip-installs a
- * hundred megabytes the first time somebody films is a studio that does
- * something surprising on a metered connection, so a missing model is a clear
- * message and a silent corpus rather than a download.
+ * Every line a scene narrates through `actor.say` comes here.
  */
 
 export type Mark = { at: number; text: string };
 
-/**
- * One cache for every demo on the machine, model and cut lines alike.
- *
- * Per-app was the first instinct and it is wrong twice over. The model is a
- * quarter of a gigabyte and a Python environment beside it, identical for
- * every app that ever films, so a second app would pay the whole install
- * again to get a byte-for-byte copy of the first one's. And the lines cannot
- * collide: `keyFor` hashes the respelt text together with the voice, the
- * language, the speed, both pause lengths and the target loudness, so two
- * apps land on the same file only when they asked the same model to say the
- * same words the same way — in which case the file they want is the file
- * that is already there.
- *
- * `DEMO_VOICE_HOME` still separates them for anyone who wants that.
- */
-const VOICE_HOME =
-  process.env.DEMO_VOICE_HOME ?? join(homedir(), '.cache/demo-voice');
+function resolveVoiceHome(): string {
+  if (process.env.DEMO_VOICE_HOME) {
+    return process.env.DEMO_VOICE_HOME;
+  }
+  const defaultHome = join(homedir(), '.cache/demo-voice');
+  try {
+    mkdirSync(defaultHome, { recursive: true });
+    const probe = join(defaultHome, `.probe_${process.pid}`);
+    writeFileSync(probe, '');
+    unlinkSync(probe);
+    return defaultHome;
+  } catch {
+    return join('/tmp', 'demo-voice');
+  }
+}
+
+const VOICE_HOME = resolveVoiceHome();
 const PYTHON = join(VOICE_HOME, '.venv/bin/python');
 const MODEL = join(VOICE_HOME, 'kokoro.onnx');
 const VOICES = join(VOICE_HOME, 'voices.bin');
@@ -94,6 +79,69 @@ const CLAUSE_PAUSE = Number(process.env.DEMO_VOICE_CLAUSE_PAUSE ?? 0.06);
  */
 const TARGET_RMS = Number(process.env.DEMO_VOICE_RMS ?? 0.12);
 
+const SKILL_ROOT = fileURLToPath(new URL('../../', import.meta.url));
+const LOCAL_EDGE_TTS = join(SKILL_ROOT, '.venv/bin/edge-tts');
+
+export function isEdgeVoice(voiceName: string = VOICE): boolean {
+  return (
+    voiceName.includes('Neural') ||
+    voiceName.startsWith('vi-') ||
+    voiceName === 'HoaiMy' ||
+    voiceName === 'NamMinh' ||
+    voiceName === 'Linh' ||
+    LANG.toLowerCase().startsWith('vi')
+  );
+}
+
+export function resolveEdgeVoice(voiceName: string = VOICE): string {
+  if (
+    voiceName === 'Linh' ||
+    voiceName === 'HoaiMy' ||
+    voiceName === 'vi' ||
+    voiceName === 'vi-VN' ||
+    voiceName === 'af_heart' && LANG.toLowerCase().startsWith('vi')
+  ) {
+    return 'vi-VN-HoaiMyNeural';
+  }
+  if (voiceName === 'NamMinh') {
+    return 'vi-VN-NamMinhNeural';
+  }
+  if (voiceName.includes('Neural')) {
+    return voiceName;
+  }
+  if (LANG.toLowerCase().startsWith('vi')) {
+    return 'vi-VN-HoaiMyNeural';
+  }
+  return voiceName;
+}
+
+async function findEdgePython(): Promise<string | null> {
+  const localPy = join(SKILL_ROOT, '.venv/bin/python3');
+  if (await exists(localPy)) {
+    return localPy;
+  }
+  const cachePy = join(VOICE_HOME, '.venv/bin/python3');
+  if (await exists(cachePy)) {
+    return cachePy;
+  }
+  const tmpPy = '/tmp/test_env/bin/python3';
+  if (await exists(tmpPy)) {
+    return tmpPy;
+  }
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  const exec = promisify(execFile);
+  for (const py of ['/Users/trantandat/miniconda3/bin/python3', 'python3']) {
+    try {
+      const { stdout } = await exec(py, ['-c', 'import edge_tts; print("ok")']);
+      if (stdout.trim() === 'ok') {
+        return py;
+      }
+    } catch {}
+  }
+  return null;
+}
+
 function exists(path: string): Promise<boolean> {
   return access(path).then(
     () => true,
@@ -101,10 +149,14 @@ function exists(path: string): Promise<boolean> {
   );
 }
 
-/** Whether the local model is installed. Checked once, reported once. */
+/** Whether the voice engine is ready. Checked once, reported once. */
 export async function voiceReady(): Promise<boolean> {
   if (!VOICE_ENABLED) {
     return false;
+  }
+  if (isEdgeVoice()) {
+    const py = await findEdgePython();
+    return py !== null;
   }
   const found = await Promise.all([
     exists(PYTHON),
@@ -115,6 +167,15 @@ export async function voiceReady(): Promise<boolean> {
 }
 
 export function voiceMissingMessage(): string {
+  if (isEdgeVoice()) {
+    return (
+      `  no voice-over: edge-tts is not installed.\n` +
+      `  to install it for natural Vietnamese/Neural voice:\n` +
+      `    ${join(SKILL_ROOT, '.venv/bin/pip')} install edge-tts\n` +
+      `    or: pip install edge-tts\n` +
+      `  or film silent with DEMO_VOICE=0.\n`
+    );
+  }
   return (
     `  no voice-over: ${VOICE_HOME} has no Kokoro model.\n` +
     `  to install it (about 250MB, once):\n` +
@@ -207,9 +268,47 @@ for line in job["lines"]:
 print(json.dumps({"ok": True}))
 `;
 
-function runPython(job: unknown): Promise<void> {
+const SYNTH_EDGE = `
+import asyncio, json, os, subprocess, sys
+import edge_tts
+
+async def synth_batch():
+    job = json.load(sys.stdin)
+    voice = job.get("voice", "vi-VN-HoaiMyNeural")
+    speed = float(job.get("speed", 1.0))
+    rate_pct = int((speed - 1) * 100)
+    rate_arg = f"+{rate_pct}%" if rate_pct >= 0 else f"{rate_pct}%"
+
+    for line in job["lines"]:
+        out_wav = line["path"]
+        if os.path.exists(out_wav):
+            continue
+        tmp_mp3 = out_wav + ".mp3"
+        for attempt in range(3):
+            try:
+                comm = edge_tts.Communicate(line["text"], voice, rate=rate_arg)
+                await comm.save(tmp_mp3)
+                break
+            except Exception:
+                if attempt == 2:
+                    raise
+                await asyncio.sleep(0.4 * (attempt + 1))
+
+        subprocess.run(
+            ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", tmp_mp3, "-ar", "24000", "-ac", "1", "-c:a", "pcm_s16le", out_wav],
+            check=True
+        )
+        if os.path.exists(tmp_mp3):
+            os.remove(tmp_mp3)
+
+    print(json.dumps({"ok": True}))
+
+asyncio.run(synth_batch())
+`;
+
+function runPython(pythonBin: string, script: string, job: unknown): Promise<void> {
   return new Promise((resolve, reject) => {
-    const child = spawn(PYTHON, ['-c', SYNTH], {
+    const child = spawn(pythonBin, ['-c', script], {
       stdio: ['pipe', 'pipe', 'pipe'],
     });
     let stderr = '';
@@ -220,7 +319,7 @@ function runPython(job: unknown): Promise<void> {
     child.on('close', (code) =>
       code === 0
         ? resolve()
-        : reject(new Error(`kokoro exited ${code}\n${stderr.slice(-800)}`))
+        : reject(new Error(`voice synth exited ${code}\n${stderr.slice(-800)}`))
     );
     child.stdin.end(JSON.stringify(job));
   });
@@ -243,8 +342,15 @@ export async function speak(marks: Mark[]): Promise<SpokenLine[]> {
 
   await mkdir(LINES, { recursive: true });
 
-  const { stat } = await import('node:fs/promises');
-  const model = String((await stat(MODEL)).size);
+  let model = 'edge';
+  if (!isEdgeVoice()) {
+    const { stat } = await import('node:fs/promises');
+    try {
+      model = String((await stat(MODEL)).size);
+    } catch {
+      model = 'missing';
+    }
+  }
 
   // Keyed and synthesised on the respelling, so changing the table
   // invalidates only the lines it actually touches.
@@ -265,17 +371,30 @@ export async function speak(marks: Mark[]): Promise<SpokenLine[]> {
   );
 
   if (todo.length > 0) {
-    await runPython({
-      model: MODEL,
-      voices: VOICES,
-      voice: VOICE,
-      lang: LANG,
-      speed: SPEED,
-      sentencePause: SENTENCE_PAUSE,
-      clausePause: CLAUSE_PAUSE,
-      targetRms: TARGET_RMS,
-      lines: todo.map((line) => ({ text: line.said, path: line.path })),
-    });
+    if (isEdgeVoice()) {
+      const edgePy = await findEdgePython();
+      if (!edgePy) {
+        throw new Error('Python with edge-tts is not installed. Run `pip install edge-tts`');
+      }
+      const actualVoice = resolveEdgeVoice(VOICE);
+      await runPython(edgePy, SYNTH_EDGE, {
+        voice: actualVoice,
+        speed: SPEED,
+        lines: todo.map((line) => ({ text: line.said, path: line.path })),
+      });
+    } else {
+      await runPython(PYTHON, SYNTH, {
+        model: MODEL,
+        voices: VOICES,
+        voice: VOICE,
+        lang: LANG,
+        speed: SPEED,
+        sentencePause: SENTENCE_PAUSE,
+        clausePause: CLAUSE_PAUSE,
+        targetRms: TARGET_RMS,
+        lines: todo.map((line) => ({ text: line.said, path: line.path })),
+      });
+    }
   }
 
   return Promise.all(
@@ -414,6 +533,7 @@ export function mixArgs(
  */
 export function spokenFor(text: string, minimum = 0): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
-  const seconds = words / (3.7 * SPEED) + 0.4;
+  const rate = isEdgeVoice() ? 3.0 : 3.7;
+  const seconds = words / (rate * SPEED) + 0.5;
   return Math.max(minimum, Math.round(seconds * 1000));
 }

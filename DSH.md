@@ -50,7 +50,7 @@ Do **not** use the `/supergraph:*` prefix in DSH.
 ## Installation & Bundle Architecture
 
 Supergraph installs as a native Cordis Bundle via `dsh.bundle.patch` (`plugins/supergraph/cordis.patch.yml`):
-- `supergraph-skills`: Mounts all 38 skills directly via `@deepseek-ai/dsh-skill-filesystem`.
+- `supergraph`: Mounts all 43 skills directly via Cordis plugin provider and registers live team monitor UI.
 - `mcp-codebase-memory`: Connects Codebase Memory MCP via `@deepseek-ai/dsh-mcp-client`.
 - `mcp-serena`: Connects Serena MCP via `@deepseek-ai/dsh-mcp-client`.
 - `preset-supergraph`: Declares the native `Supergraph Engineer` Agent Preset via `@deepseek-ai/dsh-agent-preset`, configured with token-optimized persona, graph-first workflow priority, plan mode, and strict tool-result pruning (`@deepseek-ai/dsh-compaction-tool-result-pruner`).

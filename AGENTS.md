@@ -24,6 +24,7 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | `/supergraph:fix` | `/fix` | After all coding is complete |
 | `/supergraph:integration` | `/integration` | After unit tests pass |
 | `/supergraph:browser-agent` | `/browser-agent` | Autonomous human browser emulation & ISTQB QA testing (Rust CDP) |
+| `/supergraph:mobile-agent` | `/mobile-agent` | Unified autonomous mobile testing across iOS (WebDriverAgent) & Android (UiAutomator2) |
 | `/supergraph:video-demo` | `/video-demo` | Films narrated, zooming, cursor-driven demo videos with retina screenshots |
 | `/supergraph:vibesec` | `/vibesec` | Security audit, vulnerability prevention (IDOR, XSS, CSRF, SSRF, SQLi, Auth/JWT) |
 | `/supergraph:verify` | `/verify` | Before claiming done/ready or committing |
@@ -106,10 +107,11 @@ After ALL coding, read `/supergraph:fix` and execute it.
         break
     if iteration >= 3: STOP, ask user
 
-### Step 5: Integration & E2E (MANDATORY for Web)
+### Step 5: Integration & E2E (MANDATORY for Web & Mobile)
 
 Read `/supergraph:integration` and execute it.
 For Web / UI features: ALWAYS automatically execute `/supergraph:browser-agent` to generate the ISTQB QA matrix and run autonomous user-flow tests via native Rust CDP (anti-bot bypass, zero Playwright) before claiming verification.
+For Mobile (iOS & Android) features: ALWAYS automatically execute `/supergraph:mobile-agent` to run autonomous testcases directly on connected physical iOS/Android devices, Simulators, or Emulators.
 
 ### Step 6: Verify
 
@@ -204,6 +206,28 @@ All checks pass before merge.
 | `agent_browser_wait_for_text`     | Wait for condition, element, or simulate user pause |
 | `agent_browser_screenshot`        | Capture visual test evidence without layout shift   |
 | `agent_browser_close`             | Close browser tab / session cleanly                 |
+| **WDA iOS tools** (via `supergraph-wda` / `mcp__supergraph-wda__*`) | |
+| `wda_status`                      | Check WDA health and iOS device connection          |
+| `wda_device_list`                 | List connected USB iPhones and booted Simulators    |
+| `wda_session_start`               | Launch app test session on iOS device               |
+| `wda_snapshot`                   | Compact token-efficient Accessibility Tree with @ref|
+| `wda_tap`                        | Tap element by @ref or coordinate (x, y)            |
+| `wda_fill`                       | Fill input field by @ref                            |
+| `wda_swipe`                      | Swipe gesture (up/down/left/right)                  |
+| `wda_screenshot`                 | Capture real device screenshot PNG to disk          |
+| `wda_handle_alert`               | Accept / dismiss system permission dialogs          |
+| **UiAutomator2 Android tools** (via `supergraph-uiautomator2` / `mcp__supergraph-uiautomator2__*`) | |
+| `uiauto_status`                   | Check UiAutomator2 Server health                    |
+| `uiauto_device_list`              | List connected Android devices and emulators (ADB)  |
+| `uiauto_session_start`            | Launch app test session on Android device           |
+| `uiauto_snapshot`                | Compact token-efficient Accessibility Tree with @ref|
+| `uiauto_tap`                     | Tap element by @ref or coordinate (x, y)            |
+| `uiauto_fill`                    | Fill input field by @ref                            |
+| `uiauto_press_keycode`           | Press Android keycode (Back=4, Home=3, Enter=66)    |
+| `uiauto_hide_keyboard`           | Hide soft virtual keyboard                          |
+| `uiauto_swipe`                   | Swipe gesture (up/down/left/right)                  |
+| `uiauto_screenshot`              | Capture Android device screenshot PNG to disk       |
+| `uiauto_handle_alert`            | Accept / dismiss runtime permission dialogs         |
 | **UI Skills** (via `ui-skills` / `mcp__ui-skills__*`) | |
 | `list_skills`                     | List skills from UI Skills registry (https://www.ui-skills.com) |
 | `get_skill`                      | Fetch skill markdown by discovery name or slug      |

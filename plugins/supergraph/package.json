@@ -14,6 +14,8 @@
     "sg-team-ui": "./bin/sg-team-ui.js",
     "sg-team-status": "./bin/sg-team-status.js",
     "sg-browser-mcp": "./bin/sg-browser-mcp.js",
+    "sg-wda-mcp": "./bin/sg-wda-mcp.js",
+    "sg-uiautomator2-mcp": "./bin/sg-uiautomator2-mcp.js",
     "sg-video-demo": "./skills/video-demo/scripts/demo"
   },
   "scripts": {
@@ -27,6 +29,7 @@
     "references",
     "team",
     "bin",
+    "src",
     "AGENTS.md"
   ],
   "dsh": {

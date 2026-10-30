@@ -15,6 +15,14 @@
     "supergraph-browser": {
       "command": "node",
       "args": ["bin/sg-browser-mcp.js"]
+    },
+    "supergraph-wda": {
+      "command": "node",
+      "args": ["bin/sg-wda-mcp.js"]
+    },
+    "supergraph-uiautomator2": {
+      "command": "node",
+      "args": ["bin/sg-uiautomator2-mcp.js"]
     }
   }
 }
