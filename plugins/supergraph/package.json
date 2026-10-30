@@ -1,6 +1,6 @@
 {
   "name": "supergraph",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Evidence-gated engineering workflows, 7 specialized subagents, and native Rust CDP browser/API automation for AI coding agents",
   "type": "module",
   "main": "./index.js",

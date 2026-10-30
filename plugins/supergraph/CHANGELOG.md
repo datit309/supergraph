@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.4.0 - 2026-10-30
+
+### Added
+
+- **Unified Autonomous Mobile Testing & Real Device Control (`mobile-agent`)**:
+  - **Direct Native REST Drivers (Zero Appium Server Overhead)**:
+    - **iOS**: Direct communication with `WebDriverAgent` (WDA) on port 8100 via `iproxy` tunnel.
+    - **Android**: Direct communication with `UiAutomator2 Server` on port 6790 via `adb forward`.
+  - **Token-Efficient Compact Accessibility Trees**:
+    - Nests and compacts 5,000–30,000 line native XML dumps into ~150–400 tokens with reusable `@ref` element handles (`@e1`, `@e2`).
+    - Supports incremental `--delta` snapshots to capture only mutated UI nodes between interactions.
+  - **Unified Device & Platform Auto-Discovery**:
+    - Discovers physical iPhones/iPads via `usbmuxd` (`idevice_id`) and booted Xcode Simulators (`wda_device_list`).
+    - Discovers physical Android devices and Emulators via ADB (`uiauto_device_list`).
+  - **Standard MCP Toolsets**:
+    - `supergraph-wda` (16 tools): `wda_status`, `wda_device_list`, `wda_session_start`, `wda_session_stop`, `wda_snapshot`, `wda_tap`, `wda_fill`, `wda_type`, `wda_press_button`, `wda_dismiss_keyboard`, `wda_swipe`, `wda_wait`, `wda_screenshot`, `wda_app_lifecycle`, `wda_handle_alert`, `wda_open_url`.
+    - `supergraph-uiautomator2` (15 tools): `uiauto_status`, `uiauto_device_list`, `uiauto_session_start`, `uiauto_session_stop`, `uiauto_snapshot`, `uiauto_tap`, `uiauto_fill`, `uiauto_press_keycode`, `uiauto_hide_keyboard`, `uiauto_swipe`, `uiauto_wait`, `uiauto_screenshot`, `uiauto_app_lifecycle`, `uiauto_handle_alert`, `uiauto_open_url`.
+  - **Mobile QA ISTQB Standard Suite**:
+    - 7-dimension mobile test matrix template (`templates/test-matrix-mobile-template.md`).
+    - Automated environment diagnostics and scaffolding script (`scripts/init-mobile-qa.sh doctor/matrix/bug`).
+    - Formal defect reports with real device screenshot capture.
+  - **Pipeline Integration**: Enforces Step 5 (Integration & E2E) verification for mobile projects (Flutter, React Native, Swift, Kotlin) before merge.
+
 ## 2.3.0 - 2026-10-15
 
 ### Added

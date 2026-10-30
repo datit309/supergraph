@@ -1,6 +1,6 @@
 {
   "name": "supergraph-dsh",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Evidence-gated engineering workflows, 7 specialized subagents, and native Rust CDP browser/API automation for AI coding agents",
   "author": "datit309",
   "license": "MIT",
