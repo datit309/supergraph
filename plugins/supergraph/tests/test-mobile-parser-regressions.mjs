@@ -66,6 +66,21 @@ for (const [name, Parser, node] of [
     assert.doesNotMatch(delta.text, /no UI changes/)
     assert.match(delta.text, name === 'Android' ? /checked: true/ : /value: "true"/)
   })
+  for (const change of ['remove', 'reorder', 'add']) {
+    test(`${name} ambiguous duplicate IDs invalidate old handles on ${change}`, () => {
+      const parser = new Parser()
+      const alice = node('same', 'Alice'), bob = node('same', 'Bob')
+      const initial = change === 'add' ? [alice] : [alice, bob]
+      const first = parser.parse({ children: initial })
+      const refs = first.elements.map(e => e.ref)
+      const next = change === 'remove' ? [bob] : change === 'reorder' ? [bob, alice] : [alice, bob]
+      const result = parser.parse({ children: next }, { delta: true })
+      for (const ref of refs) {
+        assert.equal(parser.resolveRef(ref), null, 'ambiguous old handle must not target another element')
+        assert.ok(result.elements.every(e => e.ref !== ref))
+      }
+    })
+  }
   test(`${name} duplicate identifiers retain separate refs`, () => {
     const parser = new Parser()
     const source = { children: [node('same'), node('same')] }
