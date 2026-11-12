@@ -330,9 +330,10 @@ export class WdaMcpServer {
 
       case 'wda_swipe': {
         if (args.direction) {
-          // Determine screen bounds (fallback to standard iPhone 393x852)
-          const width = 393
-          const height = 852
+          const { width, height } = (await this.client.windowSize()).value
+          if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+            throw new Error('Invalid device window dimensions.')
+          }
           const midX = width / 2
           const midY = height / 2
 

@@ -234,7 +234,7 @@ export class UiAutomator2McpServer {
       }
 
       case 'uiauto_snapshot': {
-        const sourceData = await this.client.source('json')
+        const sourceData = await this.client.source('xml')
         const parsed = this.parser.parse(sourceData, {
           delta: args.delta === true,
           appPackage: this.activePackage,
@@ -303,8 +303,10 @@ export class UiAutomator2McpServer {
 
       case 'uiauto_swipe': {
         if (args.direction) {
-          const width = 1080
-          const height = 2400
+          const { width, height } = (await this.client.windowSize()).value
+          if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+            throw new Error('Invalid device window dimensions.')
+          }
           const midX = width / 2
           const midY = height / 2
 
@@ -346,7 +348,7 @@ export class UiAutomator2McpServer {
         const targetRef = args.ref
 
         while (Date.now() - startTime < timeoutMs) {
-          const sourceData = await this.client.source('json')
+          const sourceData = await this.client.source('xml')
           const parsed = this.parser.parse(sourceData)
 
           if (targetRef && this.parser.resolveRef(targetRef)) {

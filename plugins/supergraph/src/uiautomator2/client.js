@@ -33,7 +33,7 @@ export class UiAutomator2Client {
       const res = await fetch(url, fetchOptions)
       const data = await res.json().catch(() => null)
 
-      if (!res.ok) {
+      if (!res.ok || data?.value?.error || (typeof data?.status === 'number' && data.status !== 0)) {
         const errorMsg = data?.value?.message || data?.message || `HTTP ${res.status} ${res.statusText}`
         throw new Error(`UiAutomator2 Request failed (${path}): ${errorMsg}`)
       }
@@ -58,8 +58,13 @@ export class UiAutomator2Client {
       },
     }
 
+    this.sessionId = null
     const res = await this.request('/session', { method: 'POST', body })
-    this.sessionId = res.sessionId || res.value?.sessionId
+    const sessionId = res?.sessionId || res?.value?.sessionId
+    if (typeof sessionId !== 'string' || !sessionId.trim()) {
+      throw new Error('UiAutomator2 session creation returned no valid session id.')
+    }
+    this.sessionId = sessionId
     return res
   }
 
@@ -73,19 +78,25 @@ export class UiAutomator2Client {
     }
   }
 
-  async source(format = 'json') {
-    const sessionPrefix = this.sessionId ? `/session/${this.sessionId}` : ''
-    return this.request(`${sessionPrefix}/source?format=${format}`)
+  async source() {
+    if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
+    return this.request(`/session/${this.sessionId}/source`)
+  }
+
+  async windowSize() {
+    if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
+    return this.request(`/session/${this.sessionId}/window/current/size`)
   }
 
   async screenshot() {
-    const res = await this.request('/screenshot')
+    if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
+    const res = await this.request(`/session/${this.sessionId}/screenshot`)
     return res.value // Base64 string
   }
 
   async tap(x, y) {
     if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
-    return this.request(`/session/${this.sessionId}/appium/tap`, {
+    return this.request(`/session/${this.sessionId}/appium/gestures/click`, {
       method: 'POST',
       body: { x: Math.round(x), y: Math.round(y) },
     })
@@ -101,9 +112,10 @@ export class UiAutomator2Client {
 
   async fill(elementId, text) {
     if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
-    return this.request(`/session/${this.sessionId}/element/${elementId}/value`, {
+    const target = elementId == null ? 'keys' : `element/${elementId}/value`
+    return this.request(`/session/${this.sessionId}/${target}`, {
       method: 'POST',
-      body: { text: String(text) },
+      body: { text: String(text), replace: true },
     })
   }
 
@@ -117,52 +129,38 @@ export class UiAutomator2Client {
 
   async hideKeyboard() {
     if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
-    return this.request(`/session/${this.sessionId}/appium/device/hide_keyboard`, {
-      method: 'POST',
-      body: {},
-    }).catch(() => null)
+    throw new Error('hideKeyboard is not supported by the direct UiAutomator2 server; use Appium middleware or an explicit keycode.')
   }
 
   async swipe(fromX, fromY, toX, toY, steps = 20) {
     if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
-    // UiAutomator2 supports drag/swipe actions
-    const body = {
-      startX: Math.round(fromX),
-      startY: Math.round(fromY),
-      endX: Math.round(toX),
-      endY: Math.round(toY),
-      steps: Math.max(5, Math.round(steps)),
-    }
-    return this.request(`/session/${this.sessionId}/touch/perform`, {
+    return this.request(`/session/${this.sessionId}/actions`, {
       method: 'POST',
       body: {
-        actions: [
-          { action: 'press', options: { x: body.startX, y: body.startY } },
-          { action: 'wait', options: { ms: 100 } },
-          { action: 'moveTo', options: { x: body.endX, y: body.endY } },
-          { action: 'release', options: {} },
-        ],
+        actions: [{
+          type: 'pointer',
+          id: 'finger',
+          parameters: { pointerType: 'touch' },
+          actions: [
+            { type: 'pointerMove', duration: 0, origin: 'viewport', x: Math.round(fromX), y: Math.round(fromY) },
+            { type: 'pointerDown', button: 0 },
+            { type: 'pause', duration: 100 },
+            { type: 'pointerMove', duration: Math.max(5, Math.round(steps)) * 5, origin: 'viewport', x: Math.round(toX), y: Math.round(toY) },
+            { type: 'pointerUp', button: 0 },
+          ],
+        }],
       },
-    }).catch(() => {
-      // Fallback to drag endpoint if available
-      return this.request(`/session/${this.sessionId}/appium/device/drag`, { method: 'POST', body })
     })
   }
 
   async activateApp(appId) {
     if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
-    return this.request(`/session/${this.sessionId}/appium/device/activate_app`, {
-      method: 'POST',
-      body: { appId },
-    })
+    throw new Error('activateApp is not supported by the direct UiAutomator2 server; use Appium middleware or ADB.')
   }
 
   async terminateApp(appId) {
     if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
-    return this.request(`/session/${this.sessionId}/appium/device/terminate_app`, {
-      method: 'POST',
-      body: { appId },
-    })
+    throw new Error('terminateApp is not supported by the direct UiAutomator2 server; use Appium middleware or ADB.')
   }
 
   async alertText() {
@@ -182,9 +180,6 @@ export class UiAutomator2Client {
 
   async openUrl(url) {
     if (!this.sessionId) throw new Error('No active UiAutomator2 session.')
-    return this.request(`/session/${this.sessionId}/url`, {
-      method: 'POST',
-      body: { url },
-    })
+    throw new Error('openUrl is not supported by the direct UiAutomator2 server; use Appium middleware or ADB.')
   }
 }

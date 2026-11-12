@@ -33,7 +33,7 @@ export class WdaClient {
       const res = await fetch(url, fetchOptions)
       const data = await res.json().catch(() => null)
 
-      if (!res.ok) {
+      if (!res.ok || data?.value?.error || (typeof data?.status === 'number' && data.status !== 0)) {
         const errorMsg = data?.value?.message || data?.message || `HTTP ${res.status} ${res.statusText}`
         throw new Error(`WDA Request failed (${path}): ${errorMsg}`)
       }
@@ -67,8 +67,13 @@ export class WdaClient {
       },
     }
 
+    this.sessionId = null
     const res = await this.request('/session', { method: 'POST', body })
-    this.sessionId = res.sessionId || res.value?.sessionId
+    const sessionId = res?.sessionId || res?.value?.sessionId
+    if (typeof sessionId !== 'string' || !sessionId.trim()) {
+      throw new Error('WDA session creation returned no valid session id.')
+    }
+    this.sessionId = sessionId
     return res
   }
 
@@ -114,7 +119,7 @@ export class WdaClient {
    */
   async tap(x, y) {
     if (!this.sessionId) throw new Error('No active WDA session. Call createSession first.')
-    return this.request(`/session/${this.sessionId}/wda/tap/nil`, {
+    return this.request(`/session/${this.sessionId}/wda/tap`, {
       method: 'POST',
       body: { x: Math.round(x), y: Math.round(y) },
     })
@@ -204,7 +209,7 @@ export class WdaClient {
    */
   async appLaunch(bundleId) {
     if (!this.sessionId) throw new Error('No active WDA session.')
-    return this.request(`/session/${this.sessionId}/wda/app/launch`, {
+    return this.request(`/session/${this.sessionId}/wda/apps/launch`, {
       method: 'POST',
       body: { bundleId },
     })
@@ -215,7 +220,7 @@ export class WdaClient {
    */
   async appTerminate(bundleId) {
     if (!this.sessionId) throw new Error('No active WDA session.')
-    return this.request(`/session/${this.sessionId}/wda/app/terminate`, {
+    return this.request(`/session/${this.sessionId}/wda/apps/terminate`, {
       method: 'POST',
       body: { bundleId },
     })
@@ -226,7 +231,15 @@ export class WdaClient {
    */
   async appActivate(bundleId) {
     if (!this.sessionId) throw new Error('No active WDA session.')
-    return this.request(`/session/${this.sessionId}/wda/app/activate`, {
+    return this.request(`/session/${this.sessionId}/wda/apps/activate`, {
+      method: 'POST',
+      body: { bundleId },
+    })
+  }
+
+  async appState(bundleId) {
+    if (!this.sessionId) throw new Error('No active WDA session.')
+    return this.request(`/session/${this.sessionId}/wda/apps/state`, {
       method: 'POST',
       body: { bundleId },
     })
