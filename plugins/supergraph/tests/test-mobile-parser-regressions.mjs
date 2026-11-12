@@ -66,6 +66,16 @@ for (const [name, Parser, node] of [
     assert.doesNotMatch(delta.text, /no UI changes/)
     assert.match(delta.text, name === 'Android' ? /checked: true/ : /value: "true"/)
   })
+  test(`${name} no-ID label replacement invalidates old ref at identical bounds`, () => {
+    const parser = new Parser()
+    const source = label => ({ children: [node(null, label)] })
+    const first = parser.parse(source('Preview'))
+    const oldRef = first.elements[0].ref
+    const result = parser.parse(source('Delete account'), { delta: true })
+    assert.equal(parser.resolveRef(oldRef), null)
+    assert.notEqual(result.elements[0].ref, oldRef)
+    assert.equal(result.elements[0].label, 'Delete account')
+  })
   for (const change of ['remove', 'reorder', 'add']) {
     test(`${name} ambiguous duplicate IDs invalidate old handles on ${change}`, () => {
       const parser = new Parser()

@@ -35,5 +35,5 @@ export function reconcileReferences(parser, elements) {
 
 export function referenceKey(element) {
   const id = element.elementId || element.resourceId || element.rawName
-  return JSON.stringify([element.type, id || null, id ? null : element.rect])
+  return JSON.stringify([element.type, id || null, id ? null : element.rect, id ? null : element.label])
 }
