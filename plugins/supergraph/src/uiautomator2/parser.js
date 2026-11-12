@@ -1,3 +1,5 @@
+import { parseAndroidSource } from '../mobile/android-source.js'
+import { reconcileReferences, referenceKey } from '../mobile/references.js'
 /**
  * Compact Accessibility Tree Parser for Android UiAutomator2 Server.
  * Transforms bulky Android UI hierarchy dumps into dense, token-efficient text with @ref handles.
@@ -41,7 +43,7 @@ export class UiAutomator2TreeParser {
     if (!boundsStr || typeof boundsStr !== 'string') {
       return { x: 0, y: 0, width: 0, height: 0 }
     }
-    const match = /\[(\d+),(\d+)\]\[(\d+),(\d+)\]/.exec(boundsStr)
+    const match = /^\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]$/.exec(boundsStr)
     if (!match) return { x: 0, y: 0, width: 0, height: 0 }
     const x1 = parseInt(match[1], 10)
     const y1 = parseInt(match[2], 10)
@@ -67,7 +69,7 @@ export class UiAutomator2TreeParser {
 
     const type = this.normalizeType(node.class)
     const rect = typeof node.bounds === 'string' ? this.parseBounds(node.bounds) : (node.rect || { x: 0, y: 0, width: 0, height: 0 })
-    const label = (node.text || node.contentDesc || '').toString().trim()
+    const label = (node.text || node.contentDesc || node['content-desc'] || '').toString().trim()
     const resourceId = node.resourceId || node['resource-id'] || null
     const elementId = node.ELEMENT || node['element-6066-11e4-a52e-4f735466cecf'] || null
 
@@ -93,7 +95,7 @@ export class UiAutomator2TreeParser {
         rect,
         center: { x: centerX, y: centerY },
         elementId,
-        checked: node.checked ?? null,
+        checked: node.checked === 'true' ? true : node.checked === 'false' ? false : (node.checked ?? null),
       })
     }
 
@@ -107,87 +109,34 @@ export class UiAutomator2TreeParser {
   }
 
   parse(sourceTree, options = {}) {
-    const rootNode = sourceTree?.value || sourceTree
+    const rootNode = parseAndroidSource(sourceTree?.value ?? sourceTree)
     const extracted = this.extractElements(rootNode, [])
-    const deltaMode = options.delta === true
-
-    if (deltaMode && this.previousElements.length > 0) {
-      const added = []
-      const removed = []
-      const prevMap = new Map(this.previousElements.map(e => [this.elementKey(e), e]))
-      const currMap = new Map(extracted.map(e => [this.elementKey(e), e]))
-
-      for (const curr of extracted) {
-        const key = this.elementKey(curr)
-        if (!prevMap.has(key)) {
-          added.push(curr)
-        }
-      }
-
-      for (const prev of this.previousElements) {
-        const key = this.elementKey(prev)
-        if (!currMap.has(key)) {
-          removed.push(prev)
-        }
-      }
-
-      this.refMap.clear()
-      const lines = []
-      lines.push('[Delta Snapshot: Android Accessibility Tree]')
-
-      let refIndex = 1
-      for (const elem of added) {
-        const ref = `@e${refIndex++}`
-        this.refMap.set(ref, elem)
-        lines.push(`+ ${ref} [${elem.type}] "${elem.label}" bounds: [${elem.rect.x}, ${elem.rect.y}, ${elem.rect.width}, ${elem.rect.height}]`)
-      }
-
-      for (const elem of removed) {
-        lines.push(`- [${elem.type}] "${elem.label}" (removed)`)
-      }
-
-      if (added.length === 0 && removed.length === 0) {
-        lines.push('(no UI changes detected)')
-      }
-
-      this.previousElements = extracted
-      return {
-        isDelta: true,
-        text: lines.join('\n'),
-        elements: extracted,
-        refMap: this.refMap,
-      }
-    }
-
-    this.refMap.clear()
-    const lines = []
-    const appPackage = options.appPackage || 'active'
-    lines.push(`[Android Accessibility Tree | Package: ${appPackage} | Nodes: ${extracted.length}]`)
-
-    let refIndex = 1
-    for (const elem of extracted) {
-      const ref = `@e${refIndex++}`
-      this.refMap.set(ref, elem)
-      elem.ref = ref
-
-      let line = `${ref} [${elem.type}]`
+    const { added, changed, removed, hadSnapshot } = reconcileReferences(this, extracted)
+    const isDelta = options.delta === true && hadSnapshot
+    const format = elem => {
+      let line = `${elem.ref} [${elem.type}]`
       if (elem.label) line += ` "${elem.label}"`
       if (elem.resourceId) line += ` id: "${elem.resourceId}"`
+      if (elem.checked !== null) line += ` checked: ${elem.checked}`
       line += ` bounds: [${elem.rect.x}, ${elem.rect.y}, ${elem.rect.width}, ${elem.rect.height}]`
-      lines.push(line)
+      return line
     }
-
-    this.previousElements = extracted
-    return {
-      isDelta: false,
-      text: lines.join('\n'),
-      elements: extracted,
-      refMap: this.refMap,
+    const lines = []
+    if (isDelta) {
+      lines.push('[Delta Snapshot: Android Accessibility Tree]')
+      for (const elem of added) lines.push(`+ ${format(elem)}`)
+      for (const elem of changed) lines.push(`~ ${format(elem)}`)
+      for (const elem of removed) lines.push(`- [${elem.type}] "${elem.label}" (removed)`)
+      if (!added.length && !removed.length && !changed.length) lines.push('(no UI changes detected)')
+    } else {
+      lines.push(`[Android Accessibility Tree | Package: ${options.appPackage || 'active'} | Nodes: ${extracted.length}]`)
+      for (const elem of extracted) lines.push(format(elem))
     }
+    return { isDelta, text: lines.join('\n'), elements: extracted, refMap: this.refMap }
   }
 
   elementKey(elem) {
-    return `${elem.type}:${elem.label}:${elem.rect.x},${elem.rect.y},${elem.rect.width},${elem.rect.height}`
+    return referenceKey(elem)
   }
 
   resolveRef(ref) {

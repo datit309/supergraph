@@ -1,3 +1,4 @@
+import { reconcileReferences, referenceKey } from '../mobile/references.js'
 /**
  * Compact Accessibility Tree Parser for WebDriverAgent (iOS).
  * Transforms bulky XCTest XML/JSON hierarchy (often 5k-50k tokens)
@@ -90,92 +91,31 @@ export class WdaTreeParser {
   parse(sourceTree, options = {}) {
     const rootNode = sourceTree?.value || sourceTree
     const extracted = this.extractElements(rootNode, [])
-    const deltaMode = options.delta === true
-
-    // Compute Delta if requested and previous elements exist
-    if (deltaMode && this.previousElements.length > 0) {
-      const added = []
-      const removed = []
-      const unchanged = []
-
-      const prevMap = new Map(this.previousElements.map(e => [this.elementKey(e), e]))
-      const currMap = new Map(extracted.map(e => [this.elementKey(e), e]))
-
-      for (const curr of extracted) {
-        const key = this.elementKey(curr)
-        if (prevMap.has(key)) {
-          unchanged.push(curr)
-        } else {
-          added.push(curr)
-        }
-      }
-
-      for (const prev of this.previousElements) {
-        const key = this.elementKey(prev)
-        if (!currMap.has(key)) {
-          removed.push(prev)
-        }
-      }
-
-      // Re-index refMap
-      this.refMap.clear()
-      const lines = []
-      lines.push('[Delta Snapshot: iOS Accessibility Tree]')
-
-      let refIndex = 1
-      for (const elem of added) {
-        const ref = `@e${refIndex++}`
-        this.refMap.set(ref, elem)
-        lines.push(`+ ${ref} [${elem.type}] "${elem.label}" bounds: [${elem.rect.x}, ${elem.rect.y}, ${elem.rect.width}, ${elem.rect.height}]`)
-      }
-
-      for (const elem of removed) {
-        lines.push(`- [${elem.type}] "${elem.label}" (removed)`)
-      }
-
-      if (added.length === 0 && removed.length === 0) {
-        lines.push('(no UI changes detected)')
-      }
-
-      this.previousElements = extracted
-      return {
-        isDelta: true,
-        text: lines.join('\n'),
-        elements: extracted,
-        refMap: this.refMap,
-      }
-    }
-
-    // Full snapshot
-    this.refMap.clear()
-    const lines = []
-    const appBundle = options.appBundle || 'active'
-    lines.push(`[iOS Accessibility Tree | App: ${appBundle} | Nodes: ${extracted.length}]`)
-
-    let refIndex = 1
-    for (const elem of extracted) {
-      const ref = `@e${refIndex++}`
-      this.refMap.set(ref, elem)
-      elem.ref = ref
-
-      let line = `${ref} [${elem.type}]`
+    const { added, changed, removed, hadSnapshot } = reconcileReferences(this, extracted)
+    const isDelta = options.delta === true && hadSnapshot
+    const format = elem => {
+      let line = `${elem.ref} [${elem.type}]`
       if (elem.label) line += ` "${elem.label}"`
       if (elem.value && elem.value !== elem.label) line += ` value: "${elem.value}"`
       line += ` bounds: [${elem.rect.x}, ${elem.rect.y}, ${elem.rect.width}, ${elem.rect.height}]`
-      lines.push(line)
+      return line
     }
-
-    this.previousElements = extracted
-    return {
-      isDelta: false,
-      text: lines.join('\n'),
-      elements: extracted,
-      refMap: this.refMap,
+    const lines = []
+    if (isDelta) {
+      lines.push('[Delta Snapshot: iOS Accessibility Tree]')
+      for (const elem of added) lines.push(`+ ${format(elem)}`)
+      for (const elem of changed) lines.push(`~ ${format(elem)}`)
+      for (const elem of removed) lines.push(`- [${elem.type}] "${elem.label}" (removed)`)
+      if (!added.length && !removed.length && !changed.length) lines.push('(no UI changes detected)')
+    } else {
+      lines.push(`[iOS Accessibility Tree | App: ${options.appBundle || 'active'} | Nodes: ${extracted.length}]`)
+      for (const elem of extracted) lines.push(format(elem))
     }
+    return { isDelta, text: lines.join('\n'), elements: extracted, refMap: this.refMap }
   }
 
   elementKey(elem) {
-    return `${elem.type}:${elem.label}:${elem.rect.x},${elem.rect.y},${elem.rect.width},${elem.rect.height}`
+    return referenceKey(elem)
   }
 
   resolveRef(ref) {
