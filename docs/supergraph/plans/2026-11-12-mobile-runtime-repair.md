@@ -62,4 +62,8 @@ Supergraph Team initialized and two DAG tasks registered. sg_task_claim failed b
 - Installed DSH mobile skill points to ~/.local/share/supergraph, not this checkout; repair is not deployed to the active host yet.
 - Cross-review found duplicate-ID stale-handle retargeting; follow-up b05bc97 invalidates ambiguous handles. RED 6 failures before fix; full integrated serial suite now 95 passed, 0 failed.
 - Runtime independent cross-review: no Critical/Important new findings; parser follow-up independent re-review: PASS and original wrong-target reproduction passes.
+- Second review finding: identity-less same-bounds relabel could retarget a handle. Integrated 812627d adds fallback semantic label; RED 2 failures before fix; independent Android/iOS unsafe-action reproduction now PASS.
+- Final full integrated serial suite: 97 tests passed, 0 failed (exit 0); parser re-review PASS, 0 Critical/Important in changed scope.
 - Setup/config review remains limited to lead inspection plus 3 registration regressions; no loaded-host deployment verification. No remote push.
+- Implementation acceptance for parser/runtime is verified locally. Task 3 deployment and physical-device acceptance remain pending; no claim of end-to-end completion.
+
