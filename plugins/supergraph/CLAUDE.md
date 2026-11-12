@@ -24,7 +24,7 @@ Your AI agent MUST read and follow the relevant skill before each phase.
 | `/supergraph:fix` | `/fix` | After all coding is complete |
 | `/supergraph:integration` | `/integration` | After unit tests pass |
 | `/supergraph:browser-agent` | `/browser-agent` | Autonomous human browser emulation & ISTQB QA testing (Rust CDP) |
-| `/supergraph:wda-agent` | `/wda-agent` | Autonomous real iOS device & simulator testing via Appium WebDriverAgent |
+| `/supergraph:mobile-agent` | `/mobile-agent` | Mobile QA using iOS WebDriverAgent or Android UiAutomator2; requires a verified native backend |
 | `/supergraph:vibesec` | `/vibesec` | Security audit, vulnerability prevention (IDOR, XSS, CSRF, SSRF, SQLi, Auth/JWT) |
 | `/supergraph:verify` | `/verify` | Before claiming done/ready or committing |
 | `/supergraph:review` | `/review` | Before merging or when review is needed |
@@ -110,7 +110,7 @@ After ALL coding, read `/supergraph:fix` and execute it.
 
 Read `/supergraph:integration` and execute it.
 For Web / UI features: ALWAYS automatically execute `/supergraph:browser-agent` to generate the ISTQB QA matrix and run autonomous user-flow tests via native Rust CDP (anti-bot bypass, zero Playwright) before claiming verification.
-For Mobile (iOS / Flutter / React Native) features: Execute `/supergraph:wda-agent` to run autonomous testcases directly on connected physical iOS devices or Simulators via WebDriverAgent.
+For Mobile (iOS & Android) features: Execute `/supergraph:mobile-agent` after verifying the selected native backend. Report device E2E as BLOCKED when tools or runners are unavailable; unit tests alone do not prove device readiness.
 
 ### Step 6: Verify
 

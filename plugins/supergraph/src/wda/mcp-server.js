@@ -81,7 +81,7 @@ export class WdaMcpServer {
       },
       {
         name: 'wda_fill',
-        description: 'Clear and fill text into an input field by @ref identifier.',
+        description: 'Type text into an input field by @ref identifier. Appends to existing text; does not clear the field.',
         inputSchema: {
           type: 'object',
           properties: {
